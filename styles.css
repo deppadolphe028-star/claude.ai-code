@@ -181,10 +181,38 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Hero ---------- */
 
 .hero {
-  background: linear-gradient(rgb(15,16,17), rgb(19,29,39) 18%, rgb(26,71,136) 37%, rgb(64,138,193) 69%, rgb(64,138,193) 102%);
+  position: relative;
+  overflow: hidden;
   padding: 180px 0 0;
   text-align: center;
 }
+
+/* ---------- Ciel bleu et nuages (derrière la 3D) ---------- */
+
+.sky {
+  background: linear-gradient(180deg, #143f7c 0%, #1f5a9e 22%, #2a6fb8 45%, #4f93d6 72%, #8cc3ee 92%, #a9d4f4 100%);
+}
+.clouds { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.cloud {
+  position: absolute;
+  animation: drift 28s ease-in-out infinite alternate;
+}
+.cloud canvas { display: block; width: 100%; height: auto; }
+@keyframes drift {
+  from { transform: translateX(-28px); }
+  to { transform: translateX(28px); }
+}
+/* Nuages du hero : autour du texte, jamais derrière */
+.cloud--a { left: 2%; top: 11%; width: 200px; opacity: .75; animation-duration: 34s; }
+.cloud--b { left: 58%; top: 11%; width: 360px; animation-duration: 30s; }
+.cloud--c { left: 80%; top: 50%; width: 280px; animation-duration: 24s; }
+.cloud--d { left: -3%; top: 82%; width: 440px; animation-duration: 38s; }
+/* Nuages de l'anatomie : côté maison et bord droit */
+.cloud--e { left: 2%; top: 14%; width: 300px; animation-duration: 32s; }
+.cloud--f { left: 30%; top: 6%; width: 220px; opacity: .85; animation-duration: 26s; }
+.cloud--g { left: -4%; top: 72%; width: 380px; animation-duration: 36s; }
+.cloud--h { left: 87%; top: 15%; width: 260px; animation-duration: 29s; }
+.cloud--i { left: 85%; top: 76%; width: 300px; animation-duration: 33s; }
 .hero__inner { display: flex; flex-direction: column; align-items: center; gap: 28px; }
 .hero .display { max-width: 980px; }
 .hero .subhead { color: rgba(245,245,247,.85); }
@@ -228,7 +256,7 @@ a { color: inherit; text-decoration: none; }
 .ask svg { width: 18px; height: 18px; }
 
 /* Maison 3D : sous le texte sur mobile, à droite sur ordinateur */
-.hero__grid { display: flex; flex-direction: column; gap: 16px; }
+.hero__grid { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 16px; }
 .hero__stage { position: relative; height: clamp(320px, 80vw, 480px); }
 .hero__stage canvas {
   position: absolute;
@@ -323,7 +351,28 @@ a { color: inherit; text-decoration: none; }
 .tile--orchid { background: var(--color-orchid-bloom); }
 .tile--peri   { background: var(--color-periwinkle); }
 
-/* Anatomie 3D : la scène reste fixe pendant que les étapes défilent */
+/* Anatomie 3D : un ciel fixe derrière la section, la scène reste en place pendant que les étapes défilent */
+.sky-section { position: relative; background: #2a6fb8; }
+.sky-layer {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  margin-bottom: -100vh;
+  overflow: hidden;
+}
+.sky-content {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
+}
+.sky-section .head, .sky-section .astep { text-shadow: 0 1px 16px rgba(10,40,90,.35); }
+.sky-section .head .mono,
+.sky-section .astep .mono,
+.sky-section .anatomy__meter .mono { color: rgba(255,255,255,.82); }
+.sky-section .subhead, .sky-section .astep p { color: rgba(255,255,255,.9); }
+.sky-section .anatomy__bar { background: rgba(255,255,255,.3); }
+.sky-section .anatomy__bar i { background: var(--color-pure); }
 .anatomy {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -339,8 +388,19 @@ a { color: inherit; text-decoration: none; }
   gap: 14px;
 }
 .anatomy__view { position: relative; flex: 1; min-height: 0; }
-.anatomy__view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.anatomy__meter { display: flex; align-items: center; gap: 16px; }
+.anatomy__view canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* bords estompés : le gros plan se fond dans le ciel */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(transparent, #000 7%, #000 93%, transparent);
+  mask-composite: intersect;
+}
+.anatomy__meter { position: relative; display: flex; align-items: center; gap: 16px; }
 .anatomy__meter .mono { color: var(--color-ash); white-space: nowrap; }
 .anatomy__bar { flex: 1; height: 2px; background: var(--color-steel); overflow: hidden; }
 .anatomy__bar i {
@@ -362,7 +422,14 @@ a { color: inherit; text-decoration: none; }
 }
 .astep.is-active { opacity: 1; }
 .astep .mono { display: inline-flex; align-items: center; gap: 10px; color: var(--color-ash); }
-.dot { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--dot); }
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--dot);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.7);
+}
 .astep h3 {
   font-family: var(--font-lyon-display);
   font-weight: 300;
@@ -552,7 +619,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .fade { animation: none; }
+  .fade, .cloud { animation: none; }
 }
 
 /* ---------- Responsive ---------- */
@@ -568,9 +635,18 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
     top: 60px;
     z-index: 2;
     height: 48vh;
-    padding-bottom: 12px;
-    background: var(--color-abyss);
+    padding: 0 12px 12px;
+    border-radius: var(--radius-cards);
+    background: rgba(42,111,184,.4);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
   }
+  .cloud--a, .cloud--b, .cloud--h, .cloud--i { display: none; }
+  .cloud--c { left: 55%; top: 60%; width: 220px; }
+  .cloud--d { left: -10%; top: 88%; width: 300px; }
+  .cloud--e { left: -8%; top: 10%; width: 200px; }
+  .cloud--f { left: 60%; top: 7%; width: 170px; }
+  .cloud--g { left: 28%; top: 36%; width: 240px; }
   .astep { min-height: 60vh; }
   .anatomy__steps { padding-bottom: 25vh; }
 }

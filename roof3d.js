@@ -1,5 +1,5 @@
 // A R Rénovation — toiture en 3D (Three.js r128)
-// Deux scènes : la maison du hero, dont les tuiles se posent rang par rang,
+// Deux scènes : la maison du hero, dont les ardoises se posent rang par rang,
 // et l'anatomie de la toiture, qui se monte couche par couche au défilement.
 (function () {
   'use strict';
@@ -14,11 +14,32 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Palette du site (voir styles.css)
-  const C = {
-    iris: '#847dff', cyan: '#00b3dd', paleIris: '#d1c9ff', deepIris: '#4b49aa',
-    orchid: '#dd90d8', periwinkle: '#90b8f0', obsidian: '#0f1011', graphite: '#2e2e2e',
-    steel: '#3f4041', silver: '#cacaca', fog: '#6a6b6b', ash: '#9f9fa0',
+  // Couleurs réelles des matériaux
+  const M = {
+    wall: '#e8e4dc',        // enduit
+    plinth: '#8c8b86',      // soubassement en pierre
+    frame: '#f3f2ee',       // menuiseries blanches
+    glass: '#6f8ea9',
+    sill: '#d6d1c5',        // appuis de fenêtre
+    shutter: '#5f7c93',     // volets
+    door: '#56728a',
+    handle: '#d9d9d6',
+    wood: '#c08a50',        // sapin traité : sablières, pannes, chevrons
+    batten: '#d2a56b',      // liteaux et contre-liteaux
+    wool: '#e2b93b',        // laine de verre
+    screen: '#c3ccd4',      // écran sous-toiture
+    slate: '#3d444c',       // ardoise naturelle
+    hook: '#d4d9dd',        // crochets inox
+    terracotta: '#b4603f',  // tuiles faîtières, mitrons
+    mortar: '#d4cdbf',
+    zinc: '#a2abb0',
+    concrete: '#9d9c97',
+    grass: '#6aa84f',
+    soil: '#7a5536',
+    stone: '#bdb9ae',
+    bush: '#4f8a3c',
+    bushDark: '#3f7631',
+    treatment: '#90b8f0',
   };
   const col = (hex) => new THREE.Color(hex).convertSRGBToLinear();
 
@@ -33,10 +54,22 @@
   const LEN = RAMPANT + 0.5;                // avec le débord d'égout
   const RX = W / 2 + 0.3;                   // demi-longueur du toit avec le débord de rive
   const APEX = new THREE.Vector3(0, H + R, 0);
+  const CX = 2.1;                           // souche de cheminée, à cheval sur le faîtage
+  const CW = 0.9;
+  const nearChimney = (x, margin) => Math.abs(x - CX) < CW / 2 + margin;
+  const RAFTERS = Array.from({ length: 17 }, (_, i) => -W / 2 + 0.12 + (i * (W - 0.24)) / 16);
+  const rafterStart = (x) => (nearChimney(x, 0.12) ? 0.66 : 0);   // chevrons coupés par la cheminée
 
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
   const smooth = (a, b, v) => { const x = clamp01((v - a) / (b - a)); return x * x * (3 - 2 * x); };
   const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+
+  // Aléatoire reproductible : les deux maisons sont identiques
+  let seed = 1;
+  const rand = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
 
   const _m = new THREE.Matrix4();
   const _p = new THREE.Vector3();
@@ -45,6 +78,8 @@
   const _e = new THREE.Euler();
   const _v = new THREE.Vector3();
   const _c = new THREE.Vector3();
+  const _f = new THREE.Vector3();
+  const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
   // Repère de chaque versant : x le long du faîtage, y perpendiculaire au versant, z dans le sens de la pente
   const SLOPES = [1, -1].map((side) => new THREE.Matrix4().compose(
@@ -53,22 +88,84 @@
     new THREE.Vector3(1, 1, 1)
   ));
 
-  function onSlope(slope, x, h, s, tilt = 0, scaleX = 1) {
+  function onSlope(slope, x, h, s, sx = 1, sy = 1, sz = 1, tilt = 0) {
     _q.setFromEuler(_e.set(tilt, 0, 0));
-    return new THREE.Matrix4().compose(_p.set(x, h, s), _q, _s.set(scaleX, 1, 1)).premultiply(slope);
+    return new THREE.Matrix4().compose(_p.set(x, h, s), _q, _s.set(sx, sy, sz)).premultiply(slope);
   }
 
-  function inWorld(x, y, z, rz = 0) {
-    _q.setFromEuler(_e.set(0, 0, rz));
-    return new THREE.Matrix4().compose(_p.set(x, y, z), _q, _s.set(1, 1, 1));
+  function inWorld(x, y, z, sx = 1, sy = 1, sz = 1) {
+    return new THREE.Matrix4().compose(_p.set(x, y, z), _q.identity(), _s.set(sx, sy, sz));
   }
 
   // Oriente un cylindre de hauteur 1 entre deux points
   function between(a, b) {
     const dir = new THREE.Vector3().subVectors(b, a);
     const length = dir.length();
-    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+    const quat = new THREE.Quaternion().setFromUnitVectors(Y_AXIS, dir.normalize());
     return new THREE.Matrix4().compose(a.clone().lerp(b, 0.5), quat, new THREE.Vector3(1, length, 1));
+  }
+
+  // Découpe [a, b] le long du faîtage pour laisser passer la cheminée
+  function aroundChimney(a, b, margin) {
+    const c0 = CX - CW / 2 - margin;
+    const c1 = CX + CW / 2 + margin;
+    return [[a, Math.min(b, c0)], [Math.max(a, c1), b]].filter(([p, q]) => q - p > 0.05);
+  }
+
+  // Textures dessinées une fois : laine de verre, écran, brique, pelouse
+  let textureCache = null;
+  function textures() {
+    if (textureCache) return textureCache;
+    seed = 3;
+    const make = (size, repeatX, repeatY, draw) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      draw(canvas.getContext('2d'), size);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.encoding = THREE.sRGBEncoding;
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(repeatX, repeatY);
+      return texture;
+    };
+    const fibres = (ctx, size, base, tones, count, w, h) => {
+      ctx.fillStyle = base;
+      ctx.fillRect(0, 0, size, size);
+      for (let i = 0; i < count; i++) {
+        ctx.globalAlpha = 0.2 + rand() * 0.5;
+        ctx.fillStyle = tones[i % tones.length];
+        ctx.fillRect(rand() * size, rand() * size, w * (0.4 + rand()), h * (0.5 + rand()));
+      }
+      ctx.globalAlpha = 1;
+    };
+    textureCache = {
+      wool: make(128, 1, 5, (ctx, s) => fibres(ctx, s, M.wool, ['#f3d36a', '#c4951f', '#f8e39a', '#b5871a'], 900, 3, 10)),
+      screen: make(256, 4, 1, (ctx, s) => {
+        ctx.fillStyle = M.screen;
+        ctx.fillRect(0, 0, s, s);
+        ctx.fillStyle = 'rgba(70,110,160,0.55)';                // bande de recouvrement
+        ctx.fillRect(0, s * 0.08, s, s * 0.025);
+        ctx.fillStyle = 'rgba(80,92,104,0.35)';                 // marquage imprimé
+        for (let y = s * 0.3; y < s; y += s * 0.22) {
+          for (let x = 8; x < s; x += 64) ctx.fillRect(x, y, 34, 5);
+        }
+      }),
+      brick: make(128, 2, 6, (ctx, s) => {
+        ctx.fillStyle = '#d3ccbf';
+        ctx.fillRect(0, 0, s, s);
+        const rows = 8;
+        const bh = s / rows;
+        for (let r = 0; r < rows; r++) {
+          const offset = (r % 2) * (s / 4);
+          for (let x = -s / 2; x < s; x += s / 2) {
+            const v = 0.85 + rand() * 0.3;
+            ctx.fillStyle = `rgb(${Math.round(155 * v)},${Math.round(74 * v)},${Math.round(53 * v)})`;
+            ctx.fillRect(x + offset + 2, r * bh + 2, s / 2 - 4, bh - 4);
+          }
+        }
+      }),
+      grass: make(256, 5, 5, (ctx, s) => fibres(ctx, s, M.grass, ['#7cbc5c', '#5a9442', '#8fc76a', '#4e8639'], 2600, 2, 6)),
+    };
+    return textureCache;
   }
 
   // Ombre de contact douce sous la maison
@@ -78,13 +175,13 @@
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext('2d');
     const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    gradient.addColorStop(0, 'rgba(0,0,0,0.55)');
-    gradient.addColorStop(0.55, 'rgba(0,0,0,0.28)');
+    gradient.addColorStop(0, 'rgba(0,0,0,0.5)');
+    gradient.addColorStop(0.55, 'rgba(0,0,0,0.25)');
     gradient.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, size, size);
     const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(W + 3.5, D + 3.5),
+      new THREE.PlaneGeometry(W + 3, D + 3),
       new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, depthWrite: false })
     );
     mesh.rotation.x = -Math.PI / 2;
@@ -93,20 +190,51 @@
   }
 
   function buildHouse() {
+    const tex = textures();
+    seed = 11;
     const group = new THREE.Group();
-    const std = (hex, roughness = 0.85, metalness = 0) =>
-      new THREE.MeshStandardMaterial({ color: col(hex), roughness, metalness });
+    const std = (hex, roughness = 0.85, metalness = 0, extra = {}) =>
+      new THREE.MeshStandardMaterial({ color: col(hex), roughness, metalness, ...extra });
     const add = (mesh) => {
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       group.add(mesh);
       return mesh;
     };
+    const unit = new THREE.BoxGeometry(1, 1, 1);
+    const varied = (n, amount) => Array.from({ length: n }, () => new THREE.Color().setScalar(1 - amount + rand() * amount * 1.4));
 
-    // Maçonnerie : murs, pignons, soubassement
-    const wall = std(C.graphite, 0.95);
-    add(new THREE.Mesh(new THREE.BoxGeometry(W, H, D), wall)).position.y = H / 2;
+    // Terrain : îlot de pelouse, allée et massifs
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(6.3, 6.0, 0.5, 72), [
+      std(M.soil, 1),
+      new THREE.MeshStandardMaterial({ map: tex.grass, roughness: 1 }),
+      std(M.soil, 1),
+    ]);
+    island.position.y = -0.25;
+    island.receiveShadow = true;
+    group.add(island);
+    group.add(contactShadow());
 
+    const stoneMat = std(M.stone, 0.9);
+    const stoneGeo = new THREE.CylinderGeometry(0.26, 0.28, 0.06, 14);
+    for (let i = 0; i < 4; i++) {
+      const stone = add(new THREE.Mesh(stoneGeo, stoneMat));
+      stone.position.set(-2.3 + (rand() - 0.5) * 0.2, 0.03, 4.0 + i * 0.55);
+      stone.scale.set(1.3, 1, 0.9);
+    }
+    const bushGeo = new THREE.IcosahedronGeometry(0.6, 1);
+    const bushMats = [std(M.bush, 0.95, 0, { flatShading: true }), std(M.bushDark, 0.95, 0, { flatShading: true })];
+    [[-4.75, 2.6, 0.62, 0], [4.85, 2.7, 0.7, 1], [-4.55, -3.2, 0.55, 1], [4.5, -3.4, 0.6, 0], [-1.25, HALF + 0.55, 0.38, 0], [1.4, HALF + 0.5, 0.34, 1]]
+      .forEach(([x, z, r, m]) => {
+        const bush = add(new THREE.Mesh(bushGeo, bushMats[m]));
+        bush.position.set(x, r * 0.75, z);
+        bush.scale.setScalar(r / 0.6);
+        bush.rotation.set(rand(), rand() * 3, rand());
+      });
+
+    // Maçonnerie : murs enduits, pignons, soubassement
+    const wallMat = std(M.wall, 0.95);
+    add(new THREE.Mesh(new THREE.BoxGeometry(W, H, D), wallMat)).position.y = H / 2;
     const gable = new THREE.Shape();
     gable.moveTo(-HALF, 0);
     gable.lineTo(HALF, 0);
@@ -116,46 +244,70 @@
     gableGeo.translate(0, 0, -0.12);
     gableGeo.rotateY(Math.PI / 2);
     [-1, 1].forEach((sx) => {
-      add(new THREE.Mesh(gableGeo, wall)).position.set(sx * (W / 2 - 0.12), H, 0);
+      add(new THREE.Mesh(gableGeo, wallMat)).position.set(sx * (W / 2 - 0.12), H, 0);
     });
+    add(new THREE.Mesh(new THREE.BoxGeometry(W + 0.12, 0.45, D + 0.12), std(M.plinth, 0.9))).position.y = 0.225;
 
-    add(new THREE.Mesh(new THREE.BoxGeometry(W + 0.3, 0.22, D + 0.3), std('#18191a', 0.9))).position.y = 0.11;
-    group.add(contactShadow());
-
-    // Ouvertures : fenêtres éclairées et porte
-    const glass = new THREE.MeshStandardMaterial({
-      color: col(C.obsidian), emissive: col(C.paleIris), emissiveIntensity: 0.4, roughness: 0.25,
-    });
-    const frameMat = std(C.fog, 0.6);
-    const doorMat = std('#141516', 0.7);
-    const unit = new THREE.BoxGeometry(1, 1, 1);
-    const opening = (x, y, z, w, h, onGable, mat) => {
-      const frame = add(new THREE.Mesh(unit, frameMat));
-      const pane = add(new THREE.Mesh(unit, mat));
-      if (onGable) {
-        frame.scale.set(0.06, h + 0.14, w + 0.14);
-        pane.scale.set(0.08, h, w);
+    // Menuiseries : fenêtres à deux vantaux, appuis, volets, porte d'entrée
+    const frameMat = std(M.frame, 0.5);
+    const glassMat = std(M.glass, 0.12, 0.35);
+    const sillMat = std(M.sill, 0.8);
+    const shutterMat = std(M.shutter, 0.7);
+    const onWall = (axis, side, u, y, w, h, depth, out, mat) => {
+      const mesh = add(new THREE.Mesh(unit, mat));
+      const d = (axis === 'z' ? HALF : W / 2) + out;
+      if (axis === 'z') {
+        mesh.scale.set(w, h, depth);
+        mesh.position.set(u, y, side * d);
       } else {
-        frame.scale.set(w + 0.14, h + 0.14, 0.06);
-        pane.scale.set(w, h, 0.08);
+        mesh.scale.set(depth, h, w);
+        mesh.position.set(side * d, y, u);
       }
-      frame.position.set(x, y, z);
-      pane.position.set(x, y, z);
     };
-    const front = HALF + 0.02;
-    opening(-2.3, 1.3, front, 1.0, 2.1, false, doorMat);
-    opening(0.3, 2.0, front, 1.15, 1.25, false, glass);
-    opening(2.5, 2.0, front, 1.15, 1.25, false, glass);
-    [-2.4, 0, 2.4].forEach((x) => opening(x, 2.0, -front, 1.0, 1.25, false, glass));
+    const windowAt = (axis, side, u, y, w, h, shutters) => {
+      onWall(axis, side, u, y, w + 0.12, h + 0.12, 0.05, 0.005, frameMat);
+      onWall(axis, side, u, y, w, h, 0.05, 0.02, glassMat);
+      onWall(axis, side, u, y, 0.05, h, 0.05, 0.03, frameMat);
+      onWall(axis, side, u, y - h / 2 - 0.1, w + 0.3, 0.07, 0.2, 0.08, sillMat);
+      if (shutters) {
+        [-1, 1].forEach((k) => onWall(axis, side, u + k * (w / 2 + 0.3), y + 0.02, 0.5, h + 0.16, 0.04, 0.03, shutterMat));
+      }
+    };
+    windowAt('z', 1, 0, 1.95, 1.0, 1.2, true);
+    windowAt('z', 1, 2.6, 1.95, 1.0, 1.2, true);
+    [-2.4, 0, 2.4].forEach((x) => windowAt('z', -1, x, 1.95, 0.9, 1.2, true));
     [-1, 1].forEach((sx) => {
-      opening(sx * (W / 2 + 0.02), 2.0, 0, 1.1, 1.25, true, glass);
-      opening(sx * (W / 2 + 0.02), H + 0.95, 0, 0.7, 0.8, true, glass);
+      windowAt('x', sx, 0, 1.95, 0.9, 1.2, true);
+      windowAt('x', sx, 0, H + 0.95, 0.6, 0.7, false);
     });
+    onWall('z', 1, -2.3, 1.5, 1.12, 2.16, 0.05, 0.005, frameMat);
+    onWall('z', 1, -2.3, 1.48, 1.0, 2.06, 0.05, 0.02, std(M.door, 0.6));
+    onWall('z', 1, -2.3, 2.15, 0.5, 0.5, 0.05, 0.03, glassMat);
+    onWall('z', 1, -1.95, 1.45, 0.05, 0.18, 0.05, 0.05, std(M.handle, 0.4, 0.6));
+    const step = (w, h, d, y, z) => {
+      const mesh = add(new THREE.Mesh(unit, stoneMat));
+      mesh.scale.set(w, h, d);
+      mesh.position.set(-2.3, y, z);
+    };
+    step(1.6, 0.22, 0.7, 0.11, HALF + 0.41);
+    step(1.3, 0.22, 0.38, 0.33, HALF + 0.25);
+
+    // Souche de cheminée en brique, couronnement et mitrons
+    const chimneyTop = H + R + 1.25;
+    const chimney = add(new THREE.Mesh(unit, new THREE.MeshStandardMaterial({ map: tex.brick, roughness: 0.9 })));
+    chimney.scale.set(CW, chimneyTop - H, CW);
+    chimney.position.set(CX, (chimneyTop + H) / 2, 0);
+    const capping = add(new THREE.Mesh(unit, std(M.concrete, 0.9)));
+    capping.scale.set(CW + 0.14, 0.12, CW + 0.14);
+    capping.position.set(CX, chimneyTop + 0.06, 0);
+    const potGeo = new THREE.CylinderGeometry(0.1, 0.13, 0.34, 14);
+    const potMat = std(M.terracotta, 0.8);
+    [-0.2, 0.2].forEach((dx) => add(new THREE.Mesh(potGeo, potMat)).position.set(CX + dx, chimneyTop + 0.29, 0));
 
     // Les couches de la toiture, dans l'ordre du chantier
     const layers = [];
-    function layer(chroma) {
-      const l = { chroma: col(chroma), group: new THREE.Group(), parts: [], queue: NaN, u: NaN };
+    function layer(glow) {
+      const l = { glow: col(glow), group: new THREE.Group(), parts: [], queue: NaN, u: NaN };
       group.add(l.group);
       layers.push(l);
       return l;
@@ -169,114 +321,163 @@
         mesh.setMatrixAt(i, item.m);
         if (colors) mesh.setColorAt(i, colors[i]);
       });
-      l.parts.push({ mesh, mat, neutral: mat.color.clone(), bases: items.map((it) => it.m), keys: items.map((it) => it.k) });
+      l.parts.push({ mesh, mat, bases: items.map((it) => it.m), keys: items.map((it) => it.k) });
       l.group.add(mesh);
     }
 
-    // 1. Charpente : chevrons et faîtière
-    const charpente = layer(C.deepIris);
+    // 1. Charpente en bois : chevrons, panne faîtière, pannes, sablières, chevêtre
+    const charpente = layer(M.wood);
     const rafters = [];
+    SLOPES.forEach((slope) => RAFTERS.forEach((x, i) => {
+      const s0 = rafterStart(x);
+      rafters.push({ m: onSlope(slope, x, 0.09, (s0 + LEN) / 2, 0.08, 0.18, LEN - s0), k: i / 16 });
+    }));
+    part(charpente, unit, std(M.wood, 0.8), rafters, varied(rafters.length, 0.12));
+    const cut = RAFTERS.filter((x) => rafterStart(x) > 0);
+    const trimLeft = Math.max(...RAFTERS.filter((x) => x < cut[0]));
+    const trimRight = Math.min(...RAFTERS.filter((x) => x > cut[cut.length - 1]));
+    const beams = [];
+    aroundChimney(-W / 2 - 0.05, W / 2 + 0.05, 0.02).forEach(([a, b]) => {
+      beams.push({ m: inWorld((a + b) / 2, H + R - 0.02, 0, b - a, 0.24, 0.14), k: 0.5 });
+    });
+    [1, -1].forEach((side) => beams.push({ m: inWorld(0, H + 0.07, side * (HALF - 0.12), W - 0.1, 0.14, 0.16), k: 0 }));
     SLOPES.forEach((slope) => {
-      for (let i = 0; i <= 16; i++) {
-        const x = -W / 2 + 0.12 + (i * (W - 0.24)) / 16;
-        rafters.push({ m: onSlope(slope, x, 0.09, LEN / 2), k: i / 16 });
+      beams.push({ m: onSlope(slope, 0, -0.08, RAMPANT * 0.5, W - 0.5, 0.16, 0.12), k: 0.3 });
+      beams.push({ m: onSlope(slope, (trimLeft + trimRight) / 2, 0.09, 0.62, trimRight - trimLeft, 0.18, 0.08), k: 0.8 });
+    });
+    part(charpente, unit, std(M.wood, 0.8), beams, varied(beams.length, 0.1));
+
+    // 2. Isolation : laine de verre entre les chevrons
+    const isolation = layer(M.wool);
+    const wool = [];
+    const bay = RAFTERS[1] - RAFTERS[0];
+    SLOPES.forEach((slope) => {
+      for (let i = 0; i < RAFTERS.length - 1; i++) {
+        const x = (RAFTERS[i] + RAFTERS[i + 1]) / 2;
+        const s0 = nearChimney(x, 0.3) ? 0.7 : 0.06;
+        const s1 = RAMPANT - 0.05;
+        wool.push({ m: onSlope(slope, x, 0.09, (s0 + s1) / 2, bay - 0.09, 0.17, s1 - s0), k: i / 15 });
       }
     });
-    part(charpente, new THREE.BoxGeometry(0.08, 0.18, LEN), std(C.fog, 0.8), rafters);
-    part(charpente, new THREE.BoxGeometry(W + 0.2, 0.24, 0.14), std(C.fog, 0.8), [{ m: inWorld(0, H + R + 0.04, 0), k: 0.5 }]);
+    part(isolation, unit, new THREE.MeshStandardMaterial({ map: tex.wool, roughness: 1 }), wool);
 
-    // 2. Isolation : panneaux posés sur les chevrons
-    const isolation = layer(C.orchid);
-    const panels = [];
-    SLOPES.forEach((slope) => {
-      for (let r = 0; r < 4; r++) {
-        for (let c = 0; c < 8; c++) {
-          const x = -W / 2 + (c + 0.5) * (W / 8);
-          const s = RAMPANT - (r + 0.5) * (RAMPANT / 4);
-          panels.push({ m: onSlope(slope, x, 0.25, s), k: (r / 3) * 0.7 + (c / 7) * 0.3 });
-        }
-      }
-    });
-    part(isolation, new THREE.BoxGeometry(W / 8 - 0.03, 0.14, RAMPANT / 4 - 0.03), std(C.ash, 1), panels);
-
-    // 3. Écran sous-toiture : lés posés de l'égout vers le faîtage
-    const ecran = layer(C.cyan);
+    // 3. Écran sous-toiture, posé en lés depuis l'égout, tenu par les contre-liteaux
+    const ecran = layer(M.screen);
     const strips = [];
     SLOPES.forEach((slope) => {
       for (let r = 0; r < 3; r++) {
-        strips.push({ m: onSlope(slope, 0, 0.33 + r * 0.004, LEN - (r + 0.5) * (LEN / 3)), k: r / 2 });
+        strips.push({ m: onSlope(slope, 0, 0.183 + r * 0.002, LEN - (r + 0.5) * (LEN / 3), 2 * RX - 0.1, 0.006, LEN / 3 + 0.12), k: r / 2 });
       }
     });
-    part(ecran, new THREE.BoxGeometry(2 * RX - 0.1, 0.012, LEN / 3 + 0.12), std(C.steel, 0.55), strips);
+    part(ecran, unit, new THREE.MeshStandardMaterial({ map: tex.screen, roughness: 0.7 }), strips);
+    const counter = [];
+    SLOPES.forEach((slope) => RAFTERS.forEach((x, i) => {
+      const s0 = rafterStart(x);
+      counter.push({ m: onSlope(slope, x, 0.2, (s0 + LEN) / 2, 0.045, 0.03, LEN - s0), k: 0.4 + 0.6 * (i / 16) });
+    }));
+    part(ecran, unit, std(M.batten, 0.85), counter, varied(counter.length, 0.12));
 
-    // 4. Couverture : liteaux puis tuiles, rang par rang depuis l'égout
-    const couverture = layer(C.iris);
-    const ROW = 0.34;
-    const TW = 0.42;
-    const TL = 0.46;
-    const rows = Math.ceil(LEN / ROW);
+    // 4. Couverture : liteaux, ardoises au crochet inox, tuiles faîtières scellées au mortier
+    const couverture = layer(M.slate);
+    const ROW = 0.17;                       // pureau
+    const TW = 0.3;
+    const TL = 0.4;
+    const rows = Math.ceil((LEN + 0.03) / ROW);
     const span = (Math.ceil((2 * RX) / TW) * TW) / 2;
     const battens = [];
-    const tiles = [];
-    const shades = [];
+    const slates = [];
+    const hooks = [];
+    const tints = [];
     SLOPES.forEach((slope) => {
       for (let r = 0; r < rows; r++) {
-        const lower = LEN + 0.03 - r * ROW;          // bord bas du rang
+        const lower = LEN + 0.03 - r * ROW;                // bord bas du rang
         const key = r / (rows - 1);
-        battens.push({ m: onSlope(slope, 0, 0.355, lower - TL + 0.05), k: key });
-        const shift = (r % 2) * (TW / 2);              // pose à joints croisés
+        battens.push({ m: onSlope(slope, 0, 0.229, lower - TL + 0.06, 2 * RX - 0.04, 0.027, 0.05), k: key });
+        const shift = (r % 2) * (TW / 2);                   // joints croisés
         for (let j = 0; j <= Math.ceil((2 * span) / TW); j++) {
           const left = -span - shift + j * TW;
           const a = Math.max(left, -span);
           const b = Math.min(left + TW, span);
-          if (b - a < 0.08) continue;
-          tiles.push({
-            m: onSlope(slope, (a + b) / 2, 0.4, lower - TL / 2, -0.065, (b - a) / TW),
-            k: key * 0.92 + Math.random() * 0.08,
-          });
-          shades.push(new THREE.Color().setScalar(0.84 + Math.random() * 0.26));
+          if (b - a < 0.06) continue;
+          const x = (a + b) / 2;
+          if (nearChimney(x, -0.05) && lower < 0.5) continue;
+          const k = key * 0.92 + rand() * 0.08;
+          slates.push({ m: onSlope(slope, x, 0.258, lower - TL / 2, b - a - 0.012, 0.012, TL, -0.03), k });
+          hooks.push({ m: onSlope(slope, x, 0.266, lower + 0.012, 0.016, 0.008, 0.05), k });
+          const shade = 0.82 + rand() * 0.32;
+          tints.push(new THREE.Color(shade * (0.96 + rand() * 0.04), shade * (0.97 + rand() * 0.04), shade * (1 + rand() * 0.08)));
         }
       }
     });
-    part(couverture, new THREE.BoxGeometry(2 * RX - 0.05, 0.035, 0.05), std(C.fog, 0.85), battens);
-    part(couverture, new THREE.BoxGeometry(TW - 0.02, 0.022, TL), std('#46484b', 0.5, 0.15), tiles, shades);
+    part(couverture, unit, std(M.batten, 0.85), battens, varied(battens.length, 0.12));
+    part(couverture, unit, std(M.slate, 0.55, 0.1), slates, tints);
+    part(couverture, unit, std(M.hook, 0.3, 0.6), hooks);
 
-    // 5. Zinguerie : gouttières, descentes, faîtage
-    const zinguerie = layer(C.paleIris);
-    const zinc = () => std(C.silver, 0.32, 0.35);
-    const caps = [];
-    for (let i = 0; i < 18; i++) {
-      caps.push({ m: inWorld(-RX + (i + 0.5) * ((2 * RX) / 18), H + R + 0.44, 0, Math.PI / 2), k: 0.45 + 0.55 * (i / 17) });
+    const ridgeGeo = new THREE.CylinderGeometry(0.17, 0.2, 0.44, 16, 1, true, 0, Math.PI);
+    ridgeGeo.rotateZ(Math.PI / 2);
+    const ridgeTiles = [];
+    const ridgeCount = Math.round((2 * RX) / 0.4);
+    for (let i = 0; i < ridgeCount; i++) {
+      const x = -RX + 0.2 + (i * (2 * RX - 0.4)) / (ridgeCount - 1);
+      if (nearChimney(x, 0.1)) continue;
+      ridgeTiles.push({ m: inWorld(x, H + R + 0.31, 0), k: 0.9 + 0.1 * (i / (ridgeCount - 1)) });
     }
-    part(zinguerie, new THREE.CylinderGeometry(0.22, 0.22, (2 * RX) / 18 - 0.02, 18), zinc(), caps);
+    part(couverture, ridgeGeo, std(M.terracotta, 0.8, 0, { side: THREE.DoubleSide }), ridgeTiles, varied(ridgeTiles.length, 0.1));
+    const mortar = [];
+    aroundChimney(-RX, RX, 0.04).forEach(([a, b]) => [1, -1].forEach((side) => {
+      mortar.push({ m: inWorld((a + b) / 2, H + R + 0.25, side * 0.15, b - a, 0.1, 0.1), k: 0.88 });
+    }));
+    part(couverture, unit, std(M.mortar, 0.95), mortar);
 
-    const gutterGeo = new THREE.CylinderGeometry(0.12, 0.12, 2 * RX + 0.1, 14);
+    // 5. Zinguerie : gouttières demi-rondes et leurs crochets, descentes, bandes de rive, abergement
+    const zinguerie = layer(M.zinc);
+    const zinc = (double) => std(M.zinc, 0.45, 0.3, double ? { side: THREE.DoubleSide } : {});
+    const GR = 0.12;
+    const gutterGeo = new THREE.CylinderGeometry(GR, GR, 2 * RX + 0.1, 20, 1, true, Math.PI, Math.PI);
     gutterGeo.rotateZ(Math.PI / 2);
-    part(zinguerie, gutterGeo, zinc(), SLOPES.map((slope) => ({ m: onSlope(slope, 0, 0.22, LEN + 0.12), k: 0 })));
-
+    const lipGeo = new THREE.CylinderGeometry(0.014, 0.014, 2 * RX + 0.1, 8);
+    lipGeo.rotateZ(Math.PI / 2);
+    const hangerGeo = new THREE.TorusGeometry(GR + 0.008, 0.007, 4, 12, Math.PI);
+    hangerGeo.rotateY(Math.PI / 2);
+    hangerGeo.rotateX(Math.PI);
+    const gutters = [];
+    const lips = [];
+    const hangers = [];
     const pipes = [];
-    SLOPES.forEach((slope, i) => {
-      const side = i === 0 ? 1 : -1;
-      const gutter = new THREE.Vector3(0, 0.22, LEN + 0.12).applyMatrix4(slope);
+    const fittings = [];
+    [1, -1].forEach((side, i) => {
+      const g = new THREE.Vector3(0, 0.12, LEN + 0.08).applyMatrix4(SLOPES[i]);
+      gutters.push({ m: inWorld(0, g.y, g.z), k: 0 });
+      lips.push({ m: inWorld(0, g.y, g.z + side * GR), k: 0 });
+      for (let x = -RX + 0.3; x <= RX - 0.25; x += 0.7) hangers.push({ m: inWorld(x, g.y, g.z), k: 0.1 });
       [-1, 1].forEach((sx) => {
-        const x = sx * (W / 2 - 0.35);
-        const a = new THREE.Vector3(x, gutter.y - 0.05, gutter.z);
-        const b = new THREE.Vector3(x, gutter.y - 0.42, side * (HALF + 0.09));
-        const c = new THREE.Vector3(x, 0.24, side * (HALF + 0.09));
-        pipes.push({ m: between(a, b), k: 0.2 }, { m: between(b, c), k: 0.2 });
+        const x = sx * 3.8;
+        const top = new THREE.Vector3(x, g.y - GR + 0.02, g.z);
+        const bend = new THREE.Vector3(x, g.y - 0.55, side * (HALF + 0.1));
+        const foot = new THREE.Vector3(x, 0.32, side * (HALF + 0.1));
+        pipes.push({ m: between(top, bend), k: 0.25 }, { m: between(bend, foot), k: 0.25 });
+        [0.9, 1.8, 2.6].forEach((y) => fittings.push({ m: inWorld(x, y, side * (HALF + 0.06), 0.15, 0.045, 0.1), k: 0.3 }));
       });
     });
-    part(zinguerie, new THREE.CylinderGeometry(0.06, 0.06, 1, 10), zinc(), pipes);
+    SLOPES.forEach((slope) => [-1, 1].forEach((sx) => {
+      fittings.push({ m: onSlope(slope, sx * (span + 0.02), 0.272, LEN / 2, 0.07, 0.06, LEN + 0.04), k: 0.6 });
+    }));
+    fittings.push({ m: inWorld(CX, H + R + 0.05, 0, CW + 0.14, 0.7, CW + 0.14), k: 0.75 });
+    part(zinguerie, gutterGeo, zinc(true), gutters);
+    part(zinguerie, lipGeo, zinc(), lips);
+    part(zinguerie, hangerGeo, zinc(), hangers);
+    part(zinguerie, new THREE.CylinderGeometry(0.05, 0.05, 1, 12), zinc(), pipes);
+    part(zinguerie, unit, zinc(), fittings);
 
-    // 6. Entretien : le traitement passe sur les tuiles
+    // 6. Entretien : le traitement hydrofuge passe sur les ardoises
     const sweepMat = new THREE.MeshBasicMaterial({
-      color: col(C.periwinkle), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false,
+      color: col(M.treatment), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false,
     });
     const bands = SLOPES.map((slope) => {
       const holder = new THREE.Group();
       slope.decompose(holder.position, holder.quaternion, holder.scale);
       const band = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.02, LEN + 0.2), sweepMat);
-      band.position.set(0, 0.47, LEN / 2);
+      band.position.set(0, 0.29, LEN / 2);
       holder.add(band);
       group.add(holder);
       return band;
@@ -302,12 +503,9 @@
           p.mesh.instanceMatrix.needsUpdate = true;
         }
       },
-      // Colore une couche : 0 = matériau réel, 1 = couleur du service
+      // Fait légèrement briller la couche en cours de pose, dans sa vraie couleur
       highlight(l, h) {
-        for (const p of l.parts) {
-          p.mat.color.copy(p.neutral).lerp(l.chroma, h);
-          p.mat.emissive.copy(l.chroma).multiplyScalar(0.35 * h);
-        }
+        for (const p of l.parts) p.mat.emissive.copy(l.glow).multiplyScalar(0.32 * h);
       },
       sweep(progress) {
         const x = -RX - 0.8 + progress * (2 * RX + 1.6);
@@ -329,7 +527,7 @@
     stage.signature = '';
   }
 
-  function createStage(canvas, ground) {
+  function createStage(canvas) {
     let renderer;
     try {
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -345,40 +543,20 @@
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(28, 1, 0.5, 200);
 
-    scene.add(new THREE.HemisphereLight(col(C.periwinkle), col(C.obsidian), 0.8));
-    const key = new THREE.DirectionalLight(0xffffff, 1.4);
-    key.position.set(9, 15, 11);
-    key.castShadow = true;
-    key.shadow.mapSize.setScalar(window.innerWidth < 700 ? 1024 : 2048);
-    Object.assign(key.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 60 });
-    key.shadow.camera.updateProjectionMatrix();
-    key.shadow.bias = -0.0004;
-    key.shadow.normalBias = 0.02;
-    scene.add(key);
-    const rim = new THREE.DirectionalLight(col(C.paleIris), 0.7);
-    rim.position.set(-12, 7, -9);
-    scene.add(rim);
-
-    if (ground === 'shadow') {
-      const plane = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.25 }));
-      plane.rotation.x = -Math.PI / 2;
-      plane.receiveShadow = true;
-      scene.add(plane);
-    } else {
-      const pedestal = new THREE.Mesh(
-        new THREE.CylinderGeometry(6.2, 6.2, 0.18, 96),
-        new THREE.MeshStandardMaterial({ color: col(C.obsidian), roughness: 1 })
-      );
-      pedestal.position.y = -0.09;
-      pedestal.receiveShadow = true;
-      scene.add(pedestal);
-      const edge = new THREE.Mesh(
-        new THREE.CylinderGeometry(6.22, 6.22, 0.03, 96, 1, true),
-        new THREE.MeshBasicMaterial({ color: col(C.steel) })
-      );
-      edge.position.y = -0.015;
-      scene.add(edge);
-    }
+    // Lumière de plein jour : ciel bleu, soleil, rebond de la pelouse
+    scene.add(new THREE.HemisphereLight(col('#cfe5ff'), col('#5f7f45'), 0.7));
+    const sun = new THREE.DirectionalLight(col('#fff3df'), 1.55);
+    sun.position.set(10, 16, 12);
+    sun.castShadow = true;
+    sun.shadow.mapSize.setScalar(window.innerWidth < 700 ? 1024 : 2048);
+    Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 60 });
+    sun.shadow.camera.updateProjectionMatrix();
+    sun.shadow.bias = -0.0004;
+    sun.shadow.normalBias = 0.02;
+    scene.add(sun);
+    const fill = new THREE.DirectionalLight(col('#dbeaff'), 0.35);
+    fill.position.set(-12, 6, -9);
+    scene.add(fill);
 
     const house = buildHouse();
     scene.add(house.group);
@@ -420,14 +598,14 @@
     cam.lookAt(stage.look);
   }
 
-  const hero = createStage(heroCanvas, 'shadow');
-  const anatomy = hero && createStage(anatomyCanvas, 'pedestal');
+  const hero = createStage(heroCanvas);
+  const anatomy = hero && createStage(anatomyCanvas);
   if (!hero || !anatomy) {
     docEl.classList.add('no-3d');
     return;
   }
 
-  // Maison du hero : tuiles posées à l'arrivée, rotation lente, glisser pour la faire tourner
+  // Maison du hero : ardoises posées à l'arrivée, rotation lente, glisser pour la faire tourner
   const heroRoof = hero.house.layers[3];
   const heroZinc = hero.house.layers[4];
   let heroStart = null;
@@ -453,14 +631,14 @@
   function updateHero(now, dt) {
     if (heroStart === null) heroStart = now;
     const t = reduceMotion ? Infinity : (now - heroStart) / 1000;
-    hero.house.place(heroRoof, 0, clamp01((t - 0.4) / 2.8), 2.4, 0.72, true);
-    hero.house.place(heroZinc, 0, clamp01((t - 3.0) / 0.9), 1.4, 0.5, true);
+    hero.house.place(heroRoof, 0, clamp01((t - 0.4) / 3.2), 2.4, 0.72, true);
+    hero.house.place(heroZinc, 0, clamp01((t - 3.4) / 0.9), 1.4, 0.5, true);
     if (!drag) {
       yaw += spin * dt * 60 + (reduceMotion ? 0 : 0.12 * dt);
       spin *= Math.pow(0.0005, dt);
     }
     hero.house.group.rotation.y = yaw;
-    frame(hero, _c.set(0, 2.8, 0), 6.1, 0.62, 0.38, 1);
+    frame(hero, _c.set(0, 2.5, 0), 6.9, 0.62, 0.4, 1);
     return `${yaw.toFixed(4)}|${heroRoof.u}|${heroZinc.u}`;
   }
 
@@ -486,8 +664,11 @@
   function updateAnatomy(now) {
     const t = scrollProgress();
     const house = anatomy.house;
+    // Pendant le gros plan sur les ardoises, la zinguerie en attente sort du cadre
+    const focus = smooth(3.5, 3.9, t) * (1 - smooth(4.35, 4.75, t));
     house.layers.forEach((l, j) => {
-      house.place(l, GAP * Math.max(0, j - t), clamp01(t - j), GAP, 0.45);
+      const lift = j > 3 ? 1 + 30 * focus : 1;
+      house.place(l, GAP * Math.max(0, j - t) * lift, clamp01(t - j), GAP * lift, 0.45);
       house.highlight(l, smooth(j - 0.2, j + 0.4, t) * (1 - smooth(j + 1.15, j + 1.45, t)));
     });
     house.sweep(clamp01((t - 5.05) / 0.9));
@@ -495,13 +676,21 @@
     house.group.rotation.y = -0.55 + (t / steps.length) * 0.75 + sway;
 
     // Les couches en attente se resserrent : la caméra se rapproche
-    const top = H + R + 0.8 + GAP * Math.max(0, 5 - t);
-    frame(anatomy, _c.set(0, top / 2 - 0.4, 0), Math.max(6.6, top / 2 + 1.1), 0.7, 0.34, 0.12);
+    const top = Math.max(H + R + 1.7, H + R + 0.8 + GAP * Math.max(0, 5 - t));
+    let radius = Math.max(7.3, top / 2 + 1.2);
+    _c.set(0, top / 2 - 0.5, 0);
+    // Gros plan sur les ardoises et leurs crochets pendant la pose de la couverture
+    if (focus > 0) {
+      _f.set(0.6, H + R - 1.1, 1.5).applyAxisAngle(Y_AXIS, house.group.rotation.y);
+      _c.lerp(_f, focus);
+      radius += (2.6 - radius) * focus;
+    }
+    frame(anatomy, _c, radius, 0.7, 0.34 + 0.12 * focus, 0.12);
 
     const k = Math.min(steps.length - 1, Math.max(0, Math.round(t) - 1));
     if (k !== activeStep) {
       activeStep = k;
-      steps.forEach((step, i) => step.classList.toggle('is-active', i === k));
+      steps.forEach((s, i) => s.classList.toggle('is-active', i === k));
       stepLabel.textContent = steps[k].dataset.label;
     }
     stepFill.style.transform = `scaleX(${(t / steps.length).toFixed(4)})`;
