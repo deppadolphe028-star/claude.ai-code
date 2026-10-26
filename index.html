@@ -23,7 +23,7 @@
     </a>
     <nav class="nav__links" aria-label="Navigation principale">
       <a class="btn-glass" href="#services">Services</a>
-      <a class="btn-glass" href="#methode">Méthode</a>
+      <a class="btn-glass" href="#anatomie">Anatomie</a>
       <a class="btn-glass" href="#questions">Questions</a>
     </nav>
     <div class="nav__end">
@@ -38,17 +38,24 @@
 
   <!-- Hero : ciel atmosphérique -->
   <section class="hero">
-    <div class="hero__inner wrap">
-      <span class="badge fade">Devis gratuit — diagnostic toiture offert</span>
-      <h1 class="display fade"><em>Protégez</em> ce qui vous abrite.</h1>
-      <p class="subhead fade">Couvreur pour particuliers et professionnels. Réfection de toiture, réparation de fuites, zinguerie et isolation, avec un seul interlocuteur du devis à la fin du chantier.</p>
-      <form class="ask fade" id="ask">
-        <label class="sr-only" for="ask-input">Décrivez votre problème de toiture</label>
-        <input id="ask-input" type="text" placeholder="J’ai une fuite au plafond depuis la tempête…" autocomplete="off">
-        <button type="submit" aria-label="Envoyer ma demande">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-        </button>
-      </form>
+    <div class="hero__grid wrap">
+      <div class="hero__inner">
+        <span class="badge fade">Devis gratuit — diagnostic toiture offert</span>
+        <h1 class="display fade"><em>Protégez</em> ce qui vous abrite.</h1>
+        <p class="subhead fade">Couvreur pour particuliers et professionnels. Réfection de toiture, réparation de fuites, zinguerie et isolation, avec un seul interlocuteur du devis à la fin du chantier.</p>
+        <form class="ask fade" id="ask">
+          <label class="sr-only" for="ask-input">Décrivez votre problème de toiture</label>
+          <input id="ask-input" type="text" placeholder="J’ai une fuite au plafond depuis la tempête…" autocomplete="off">
+          <button type="submit" aria-label="Envoyer ma demande">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+        </form>
+      </div>
+      <!-- Maison 3D : les tuiles se posent rang par rang -->
+      <div class="hero__stage">
+        <canvas id="hero-roof" role="img" aria-label="Maison en 3D dont les tuiles se posent rang par rang"></canvas>
+        <p class="mono hero__hint" aria-hidden="true">Glissez pour faire tourner la maison</p>
+      </div>
     </div>
   </section>
 
@@ -109,6 +116,60 @@
         <h3>Démoussage</h3>
         <p>Nettoyage de la toiture, traitement anti-mousse et hydrofuge pour la protéger plus longtemps.</p>
       </article>
+    </div>
+  </section>
+
+  <!-- Anatomie 3D : la toiture se monte au défilement -->
+  <section class="section band" id="anatomie">
+    <div class="wrap">
+      <div class="head">
+        <span class="mono">Anatomie d’une toiture</span>
+        <h2 class="display-sm"><em>Couche</em> après couche.</h2>
+        <p class="subhead">Faites défiler : la toiture se monte sous vos yeux, dans l’ordre d’un vrai chantier.</p>
+      </div>
+      <div class="anatomy">
+        <div class="anatomy__stage">
+          <div class="anatomy__view">
+            <canvas id="anatomy-roof" role="img" aria-label="Toiture en 3D qui se monte couche par couche : charpente, isolation, écran sous-toiture, couverture et zinguerie"></canvas>
+          </div>
+          <div class="anatomy__meter" aria-hidden="true">
+            <span class="mono" id="anatomy-label">01 — Charpente</span>
+            <span class="anatomy__bar"><i id="anatomy-fill"></i></span>
+          </div>
+        </div>
+        <ol class="anatomy__steps">
+          <li class="astep is-active" data-label="01 — Charpente" style="--dot: var(--color-deep-iris)">
+            <span class="mono"><i class="dot"></i>01 — Charpente</span>
+            <h3>La structure</h3>
+            <p>Chevrons et faîtière portent tout le toit. Nous les contrôlons, traitons le bois et remplaçons les pièces abîmées.</p>
+          </li>
+          <li class="astep" data-label="02 — Isolation" style="--dot: var(--color-orchid-bloom)">
+            <span class="mono"><i class="dot"></i>02 — Isolation</span>
+            <h3>La chaleur reste dedans</h3>
+            <p>Des panneaux isolants posés sur les chevrons. Dans une maison mal isolée, jusqu’à 30 % de la chaleur s’échappe par le toit.</p>
+          </li>
+          <li class="astep" data-label="03 — Écran sous-toiture" style="--dot: var(--color-cyan-signal)">
+            <span class="mono"><i class="dot"></i>03 — Écran sous-toiture</span>
+            <h3>La barrière contre l’eau</h3>
+            <p>Une membrane respirante arrête l’eau, la neige poudreuse et la poussière, tout en laissant sortir l’humidité.</p>
+          </li>
+          <li class="astep" data-label="04 — Couverture" style="--dot: var(--color-iris-gleam)">
+            <span class="mono"><i class="dot"></i>04 — Couverture</span>
+            <h3>Tuile après tuile</h3>
+            <p>Les liteaux, puis les tuiles ou ardoises, posées du bas vers le haut. Chaque rang recouvre le haut du précédent pour que l’eau glisse toujours dessus.</p>
+          </li>
+          <li class="astep" data-label="05 — Zinguerie" style="--dot: var(--color-pale-iris)">
+            <span class="mono"><i class="dot"></i>05 — Zinguerie</span>
+            <h3>L’eau va où il faut</h3>
+            <p>Faîtage, gouttières et descentes évacuent la pluie loin des murs et des fondations.</p>
+          </li>
+          <li class="astep" data-label="06 — Entretien" style="--dot: var(--color-periwinkle)">
+            <span class="mono"><i class="dot"></i>06 — Entretien</span>
+            <h3>Une toiture qui dure</h3>
+            <p>Démoussage et traitement hydrofuge gardent les tuiles propres et imperméables plus longtemps.</p>
+          </li>
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -232,6 +293,8 @@
   </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="roof3d.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
