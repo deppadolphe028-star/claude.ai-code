@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>A R Rénovation — Couverture, zinguerie &amp; charpente</title>
-  <meta name="description" content="A R Rénovation, artisan couvreur : couverture, zinguerie, charpente, isolation des combles, démoussage et réparation de fuites. Devis gratuit.">
+  <title>A R Rénovation</title>
+  <meta name="description" content="A R Rénovation, couvreur : réfection de toiture, réparation de fuites, zinguerie, charpente, isolation et démoussage. Devis gratuit.">
   <meta name="theme-color" content="#0f1011">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f1011'/%3E%3Cpath d='M6 19 16 9l10 10' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,288 +14,224 @@
 </head>
 <body>
 
-  <!-- Navigation -->
-  <header class="nav" id="top">
-    <div class="nav__inner">
-      <a class="brand" href="#top" aria-label="A R Rénovation — accueil">
-        <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
-          <path d="M5 22 20 8l15 14" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <text x="20" y="33" text-anchor="middle">AR</text>
-        </svg>
-        <span class="brand__name">A R Rénovation</span>
-      </a>
-      <nav class="nav__links" aria-label="Navigation principale">
-        <a class="btn btn--glass" href="#services">Services</a>
-        <a class="btn btn--glass" href="#methode">Méthode</a>
-        <a class="btn btn--glass" href="#faq">Questions</a>
-      </nav>
-      <div class="nav__actions">
-        <!-- À REMPLACER : numéro de téléphone réel -->
-        <a class="nav__phone" href="tel:+33600000000">06 00 00 00 00</a>
-        <a class="btn btn--primary" href="#contact">Devis gratuit <span aria-hidden="true">→</span></a>
-      </div>
+<!-- Barre de navigation (verre dépoli) -->
+<header class="nav">
+  <div class="nav__inner">
+    <a class="logo" href="#accueil" aria-label="A R Rénovation, accueil">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 15 14 5l11 10M7 12v11h14V12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      <span>A R Rénovation</span>
+    </a>
+    <nav class="nav__links" aria-label="Navigation principale">
+      <a class="btn-glass" href="#services">Services</a>
+      <a class="btn-glass" href="#methode">Méthode</a>
+      <a class="btn-glass" href="#questions">Questions</a>
+    </nav>
+    <div class="nav__end">
+      <!-- À REMPLACER : vrai numéro -->
+      <a class="nav__text" href="tel:+33600000000">06 00 00 00 00</a>
+      <a class="btn-primary" href="#contact">Devis gratuit <span aria-hidden="true">→</span></a>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main>
+<main id="accueil">
 
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero__sky" aria-hidden="true"></div>
-      <div class="hero__content container">
-        <span class="chip reveal-hero">Devis gratuit — Diagnostic de toiture offert</span>
-        <h1 class="display reveal-hero">Votre toit, <em>notre</em> métier.</h1>
-        <p class="lead reveal-hero">Couverture, zinguerie, charpente et isolation. A R Rénovation protège ce qui vous abrite, avec le soin d’un artisan et la précision d’un compagnon.</p>
+  <!-- Hero : ciel atmosphérique -->
+  <section class="hero">
+    <div class="hero__inner wrap">
+      <span class="badge fade">Devis gratuit — diagnostic toiture offert</span>
+      <h1 class="display fade"><em>Protégez</em> ce qui vous abrite.</h1>
+      <p class="subhead fade">Couvreur pour particuliers et professionnels. Réfection de toiture, réparation de fuites, zinguerie et isolation, avec un seul interlocuteur du devis à la fin du chantier.</p>
+      <form class="ask fade" id="ask">
+        <label class="sr-only" for="ask-input">Décrivez votre problème de toiture</label>
+        <input id="ask-input" type="text" placeholder="J’ai une fuite au plafond depuis la tempête…" autocomplete="off">
+        <button type="submit" aria-label="Envoyer ma demande">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
 
-        <form class="prompt reveal-hero" id="prompt-form" autocomplete="off">
-          <label class="sr-only" for="prompt-input">Décrivez votre projet</label>
-          <input id="prompt-input" type="text" placeholder="Une fuite au-dessus de la cuisine depuis l’orage…">
-          <button type="submit" class="prompt__submit" aria-label="Décrire mon projet">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-          </button>
-        </form>
-        <p class="mono hint reveal-hero">Décrivez votre besoin — nous vous rappelons</p>
+  <!-- Badges laurier -->
+  <section class="laurels wrap" aria-label="Nos engagements">
+    <div class="laurel">
+      <svg class="leaf" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+      <div><p class="laurel__name">Garantie décennale</p><p class="mono">Assurance travaux</p></div>
+      <svg class="leaf leaf--r" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+    </div>
+    <div class="laurel">
+      <svg class="leaf" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+      <div><p class="laurel__name">Devis gratuit</p><p class="mono">Sans engagement</p></div>
+      <svg class="leaf leaf--r" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+    </div>
+    <div class="laurel">
+      <svg class="leaf" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+      <div><p class="laurel__name">Artisan couvreur</p><p class="mono">Travail soigné</p></div>
+      <svg class="leaf leaf--r" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+    </div>
+  </section>
+
+  <!-- Services : tuiles chromatiques -->
+  <section class="section wrap" id="services">
+    <div class="head">
+      <span class="mono">Nos services</span>
+      <h2 class="display-sm"><em>Tout</em> pour votre toiture.</h2>
+      <p class="subhead">De la tuile cassée à la toiture complète, nous intervenons sur maisons, immeubles et bâtiments professionnels.</p>
+    </div>
+    <div class="tiles">
+      <article class="tile tile--iris">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11M7 13v14h18V13M7 18h18M7 22.5h18" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <h3>Couverture</h3>
+        <p>Réfection complète ou partielle. Tuiles mécaniques, tuiles plates, ardoises naturelles.</p>
+      </article>
+      <article class="tile tile--cyan">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <h3>Fuites</h3>
+        <p>Recherche de fuite, bâchage d’urgence, remplacement de tuiles et réparation après tempête.</p>
+      </article>
+      <article class="tile tile--pale">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9h24v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9Zm18 8v11" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <h3>Zinguerie</h3>
+        <p>Gouttières, descentes, chéneaux, noues et solins en zinc, cuivre ou aluminium.</p>
+      </article>
+      <article class="tile tile--deep">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 26 16 6l14 20M9 16h14M6 21h20M16 6v20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <h3>Charpente</h3>
+        <p>Contrôle, traitement du bois, renforcement et remplacement de pièces abîmées.</p>
+      </article>
+      <article class="tile tile--orchid">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 15 16 4l13 11M6 16c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0M6 22c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <h3>Isolation</h3>
+        <p>Combles perdus et aménagés, écran sous-toiture. Moins de chaleur perdue en hiver.</p>
+      </article>
+      <article class="tile tile--peri">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22 16 10l12 12M10 5v3M16 2v3M22 5v3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <h3>Démoussage</h3>
+        <p>Nettoyage de la toiture, traitement anti-mousse et hydrofuge pour la protéger plus longtemps.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Module téléphone : le rapport de diagnostic -->
+  <section class="wrap">
+    <div class="mockup">
+      <div class="mockup__text">
+        <span class="mono">Diagnostic offert</span>
+        <h2 class="heading-lg">Vous voyez <em>ce que</em> nous voyons.</h2>
+        <p>Après la visite, vous recevez un compte rendu avec photos de votre toiture, élément par élément. Vous savez ce qui est urgent et ce qui peut attendre.</p>
+        <a class="btn-primary" href="#contact">Demander un diagnostic <span aria-hidden="true">→</span></a>
       </div>
-
-      <!-- Silhouette de toits -->
-      <svg class="hero__roofs" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0 220V150l90-60 90 60v-30l120-80 120 80v40l70-50 70 50V90l110-70 110 70v70l80-55 80 55v-40l130-90 130 90v60l70-45 70 45v25Z" fill="#0f1011"/>
-        <path d="M0 150l90-60 90 60v-30l120-80 120 80v40l70-50 70 50V90l110-70 110 70v70l80-55 80 55v-40l130-90 130 90v60l70-45 70 45" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
-      </svg>
-    </section>
-
-    <!-- Engagements -->
-    <section class="laurels container" aria-label="Nos engagements">
-      <div class="laurel">
-        <svg viewBox="0 0 24 48" class="laurel__leaf" aria-hidden="true"><path d="M20 46C8 38 4 26 8 4M8 12c-4-1-6-4-6-7 3 0 6 3 6 7Zm0 10c-4 0-6-3-7-6 3-1 6 2 7 6Zm2 10c-4 1-7-2-8-5 3-1 7 1 8 5Zm4 8c-4 2-7 0-9-3 3-1 7 0 9 3Z" fill="none" stroke="currentColor"/></svg>
-        <div><p class="laurel__title">Garantie décennale</p><p class="mono">Travaux assurés</p></div>
-        <svg viewBox="0 0 24 48" class="laurel__leaf laurel__leaf--r" aria-hidden="true"><path d="M20 46C8 38 4 26 8 4M8 12c-4-1-6-4-6-7 3 0 6 3 6 7Zm0 10c-4 0-6-3-7-6 3-1 6 2 7 6Zm2 10c-4 1-7-2-8-5 3-1 7 1 8 5Zm4 8c-4 2-7 0-9-3 3-1 7 0 9 3Z" fill="none" stroke="currentColor"/></svg>
-      </div>
-      <div class="laurel">
-        <svg viewBox="0 0 24 48" class="laurel__leaf" aria-hidden="true"><path d="M20 46C8 38 4 26 8 4M8 12c-4-1-6-4-6-7 3 0 6 3 6 7Zm0 10c-4 0-6-3-7-6 3-1 6 2 7 6Zm2 10c-4 1-7-2-8-5 3-1 7 1 8 5Zm4 8c-4 2-7 0-9-3 3-1 7 0 9 3Z" fill="none" stroke="currentColor"/></svg>
-        <div><p class="laurel__title">Devis gratuit</p><p class="mono">Détaillé &amp; sans engagement</p></div>
-        <svg viewBox="0 0 24 48" class="laurel__leaf laurel__leaf--r" aria-hidden="true"><path d="M20 46C8 38 4 26 8 4M8 12c-4-1-6-4-6-7 3 0 6 3 6 7Zm0 10c-4 0-6-3-7-6 3-1 6 2 7 6Zm2 10c-4 1-7-2-8-5 3-1 7 1 8 5Zm4 8c-4 2-7 0-9-3 3-1 7 0 9 3Z" fill="none" stroke="currentColor"/></svg>
-      </div>
-      <div class="laurel">
-        <svg viewBox="0 0 24 48" class="laurel__leaf" aria-hidden="true"><path d="M20 46C8 38 4 26 8 4M8 12c-4-1-6-4-6-7 3 0 6 3 6 7Zm0 10c-4 0-6-3-7-6 3-1 6 2 7 6Zm2 10c-4 1-7-2-8-5 3-1 7 1 8 5Zm4 8c-4 2-7 0-9-3 3-1 7 0 9 3Z" fill="none" stroke="currentColor"/></svg>
-        <div><p class="laurel__title">Artisan local</p><p class="mono">Un interlocuteur unique</p></div>
-        <svg viewBox="0 0 24 48" class="laurel__leaf laurel__leaf--r" aria-hidden="true"><path d="M20 46C8 38 4 26 8 4M8 12c-4-1-6-4-6-7 3 0 6 3 6 7Zm0 10c-4 0-6-3-7-6 3-1 6 2 7 6Zm2 10c-4 1-7-2-8-5 3-1 7 1 8 5Zm4 8c-4 2-7 0-9-3 3-1 7 0 9 3Z" fill="none" stroke="currentColor"/></svg>
-      </div>
-    </section>
-
-    <!-- Services -->
-    <section class="section container" id="services">
-      <header class="section__head reveal">
-        <span class="mono eyebrow">Nos savoir-faire</span>
-        <h2 class="display display--sm">Du faîtage <em>à la</em> gouttière.</h2>
-        <p class="lead">Six métiers maîtrisés pour une toiture saine, étanche et durable — en neuf comme en rénovation.</p>
-      </header>
-
-      <div class="tiles">
-        <article class="tile tile--iris reveal">
-          <svg class="tile__icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11M7 13v14h18V13M7 18h18M7 22.5h18" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          <h3 class="tile__title">Couverture</h3>
-          <p>Pose et réfection de toitures en tuiles mécaniques, tuiles canal et ardoises naturelles. Remplacement complet ou partiel.</p>
-          <span class="mono tile__tag">Tuiles · Ardoises</span>
-        </article>
-        <article class="tile tile--deep reveal">
-          <svg class="tile__icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9h24v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9Zm18 8v11M18 28h8" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          <h3 class="tile__title">Zinguerie</h3>
-          <p>Gouttières, descentes, chéneaux, noues et solins en zinc, cuivre ou aluminium. Façonnage sur mesure.</p>
-          <span class="mono tile__tag">Zinc · Cuivre · Alu</span>
-        </article>
-        <article class="tile tile--orchid reveal">
-          <svg class="tile__icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 26 16 6l14 20M9 16h14M6 21h20M16 6v20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          <h3 class="tile__title">Charpente</h3>
-          <p>Diagnostic, traitement, renforcement et remplacement de pièces de charpente traditionnelle ou industrielle.</p>
-          <span class="mono tile__tag">Bois · Traitement</span>
-        </article>
-        <article class="tile tile--peri reveal">
-          <svg class="tile__icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 15 16 4l13 11M6 15c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0M6 21c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          <h3 class="tile__title">Isolation</h3>
-          <p>Isolation des combles perdus et aménagés, sarking, écran sous-toiture. Moins de pertes, plus de confort.</p>
-          <span class="mono tile__tag">Combles · Sarking</span>
-        </article>
-        <article class="tile tile--pale reveal">
-          <svg class="tile__icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22 16 10l12 12M10 5v3M16 2v3M22 5v3M8 27c2-2 4-2 6 0s4 2 6 0 4-2 6 0" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          <h3 class="tile__title">Démoussage</h3>
-          <p>Nettoyage, traitement anti-mousse et hydrofuge pour prolonger la vie de votre couverture et lui rendre son éclat.</p>
-          <span class="mono tile__tag">Nettoyage · Hydrofuge</span>
-        </article>
-        <article class="tile tile--cyan reveal">
-          <svg class="tile__icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15Zm-3 16a3 3 0 0 0 3 3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          <h3 class="tile__title">Fuites &amp; urgences</h3>
-          <p>Recherche de fuite, bâchage, remplacement de tuiles cassées et réparation après tempête. Intervention rapide.</p>
-          <span class="mono tile__tag">Réparation · Bâchage</span>
-        </article>
-      </div>
-    </section>
-
-    <!-- Bloc inversé -->
-    <section class="container">
-      <div class="inverted reveal">
-        <h2 class="inverted__title">Un seul interlocuteur, <em>du diagnostic</em> au dernier rang de tuiles.</h2>
-        <!-- À ADAPTER : vérifiez que ces engagements correspondent à votre entreprise -->
-        <dl class="stats">
-          <div><dt class="mono">Devis</dt><dd>Gratuit</dd></div>
-          <div><dt class="mono">Garantie</dt><dd>10 ans</dd></div>
-          <div><dt class="mono">Interlocuteur</dt><dd>Unique</dd></div>
-        </dl>
-      </div>
-    </section>
-
-    <!-- Anatomie d'une toiture -->
-    <section class="section container">
-      <div class="showcase reveal">
-        <div class="showcase__text">
-          <span class="mono eyebrow">Anatomie d’une toiture</span>
-          <h2 class="heading">Chaque couche <em>compte</em>.</h2>
-          <p>Une toiture performante n’est pas qu’une affaire de tuiles. Nous contrôlons l’ensemble du complexe : charpente, isolant, écran, ventilation et couverture.</p>
-        </div>
-        <figure class="showcase__figure">
-          <svg viewBox="0 0 520 320" role="img" aria-label="Coupe d'une toiture : tuiles, liteaux, écran sous-toiture, isolant et chevrons">
-            <defs>
-              <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#2b2b2c"/><stop offset="1" stop-color="#131313"/>
-              </linearGradient>
-            </defs>
-            <path d="M40 260 260 60l220 200Z" fill="url(#chrome)"/>
-            <g fill="none" stroke-width="1.2">
-              <path d="M40 260 260 60l220 200" stroke="#ffffff"/>
-              <path d="M62 260 260 80l198 180" stroke="#9f9fa0" stroke-dasharray="6 5"/>
-              <path d="M84 260 260 100l176 160" stroke="#00b3dd"/>
-              <path d="M110 260 260 124l150 136" stroke="#9f9fa0"/>
-              <path d="M138 260 260 150l122 110" stroke="#6a6b6b"/>
-            </g>
-            <g class="anat-labels" font-family="Roboto Mono, monospace" font-size="10" letter-spacing="1.6" fill="#9f9fa0">
-              <line x1="370" y1="160" x2="440" y2="120" stroke="#3f4041"/><text x="444" y="118">TUILES</text>
-              <line x1="350" y1="170" x2="440" y2="146" stroke="#3f4041"/><text x="444" y="144">LITEAUX</text>
-              <line x1="332" y1="186" x2="440" y2="172" stroke="#3f4041"/><text x="444" y="170" fill="#00b3dd">ÉCRAN</text>
-              <line x1="314" y1="200" x2="440" y2="198" stroke="#3f4041"/><text x="444" y="196">ISOLANT</text>
-              <line x1="300" y1="214" x2="440" y2="224" stroke="#3f4041"/><text x="444" y="222">CHEVRONS</text>
-            </g>
-            <line x1="20" y1="260" x2="500" y2="260" stroke="#3f4041"/>
+      <div class="phone" aria-label="Exemple de compte rendu de diagnostic">
+        <div class="phone__screen">
+          <p class="mono phone__label">Exemple de compte rendu</p>
+          <p class="phone__title">Maison — toiture tuiles</p>
+          <svg class="phone__chart" viewBox="0 0 200 60" aria-hidden="true">
+            <path d="M0 50 C30 48 45 30 70 34 S110 14 140 20 180 8 200 6" fill="none" stroke="#00b3dd" stroke-width="1.6"/>
+            <circle cx="200" cy="6" r="3" fill="#00b3dd"/>
           </svg>
-        </figure>
-      </div>
-    </section>
-
-    <!-- Méthode -->
-    <section class="section section--abyss" id="methode">
-      <div class="container">
-        <header class="section__head reveal">
-          <span class="mono eyebrow">Notre méthode</span>
-          <h2 class="display display--sm"><em>Quatre</em> temps, zéro surprise.</h2>
-        </header>
-        <ol class="steps">
-          <li class="step reveal">
-            <span class="mono step__num">01 — Diagnostic</span>
-            <h3>On monte voir.</h3>
-            <p>Inspection de la couverture, de la zinguerie et des combles. Photos à l’appui, nous vous montrons ce que nous voyons.</p>
-          </li>
-          <li class="step reveal">
-            <span class="mono step__num">02 — Devis</span>
-            <h3>Clair et détaillé.</h3>
-            <p>Un devis poste par poste, matériaux précisés, sans frais cachés. Vous décidez à votre rythme.</p>
-          </li>
-          <li class="step reveal">
-            <span class="mono step__num">03 — Chantier</span>
-            <h3>Propre et sécurisé.</h3>
-            <p>Échafaudage, protection des abords, évacuation des déchets. Le chantier est rendu net chaque soir.</p>
-          </li>
-          <li class="step reveal">
-            <span class="mono step__num">04 — Réception</span>
-            <h3>On vérifie ensemble.</h3>
-            <p>Visite de fin de travaux, remise des documents et de l’attestation de garantie décennale.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="section container" id="faq">
-      <header class="section__head reveal">
-        <span class="mono eyebrow">Questions fréquentes</span>
-        <h2 class="display display--sm">Bon à <em>savoir</em>.</h2>
-      </header>
-      <div class="faq">
-        <details class="reveal">
-          <summary>Le devis est-il vraiment gratuit ?</summary>
-          <p>Oui. Le déplacement, le diagnostic et le devis sont gratuits et sans engagement.</p>
-        </details>
-        <details class="reveal">
-          <summary>Quand faut-il refaire sa toiture ?</summary>
-          <p>Tuiles poreuses ou cassées, mousses envahissantes, traces d’humidité dans les combles ou gouttières qui débordent sont des signaux à ne pas ignorer. Un diagnostic permet de savoir si une réparation suffit.</p>
-        </details>
-        <details class="reveal">
-          <summary>Intervenez-vous en urgence après une tempête ?</summary>
-          <p>Oui, nous réalisons la mise hors d’eau (bâchage) puis la réparation. Nous pouvons également vous fournir les éléments nécessaires à votre déclaration de sinistre.</p>
-        </details>
-        <details class="reveal">
-          <summary>Mes travaux sont-ils assurés ?</summary>
-          <p>Nos travaux sont couverts par notre assurance responsabilité civile décennale. L’attestation vous est remise avec le devis.</p>
-        </details>
-      </div>
-    </section>
-
-    <!-- Contact -->
-    <section class="section section--abyss" id="contact">
-      <div class="container contact">
-        <div class="contact__intro reveal">
-          <span class="mono eyebrow">Contact</span>
-          <h2 class="display display--sm">Parlons de <em>votre</em> toit.</h2>
-          <p class="lead">Décrivez votre projet, nous revenons vers vous rapidement avec une date de visite.</p>
-          <!-- À REMPLACER : coordonnées réelles de l'entreprise -->
-          <ul class="contact__list">
-            <li><span class="mono">Téléphone</span><a href="tel:+33600000000">06 00 00 00 00</a></li>
-            <li><span class="mono">E-mail</span><a href="mailto:contact@ar-renovation.fr">contact@ar-renovation.fr</a></li>
-            <li><span class="mono">Zone</span><span>Votre ville &amp; ses environs</span></li>
+          <ul class="phone__list">
+            <li><span>Tuiles</span><span class="bar"><i style="width:62%"></i></span><span class="mono">À reprendre</span></li>
+            <li><span>Faîtage</span><span class="bar"><i style="width:35%"></i></span><span class="mono">Urgent</span></li>
+            <li><span>Gouttières</span><span class="bar"><i style="width:80%"></i></span><span class="mono">Bon état</span></li>
+            <li><span>Charpente</span><span class="bar"><i style="width:90%"></i></span><span class="mono">Bon état</span></li>
           </ul>
         </div>
-
-        <form class="form reveal" id="contact-form" data-email="contact@ar-renovation.fr">
-          <div class="form__row">
-            <label>Nom<input name="nom" type="text" required autocomplete="name"></label>
-            <label>Téléphone<input name="telephone" type="tel" required autocomplete="tel"></label>
-          </div>
-          <div class="form__row">
-            <label>E-mail<input name="email" type="email" autocomplete="email"></label>
-            <label>Ville<input name="ville" type="text" autocomplete="address-level2"></label>
-          </div>
-          <label>Type de travaux
-            <select name="travaux">
-              <option>Couverture</option>
-              <option>Zinguerie / gouttières</option>
-              <option>Charpente</option>
-              <option>Isolation</option>
-              <option>Démoussage</option>
-              <option>Fuite / urgence</option>
-              <option>Autre</option>
-            </select>
-          </label>
-          <label>Votre projet<textarea name="message" id="message" rows="5" required></textarea></label>
-          <button class="btn btn--primary btn--block" type="submit">Demander mon devis gratuit <span aria-hidden="true">→</span></button>
-          <p class="mono form__note" id="form-note">Réponse sous 48 h ouvrées</p>
-        </form>
       </div>
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <div class="container footer__inner">
-      <a class="brand" href="#top">
-        <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
-          <path d="M5 22 20 8l15 14" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <text x="20" y="33" text-anchor="middle">AR</text>
-        </svg>
-        <span class="brand__name">A R Rénovation</span>
-      </a>
-      <p class="mono">Couverture · Zinguerie · Charpente · Isolation</p>
-      <p class="mono footer__copy">© <span id="year">2026</span> A R Rénovation</p>
     </div>
-  </footer>
+  </section>
 
-  <script src="script.js"></script>
+  <!-- Carte inversée -->
+  <section class="section wrap">
+    <div class="stat">
+      <h2 class="heading-lg">Un seul <em>interlocuteur</em>, du premier appel à la fin du chantier.</h2>
+      <!-- À VÉRIFIER : engagements de l'entreprise -->
+      <dl class="stat__grid">
+        <div><dt class="mono">Devis</dt><dd>Gratuit</dd></div>
+        <div><dt class="mono">Garantie</dt><dd>10 ans</dd></div>
+        <div><dt class="mono">Chantier</dt><dd>Nettoyé</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Méthode -->
+  <section class="section band" id="methode">
+    <div class="wrap">
+      <div class="head">
+        <span class="mono">Comment ça se passe</span>
+        <h2 class="display-sm"><em>Simple</em>, du début à la fin.</h2>
+      </div>
+      <ol class="steps">
+        <li><span class="mono">Étape 1</span><h3>Vous nous appelez</h3><p>Ou vous remplissez le formulaire. Nous fixons une date de visite.</p></li>
+        <li><span class="mono">Étape 2</span><h3>Visite et devis</h3><p>Nous inspectons la toiture et vous remettons un devis détaillé, gratuit.</p></li>
+        <li><span class="mono">Étape 3</span><h3>Les travaux</h3><p>Chantier protégé et sécurisé. Les déchets sont évacués.</p></li>
+        <li><span class="mono">Étape 4</span><h3>La réception</h3><p>Nous vérifions le travail ensemble et vous remettons la garantie.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section class="section wrap" id="questions">
+    <div class="head">
+      <span class="mono">Questions fréquentes</span>
+      <h2 class="display-sm"><em>Vos</em> questions.</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Le devis est-il payant ?</summary><p>Non. La visite, le diagnostic et le devis sont gratuits et sans engagement.</p></details>
+      <details><summary>Comment savoir si ma toiture doit être refaite ?</summary><p>Tuiles cassées ou poreuses, mousse abondante, taches d’humidité au plafond, gouttières qui débordent. Une visite permet de savoir si une réparation suffit.</p></details>
+      <details><summary>Vous déplacez-vous en urgence ?</summary><p>Oui. Après une tempête, nous bâchons la toiture pour la mettre hors d’eau, puis nous réparons. Nous vous aidons aussi pour la déclaration à l’assurance.</p></details>
+      <details><summary>Les travaux sont-ils garantis ?</summary><p>Oui, ils sont couverts par notre assurance décennale. L’attestation vous est remise avec le devis.</p></details>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section band" id="contact">
+    <div class="wrap contact">
+      <div class="contact__intro">
+        <span class="mono">Contact</span>
+        <h2 class="display-sm"><em>Parlons</em> de votre toit.</h2>
+        <p class="subhead">Laissez vos coordonnées, nous vous rappelons pour fixer une visite.</p>
+        <!-- À REMPLACER : vraies coordonnées -->
+        <dl class="coords">
+          <div><dt class="mono">Téléphone</dt><dd><a href="tel:+33600000000">06 00 00 00 00</a></dd></div>
+          <div><dt class="mono">E-mail</dt><dd><a href="mailto:contact@ar-renovation.fr">contact@ar-renovation.fr</a></dd></div>
+          <div><dt class="mono">Secteur</dt><dd>Votre ville et ses environs</dd></div>
+        </dl>
+      </div>
+      <form class="form" id="devis" data-email="contact@ar-renovation.fr">
+        <div class="form__row">
+          <label for="f-nom">Nom<input id="f-nom" name="nom" required autocomplete="name"></label>
+          <label for="f-tel">Téléphone<input id="f-tel" name="telephone" type="tel" required autocomplete="tel"></label>
+        </div>
+        <div class="form__row">
+          <label for="f-mail">E-mail<input id="f-mail" name="email" type="email" autocomplete="email"></label>
+          <label for="f-ville">Ville<input id="f-ville" name="ville" autocomplete="address-level2"></label>
+        </div>
+        <label for="f-type">Travaux
+          <select id="f-type" name="travaux">
+            <option>Couverture</option><option>Fuite</option><option>Zinguerie</option>
+            <option>Charpente</option><option>Isolation</option><option>Démoussage</option><option>Autre</option>
+          </select>
+        </label>
+        <label for="f-msg">Votre demande<textarea id="f-msg" name="message" rows="5" required></textarea></label>
+        <button class="btn-primary btn-block" type="submit">Envoyer ma demande <span aria-hidden="true">→</span></button>
+        <p class="mono form__note" id="form-note">Réponse rapide, sans engagement</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <a class="logo" href="#accueil">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 15 14 5l11 10M7 12v11h14V12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      <span>A R Rénovation</span>
+    </a>
+    <p class="mono">Couverture · Zinguerie · Charpente · Isolation</p>
+    <p class="mono">© <span id="year">2026</span> A R Rénovation</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
