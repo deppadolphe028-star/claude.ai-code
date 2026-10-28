@@ -12,11 +12,12 @@ ciel bleu avec des nuages.
 - **Page compacte** : sur mobile, les tuiles de services et de nettoyage défilent au doigt, comme
   la galerie de réalisations ; l'anatomie 3D se monte sur une courte distance de défilement.
 - **Diagnostic express** : le visiteur touche ce qu'il constate (fuite, tempête, tuiles cassées,
-  mousse…), obtient un premier avis avec un niveau d'urgence, puis une demande de devis déjà rédigée.
+  mousse…) et sa demande de diagnostic se rédige toute seule (constat, travaux probables, type de
+  travaux du plus grave).
 - **Devis pré-remplis** : le champ de l'accueil et le lien « Devis » de chaque service remplissent
   le formulaire (type de travaux et message).
 - **Urgences** : lien d'appel dans l'accueil, encadré « Urgence » à côté du formulaire, bouton
-  « Appeler maintenant » quand le diagnostic indique une urgence.
+  « Appeler » toujours visible sur mobile.
 - **Choix de la couverture** : ardoise, tuile plate, tuile romane ou bac acier, sur la maison de
   l'accueil comme dans l'anatomie ; l'ancienne couverture se dépose depuis le faîtage et la nouvelle
   se pose depuis l'égout.
@@ -34,7 +35,7 @@ ciel bleu avec des nuages.
   (voir « Ajouter vos avis clients » ci-dessous).
 - **Des couleurs qui font agir** : l'orange est réservé aux boutons de devis, seuls éléments orange de
   la page, donc vus en premier ; le rouge ne signale que l'urgence (point qui pulse près de l'appel,
-  encadré « Urgence », diagnostic urgent) ; le bleu du ciel inspire confiance.
+  encadré « Urgence ») ; le bleu du ciel inspire confiance.
 - **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
 
 ## Ajouter vos photos de chantiers

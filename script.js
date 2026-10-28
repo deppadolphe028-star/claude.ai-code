@@ -82,62 +82,27 @@ const compare = document.getElementById('compare');
 const compareRange = document.getElementById('compare-range');
 compareRange.addEventListener('input', () => compare.style.setProperty('--pos', `${compareRange.value}%`));
 
-// Diagnostic express : un premier avis selon ce que le visiteur constate
+// Diagnostic express : ce que le visiteur constate rédige sa demande de diagnostic
 const SYMPTOMS = {
-  fuite: { label: 'Fuite ou tache au plafond', advice: 'Recherche de fuite et réparation', part: 'Couverture', type: 'Fuite', score: 90 },
-  tempete: { label: 'Dégâts après une tempête', advice: 'Mise hors d’eau, puis réparation', part: 'Couverture', type: 'Fuite', score: 96 },
-  casse: { label: 'Tuiles ou ardoises cassées', advice: 'Remplacement des éléments abîmés', part: 'Couverture', type: 'Couverture', score: 72 },
-  gouttiere: { label: 'Gouttière qui déborde', advice: 'Nettoyage ou remplacement des gouttières', part: 'Zinguerie', type: 'Zinguerie', score: 58 },
-  mousse: { label: 'Mousse ou lichen', advice: 'Démoussage et traitement hydrofuge', part: 'Entretien', type: 'Démoussage', score: 40 },
-  froid: { label: 'Pièces froides sous le toit', advice: 'Isolation des combles', part: 'Isolation', type: 'Isolation', score: 48 },
-  age: { label: 'Toiture de plus de 30 ans', advice: 'Bilan complet, réfection à étudier', part: 'Couverture', type: 'Couverture', score: 62 },
+  fuite: { label: 'Fuite ou tache au plafond', advice: 'Recherche de fuite et réparation', type: 'Fuite', score: 90 },
+  tempete: { label: 'Dégâts après une tempête', advice: 'Mise hors d’eau, puis réparation', type: 'Fuite', score: 96 },
+  casse: { label: 'Tuiles ou ardoises cassées', advice: 'Remplacement des éléments abîmés', type: 'Couverture', score: 72 },
+  gouttiere: { label: 'Gouttière qui déborde', advice: 'Nettoyage ou remplacement des gouttières', type: 'Zinguerie', score: 58 },
+  mousse: { label: 'Mousse ou lichen', advice: 'Démoussage et traitement hydrofuge', type: 'Démoussage', score: 40 },
+  froid: { label: 'Pièces froides sous le toit', advice: 'Isolation des combles', type: 'Isolation', score: 48 },
+  age: { label: 'Toiture de plus de 30 ans', advice: 'Bilan complet, réfection à étudier', type: 'Couverture', score: 62 },
 };
-const LEVELS = [
-  { min: 85, cls: 'is-urgent', pill: 'Urgent', title: 'Intervention rapide conseillée' },
-  { min: 55, cls: 'is-soon', pill: 'À prévoir', title: 'Travaux à prévoir' },
-  { min: 0, cls: 'is-watch', pill: 'À surveiller', title: 'Entretien conseillé' },
-];
 const symptomButtons = Array.from(document.querySelectorAll('.symptom'));
-const diagTitle = document.getElementById('diag-title');
-const diagLevel = document.getElementById('diag-level');
-const diagList = document.getElementById('diag-list');
-const diagCall = document.getElementById('diag-call');
-const emptyDiagnostic = diagList.innerHTML;
 
+// Le plus grave d'abord : il donne le type de travaux de la demande
 const pickedSymptoms = () => symptomButtons
   .filter((button) => button.getAttribute('aria-pressed') === 'true')
   .map((button) => SYMPTOMS[button.dataset.symptom])
   .sort((a, b) => b.score - a.score);
 
-function renderDiagnostic() {
-  const picked = pickedSymptoms();
-  if (!picked.length) {
-    diagTitle.textContent = 'Touchez ce que vous voyez sur votre toit';
-    diagLevel.hidden = true;
-    diagCall.hidden = true;
-    diagList.innerHTML = emptyDiagnostic;
-    return;
-  }
-  const level = LEVELS.find((l) => picked[0].score >= l.min);
-  diagTitle.textContent = level.title;
-  diagLevel.className = `phone__pill ${level.cls}`;
-  diagLevel.textContent = level.pill;
-  diagLevel.hidden = false;
-  diagCall.hidden = level.cls !== 'is-urgent';
-  diagList.replaceChildren(...picked.map((symptom) => {
-    const item = document.createElement('li');
-    item.innerHTML = '<span></span><span class="bar"><i></i></span><span class="mono"></span>';
-    item.children[0].textContent = symptom.advice;
-    item.children[2].textContent = symptom.part;
-    return item;
-  }));
-  void diagList.offsetWidth;   // les barres partent de zéro et s'allongent
-  diagList.querySelectorAll('.bar i').forEach((bar, i) => { bar.style.width = `${picked[i].score}%`; });
-}
 symptomButtons.forEach((button) => {
   button.addEventListener('click', () => {
     button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true'));
-    renderDiagnostic();
   });
 });
 document.getElementById('diag-cta').addEventListener('click', (event) => {
@@ -150,7 +115,7 @@ document.getElementById('diag-cta').addEventListener('click', (event) => {
   openDevis({
     type: picked[0].type,
     text: `Diagnostic express — je constate : ${picked.map((s) => s.label.toLowerCase()).join(', ')}.\n`
-      + `Premier avis : ${picked.map((s) => s.advice.toLowerCase()).join(', ')}.`,
+      + `Travaux probables : ${picked.map((s) => s.advice.toLowerCase()).join(', ')}.`,
   });
 });
 

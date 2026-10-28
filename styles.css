@@ -24,7 +24,6 @@
   --color-ember: #ff7a45;
   --color-ember-hover: #ff9466;
   --color-alarm: #ff4f45;
-  --color-alarm-deep: #d92d2f;
   --color-star: #ffb547;
 
   /* Polices (substituts Google Fonts de Lyon Display / Suisse Int'l) */
@@ -752,41 +751,19 @@ a { color: inherit; text-decoration: none; }
 .no-3d .anatomy__steps, .no-3d-anatomy .anatomy__steps { padding-bottom: 0; }
 .no-3d .astep, .no-3d-anatomy .astep { min-height: 0; padding: 24px 0; opacity: 1; }
 
-/* Module téléphone */
-.mockup {
+/* Diagnostic express : symptômes à toucher, puis demande de diagnostic pré-remplie */
+.diag {
   background: var(--color-graphite);
   border-radius: var(--radius-cards);
   padding: 64px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  overflow: hidden;
-}
-.mockup__text { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
-.mockup__text p:not(.mono) { max-width: 420px; }
-.phone {
-  justify-self: center;
-  width: 280px;
-  max-width: 100%;
-  padding: 10px;
-  border-radius: 44px;
-  background: linear-gradient(135deg, rgb(43,43,44), rgb(19,19,19));
-  transform: rotate(-6deg);
-}
-.phone__screen {
-  background: var(--color-obsidian);
-  border-radius: 36px;
-  padding: 40px 20px 28px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
 }
-.phone__label { font-size: 9px; }
-.phone__title { font-family: var(--font-lyon-display); font-weight: 300; font-size: 24px; line-height: 1.05; color: var(--color-cloud); }
-
-/* Diagnostic express : symptômes à cocher, premier avis dans le téléphone */
-.symptoms { display: flex; flex-wrap: wrap; gap: 8px; }
+.diag p:not(.mono) { max-width: 520px; }
+.symptoms { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 760px; }
 .symptom {
   border: 1px solid rgba(255,255,255,.25);
   border-radius: var(--radius-full);
@@ -800,40 +777,6 @@ a { color: inherit; text-decoration: none; }
 .symptom:hover { background: rgba(255,255,255,.12); }
 .symptom[aria-pressed="true"] { border-color: var(--color-pure); background: var(--color-pure); color: var(--color-void); }
 .symptom[aria-pressed="true"]::before { content: '✓ '; }
-.phone__pill {
-  align-self: flex-start;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font: 500 10px/1.4 var(--font-roboto-mono);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--color-void);
-}
-.phone__pill.is-urgent { background: var(--color-alarm); }
-.phone__pill.is-soon { background: #f2c14e; }
-.phone__pill.is-watch { background: #8fd6b3; }
-.phone__list li.is-empty { color: var(--color-fog); }
-.phone__call {
-  padding: 10px;
-  border-radius: var(--radius-buttons);
-  background: var(--color-alarm-deep);
-  color: var(--color-pure);
-  font-size: 13px;
-  text-align: center;
-}
-.phone__call[hidden] { display: none; }
-.phone__note { font-size: 11px; line-height: 1.4; color: var(--color-fog); }
-.phone__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.phone__list li {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 8px;
-  font-size: 13px;
-  color: var(--color-cloud);
-}
-.phone__list .mono { font-size: 9px; line-height: 1.5; text-align: right; }
-.bar { grid-column: 1 / -1; grid-row: 2; height: 3px; background: var(--color-steel); border-radius: 2px; overflow: hidden; }
-.bar i { display: block; width: 0; height: 100%; background: var(--color-cyan-signal); transition: width .4s ease; }
 
 /* Carte inversée */
 .stat {
@@ -1040,7 +983,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
   .actionbar__call svg { width: 18px; height: 18px; }
   body { padding-bottom: 72px; }
   .tiles, .steps, .works, .reviews { grid-template-columns: repeat(2, 1fr); }
-  .mockup { grid-template-columns: 1fr; padding: 48px; }
+  .diag { padding: 48px; }
   .stat, .contact { grid-template-columns: 1fr; }
   .anatomy { grid-template-columns: 1fr; gap: 0; }
   .anatomy__stage {
@@ -1101,7 +1044,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
   .review { scroll-snap-align: start; }
   .review__text { font-size: 20px; }
   .tile h3 { margin-top: 24px; }
-  .mockup { padding: 32px 20px; gap: 36px; }
+  .diag { padding: 32px 20px; }
   .heading-lg { font-size: 32px; }
   .stat__grid dd { font-size: 24px; }
   .form__row { grid-template-columns: 1fr; }

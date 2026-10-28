@@ -419,39 +419,22 @@
     </div>
   </section>
 
-  <!-- Diagnostic express : premier avis immédiat, puis demande de devis pré-remplie -->
+  <!-- Diagnostic express : le visiteur touche ce qu'il constate, sa demande de diagnostic se rédige toute seule -->
   <section class="section wrap" id="diagnostic">
-    <div class="mockup">
-      <div class="mockup__text">
-        <span class="mono">Diagnostic express</span>
-        <h2 class="heading-lg">Que voyez-vous <em>sur votre</em> toit ?</h2>
-        <p>Touchez ce que vous constatez : vous obtenez un premier avis tout de suite. Ensuite, nous venons vérifier gratuitement.</p>
-        <div class="symptoms" role="group" aria-label="Ce que vous constatez">
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="fuite">Fuite ou tache au plafond</button>
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="tempete">Dégâts après une tempête</button>
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="casse">Tuiles ou ardoises cassées</button>
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="gouttiere">Gouttière qui déborde</button>
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="mousse">Mousse ou lichen</button>
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="froid">Pièces froides sous le toit</button>
-          <button type="button" class="symptom" aria-pressed="false" data-symptom="age">Toiture de plus de 30 ans</button>
-        </div>
-        <a class="btn-primary" id="diag-cta" href="#contact">Recevoir mon diagnostic gratuit <span aria-hidden="true">→</span></a>
+    <div class="diag">
+      <span class="mono">Diagnostic express</span>
+      <h2 class="heading-lg">Que voyez-vous <em>sur votre</em> toit ?</h2>
+      <p>Touchez ce que vous constatez : votre demande de diagnostic se prépare toute seule. Nous venons ensuite vérifier gratuitement.</p>
+      <div class="symptoms" role="group" aria-label="Ce que vous constatez">
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="fuite">Fuite ou tache au plafond</button>
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="tempete">Dégâts après une tempête</button>
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="casse">Tuiles ou ardoises cassées</button>
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="gouttiere">Gouttière qui déborde</button>
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="mousse">Mousse ou lichen</button>
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="froid">Pièces froides sous le toit</button>
+        <button type="button" class="symptom" aria-pressed="false" data-symptom="age">Toiture de plus de 30 ans</button>
       </div>
-      <div class="phone">
-        <div class="phone__screen" aria-live="polite">
-          <p class="mono phone__label">Votre premier avis</p>
-          <p class="phone__title" id="diag-title">Touchez ce que vous voyez sur votre toit</p>
-          <span class="phone__pill" id="diag-level" hidden></span>
-          <ul class="phone__list" id="diag-list">
-            <li class="is-empty"><span>Couverture</span><span class="bar"><i></i></span><span class="mono">À évaluer</span></li>
-            <li class="is-empty"><span>Zinguerie</span><span class="bar"><i></i></span><span class="mono">À évaluer</span></li>
-            <li class="is-empty"><span>Charpente</span><span class="bar"><i></i></span><span class="mono">À évaluer</span></li>
-            <li class="is-empty"><span>Isolation</span><span class="bar"><i></i></span><span class="mono">À évaluer</span></li>
-          </ul>
-          <a class="phone__call" id="diag-call" href="tel:+33782627856" hidden>Appeler maintenant</a>
-          <p class="phone__note">Avis indicatif, confirmé lors de la visite gratuite.</p>
-        </div>
-      </div>
+      <a class="btn-primary" id="diag-cta" href="#contact">Recevoir mon diagnostic gratuit <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
