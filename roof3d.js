@@ -116,7 +116,18 @@
     return [[a, Math.min(b, c0)], [Math.max(a, c1), b]].filter(([p, q]) => q - p > 0.05);
   }
 
-  // Textures dessinées une fois : laine de verre, écran, brique, pelouse
+  // Chaque pièce lit sa propre zone de texture : deux ardoises ou deux tuiles ne se ressemblent jamais
+  function withUvOffset(mat) {
+    mat.userData.uvOffset = true;
+    mat.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nattribute vec2 uvOffset;')
+        .replace('#include <uv_vertex>', '#include <uv_vertex>\n#ifdef USE_UV\n\tvUv += uvOffset;\n#endif');
+    };
+    return mat;
+  }
+
+  // Textures dessinées une fois : laine de verre, écran, brique, pelouse, ardoise, terre cuite, acier, ciel
   let textureCache = null;
   function textures() {
     if (textureCache) return textureCache;
@@ -141,7 +152,71 @@
       }
       ctx.globalAlpha = 1;
     };
+    const blotches = (ctx, size, tones, count, rMin, rMax) => {
+      for (let i = 0; i < count; i++) {
+        const x = rand() * size;
+        const y = rand() * size;
+        const r = rMin + rand() * (rMax - rMin);
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, tones[i % tones.length]);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+      }
+    };
+    const speckles = (ctx, size, color, count, dot) => {
+      ctx.fillStyle = color;
+      for (let i = 0; i < count; i++) ctx.fillRect(rand() * size, rand() * size, 0.5 + dot * rand(), 0.5 + dot * rand());
+    };
+    const variant = (texture, repeatX, repeatY) => {
+      const copy = texture.clone();
+      copy.repeat.set(repeatX, repeatY);
+      copy.needsUpdate = true;
+      return copy;
+    };
+    const slate = make(512, 0.35, 0.35, (ctx, s) => {
+      ctx.fillStyle = '#4a525b';
+      ctx.fillRect(0, 0, s, s);
+      blotches(ctx, s, ['rgba(20,26,34,0.12)', 'rgba(120,132,146,0.09)'], 60, 40, 140);
+      for (let y = 0; y < s; y += 2 + rand() * 5) {            // lits de clivage
+        ctx.strokeStyle = rand() < 0.5 ? 'rgba(22,28,36,0.3)' : 'rgba(150,160,172,0.18)';
+        ctx.lineWidth = 0.5 + rand() * 1.2;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (let x = 32; x <= s; x += 32) ctx.lineTo(x, y + (rand() - 0.5) * 2.2);
+        ctx.stroke();
+      }
+      speckles(ctx, s, 'rgba(205,214,224,0.4)', 900, 1.2);     // paillettes de mica
+    });
+    const clay = make(512, 0.3, 0.3, (ctx, s) => {
+      ctx.fillStyle = '#f0e6df';
+      ctx.fillRect(0, 0, s, s);
+      blotches(ctx, s, ['rgba(120,60,30,0.13)', 'rgba(255,240,225,0.2)', 'rgba(70,35,20,0.08)'], 90, 20, 110);
+      speckles(ctx, s, 'rgba(90,45,25,0.35)', 2600, 1.6);       // grain de sable
+      speckles(ctx, s, 'rgba(255,245,235,0.35)', 1400, 1.4);
+    });
+    const sky = document.createElement('canvas');
+    sky.width = 4;
+    sky.height = 256;
+    const skyCtx = sky.getContext('2d');
+    const skyGradient = skyCtx.createLinearGradient(0, 0, 0, 256);
+    [[0, '#2f6fb8'], [0.45, '#8cc3ee'], [0.5, '#dcecf8'], [0.55, '#7d9a5e'], [1, '#4b6b3a']].forEach(([at, c]) => skyGradient.addColorStop(at, c));
+    skyCtx.fillStyle = skyGradient;
+    skyCtx.fillRect(0, 0, 4, 256);
+    const skyTexture = new THREE.CanvasTexture(sky);
+    skyTexture.encoding = THREE.sRGBEncoding;
     textureCache = {
+      slate,
+      clay,
+      clayRoman: variant(clay, 1, 1),        // UV en mètres sur les pièces extrudées
+      clayRidge: variant(clay, 0.5, 0.5),
+      steel: make(256, 1, 1, (ctx, s) => {
+        ctx.fillStyle = '#e9ebee';
+        ctx.fillRect(0, 0, s, s);
+        blotches(ctx, s, ['rgba(255,255,255,0.25)', 'rgba(0,0,0,0.06)'], 40, 10, 60);
+        speckles(ctx, s, 'rgba(0,0,0,0.08)', 1500, 1);
+      }),
+      sky: skyTexture,
       wool: make(128, 1, 5, (ctx, s) => fibres(ctx, s, M.wool, ['#f3d36a', '#c4951f', '#f8e39a', '#b5871a'], 900, 3, 10)),
       screen: make(256, 4, 1, (ctx, s) => {
         ctx.fillStyle = M.screen;
@@ -353,6 +428,10 @@
       return l;
     }
     function part(l, geo, mat, items, colors) {
+      if (mat.userData.uvOffset) {
+        geo = geo.clone();
+        geo.setAttribute('uvOffset', new THREE.InstancedBufferAttribute(Float32Array.from({ length: items.length * 2 }, rand), 2));
+      }
       const mesh = new THREE.InstancedMesh(geo, mat, items.length);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -448,7 +527,7 @@
             const b = Math.min(left + tw, half);
             if (b - a < (clip ? 0.06 : tw - 0.001)) continue;
             const x = (a + b) / 2;
-            if (nearChimney(x, -0.05) && lower < 0.5) continue;
+            if (nearChimney(x, -0.05) && lower < 0.38) continue;     // pièce entièrement dans la souche
             put(slope, x, b - a, lower, (r / (rows - 1)) * 0.92 + rand() * 0.08);
           }
         }
@@ -459,23 +538,33 @@
       return new THREE.Color(shade, shade * (0.92 + rand() * 0.12), shade * (0.88 + rand() * 0.12));
     });
 
-    // Faîtage de l'ardoise et des tuiles : tuiles faîtières en terre cuite scellées au mortier
+    // Faîtage de l'ardoise et des tuiles : tuiles faîtières en terre cuite scellées au mortier,
+    // d'une rive à l'autre, jusqu'à la cheminée, avec les bouts fermés au mortier
+    const RIDGE_HALF = 4.42;                                   // couvre la plus large des couvertures
     const ridgeGeo = new THREE.CylinderGeometry(0.17, 0.2, 0.44, 16, 1, true, 0, Math.PI);
     ridgeGeo.rotateZ(Math.PI / 2);
-    const ridgeCount = Math.round((2 * RX) / 0.4);
+    const ridgeEnd = new THREE.CircleGeometry(0.19, 16, 0, Math.PI);
+    ridgeEnd.rotateY(Math.PI / 2);
+    const ridgeCount = Math.round((2 * RIDGE_HALF) / 0.4);
+    const clayMat = (hex, map, extra = {}) => withUvOffset(new THREE.MeshStandardMaterial({
+      color: col(hex), map, bumpMap: map, bumpScale: 0.02, roughness: 0.8, ...extra,
+    }));
     function ridge(l) {
       const tiles = [];
       for (let i = 0; i < ridgeCount; i++) {
-        const x = -RX + 0.2 + (i * (2 * RX - 0.4)) / (ridgeCount - 1);
-        if (nearChimney(x, 0.1)) continue;
+        const x = -RIDGE_HALF + 0.22 + (i * (2 * RIDGE_HALF - 0.44)) / (ridgeCount - 1);
+        if (Math.abs(x - CX) < CW / 2) continue;               // seule la tuile prise dans la souche disparaît
         tiles.push({ m: inWorld(x, H + R + 0.31, 0), k: 0.9 + 0.1 * (i / (ridgeCount - 1)) });
       }
-      part(l, ridgeGeo, std(M.terracotta, 0.8, 0, { side: THREE.DoubleSide }), tiles, varied(tiles.length, 0.1));
+      part(l, ridgeGeo, clayMat(M.terracotta, textures().clayRidge, { side: THREE.DoubleSide }), tiles, varied(tiles.length, 0.1));
       const mortar = [];
-      aroundChimney(-RX, RX, 0.04).forEach(([a, b]) => [1, -1].forEach((side) => {
+      aroundChimney(-RIDGE_HALF, RIDGE_HALF, -0.05).forEach(([a, b]) => [1, -1].forEach((side) => {
         mortar.push({ m: inWorld((a + b) / 2, H + R + 0.25, side * 0.15, b - a, 0.1, 0.1), k: 0.88 });
       }));
+      [-1, 1].forEach((side) => mortar.push({ m: inWorld(side * (RIDGE_HALF - 0.01), H + R + 0.24, 0, 0.02, 0.12, 0.38), k: 1 }));
       part(l, unit, std(M.mortar, 0.95), mortar);
+      part(l, ridgeEnd, std(M.mortar, 0.95, 0, { side: THREE.DoubleSide }),
+        [-1, 1].map((side) => ({ m: inWorld(side * (RIDGE_HALF - 0.01), H + R + 0.31, 0), k: 1 })));
     }
 
     const coverings = {};
@@ -491,7 +580,10 @@
       const shade = 0.82 + rand() * 0.32;
       tints.push(new THREE.Color(shade * (0.96 + rand() * 0.04), shade * (0.97 + rand() * 0.04), shade * (1 + rand() * 0.08)));
     });
-    part(coverings.ardoise, unit, std(M.slate, 0.55, 0.1), slates, tints);
+    const slateMat = withUvOffset(new THREE.MeshStandardMaterial({
+      map: textures().slate, bumpMap: textures().slate, bumpScale: 0.025, roughness: 0.55, metalness: 0.1,
+    }));
+    part(coverings.ardoise, unit, slateMat, slates, tints);
     part(coverings.ardoise, unit, std(M.hook, 0.3, 0.6), hooks);
     ridge(coverings.ardoise);
 
@@ -501,7 +593,7 @@
     lay({ row: 0.13, tw: 0.22, offset: true, clip: true }, (slope, x, w, lower, k) => {
       flat.push({ m: onSlope(slope, x, 0.258, lower - 0.16, w - 0.012, 0.014, 0.32, -0.04), k });
     });
-    part(coverings.plate, unit, std(M.flatTile, 0.85), flat, terracotta(flat.length));
+    part(coverings.plate, unit, clayMat(M.flatTile, textures().clay, { roughness: 0.85 }), flat, terracotta(flat.length));
     ridge(coverings.plate);
 
     // Tuiles romanes à emboîtement
@@ -510,7 +602,7 @@
     lay({ row: 0.33, tw: 0.3, offset: false, clip: false }, (slope, x, w, lower, k) => {
       roman.push({ m: onSlope(slope, x, 0.256, lower - 0.21, 1, 1, 1, -0.035), k });
     });
-    part(coverings.romane, romanTileGeometry(0.3, 0.42), std(M.romanTile, 0.75), roman, terracotta(roman.length));
+    part(coverings.romane, romanTileGeometry(0.3, 0.42), clayMat(M.romanTile, textures().clayRoman, { roughness: 0.75 }), roman, terracotta(roman.length));
     ridge(coverings.romane);
 
     // Bac acier : plaques nervurées du faîtage à l'égout, posées d'un pignon à l'autre,
@@ -535,17 +627,22 @@
       }
     });
     const screwGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.01, 8);
-    part(coverings.acier, steelPanelGeometry(PW, panelLen), std(M.steel, 0.42, 0.45), panels);
+    const steelMat = () => new THREE.MeshStandardMaterial({ color: col(M.steel), map: textures().steel, roughness: 0.35, metalness: 0.55 });
+    part(coverings.acier, steelPanelGeometry(PW, panelLen), steelMat(), panels);
     part(coverings.acier, screwGeo, std(M.screw, 0.35, 0.6), screws);
+    // Faîtage en acier sur closoirs en mousse, qui ferment les nervures jusqu'à la cheminée
     const steelRidge = [];
+    const closures = [];
     const ridgeScrews = [];
     SLOPES.forEach((slope) => {
-      aroundChimney(-RX, RX, 0.04).forEach(([a, b]) => {
+      aroundChimney(-RX, RX, -0.05).forEach(([a, b]) => {
         steelRidge.push({ m: onSlope(slope, (a + b) / 2, 0.305, 0.01, b - a, 0.008, 0.54), k: 0.95 });
+        closures.push({ m: onSlope(slope, (a + b) / 2, 0.275, 0.01, b - a, 0.052, 0.5), k: 0.93 });
         for (let x = a + 0.2; x < b - 0.1; x += 0.6) ridgeScrews.push({ m: onSlope(slope, x, 0.312, 0.2), k: 1 });
       });
     });
-    part(coverings.acier, unit, std(M.steel, 0.42, 0.45), steelRidge);
+    part(coverings.acier, unit, steelMat(), steelRidge);
+    part(coverings.acier, unit, std('#24272a', 0.95), closures);
     part(coverings.acier, screwGeo, std(M.screw, 0.35, 0.6), ridgeScrews);
 
     // 5. Zinguerie : gouttières demi-rondes et leurs crochets, descentes, bandes de rive, abergement
@@ -694,6 +791,25 @@
 
     const house = buildHouse();
     scene.add(house.group);
+
+    // Reflets du ciel sur l'acier, le zinc et les vitres
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envScene = new THREE.Scene();
+    envScene.add(new THREE.Mesh(
+      new THREE.SphereGeometry(10, 32, 16),
+      new THREE.MeshBasicMaterial({ map: textures().sky, side: THREE.BackSide })
+    ));
+    const env = pmrem.fromScene(envScene, 0.02).texture;
+    pmrem.dispose();
+    house.group.traverse((obj) => {
+      [].concat(obj.material || []).forEach((mat) => {
+        if (mat.metalness >= 0.25) {
+          mat.envMap = env;
+          mat.envMapIntensity = 0.9;
+          mat.needsUpdate = true;
+        }
+      });
+    });
 
     const stage = {
       canvas, renderer, scene, camera, house,

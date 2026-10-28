@@ -56,9 +56,9 @@
     </a>
     <nav class="nav__links" aria-label="Navigation principale">
       <a class="btn-glass" href="#services">Services</a>
+      <a class="btn-glass" href="#realisations">Réalisations</a>
       <a class="btn-glass" href="#anatomie">Anatomie</a>
       <a class="btn-glass" href="#diagnostic">Diagnostic</a>
-      <a class="btn-glass" href="#questions">Questions</a>
     </nav>
     <div class="nav__end">
       <!-- À REMPLACER : vrai numéro (il apparaît plusieurs fois dans la page) -->
@@ -71,6 +71,7 @@
   </div>
   <nav class="menu" id="menu" aria-label="Menu" hidden>
     <a href="#services">Services</a>
+    <a href="#realisations">Nos réalisations</a>
     <a href="#anatomie">Anatomie d’une toiture</a>
     <a href="#diagnostic">Diagnostic express</a>
     <a href="#methode">Comment ça se passe</a>
@@ -180,6 +181,75 @@
         <p>Nettoyage de la toiture, traitement anti-mousse et hydrofuge pour la protéger plus longtemps.</p>
         <a class="tile__cta" href="#contact" data-travaux="Démoussage">Devis démoussage <span aria-hidden="true">→</span></a>
       </article>
+    </div>
+  </section>
+
+  <!-- Réalisations : photos de chantiers, avec un comparatif avant / après.
+       Pour ajouter vos photos, voir realisations/LISEZMOI.txt ; légendes À COMPLÉTER ci-dessous. -->
+  <section class="section" id="realisations">
+    <div class="wrap">
+      <div class="head">
+        <span class="mono">Nos réalisations</span>
+        <h2 class="display-sm">Des toits <em>bien</em> faits.</h2>
+        <p class="subhead">Quelques chantiers récents, de la réparation à la réfection complète.</p>
+      </div>
+
+      <div class="compare" id="compare">
+        <figure class="compare__side photo photo--before">
+          <img src="realisations/avant.jpg" alt="Toiture avant les travaux" loading="lazy">
+          <span class="photo__empty"><b>Photo avant travaux</b><span>realisations/avant.jpg</span></span>
+        </figure>
+        <figure class="compare__side compare__side--after photo photo--after">
+          <img src="realisations/apres.jpg" alt="La même toiture après les travaux" loading="lazy">
+          <span class="photo__empty"><b>Photo après travaux</b><span>realisations/apres.jpg</span></span>
+        </figure>
+        <span class="mono compare__tag compare__tag--before">Avant</span>
+        <span class="mono compare__tag compare__tag--after">Après</span>
+        <span class="compare__line" aria-hidden="true"></span>
+        <input class="compare__range" id="compare-range" type="range" min="0" max="100" value="50" aria-label="Glisser pour comparer avant et après les travaux">
+      </div>
+
+      <ul class="works">
+        <li class="work">
+          <figure>
+            <div class="photo"><img src="realisations/chantier-1.jpg" alt="Réfection d’une toiture en ardoise" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-1.jpg</span></span></div>
+            <figcaption><span class="mono">Ardoise · Réfection complète</span><span class="work__place">Ville — année</span></figcaption>
+          </figure>
+        </li>
+        <li class="work">
+          <figure>
+            <div class="photo"><img src="realisations/chantier-2.jpg" alt="Remplacement de tuiles" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-2.jpg</span></span></div>
+            <figcaption><span class="mono">Tuile · Remplacement de tuiles</span><span class="work__place">Ville — année</span></figcaption>
+          </figure>
+        </li>
+        <li class="work">
+          <figure>
+            <div class="photo"><img src="realisations/chantier-3.jpg" alt="Pose de gouttières en zinc" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-3.jpg</span></span></div>
+            <figcaption><span class="mono">Zinguerie · Gouttières neuves</span><span class="work__place">Ville — année</span></figcaption>
+          </figure>
+        </li>
+        <li class="work">
+          <figure>
+            <div class="photo"><img src="realisations/chantier-4.jpg" alt="Toiture en bac acier" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-4.jpg</span></span></div>
+            <figcaption><span class="mono">Bac acier · Toiture neuve</span><span class="work__place">Ville — année</span></figcaption>
+          </figure>
+        </li>
+        <li class="work">
+          <figure>
+            <div class="photo"><img src="realisations/chantier-5.jpg" alt="Démoussage et traitement d’une toiture" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-5.jpg</span></span></div>
+            <figcaption><span class="mono">Démoussage · Traitement hydrofuge</span><span class="work__place">Ville — année</span></figcaption>
+          </figure>
+        </li>
+        <li class="work">
+          <figure>
+            <div class="photo"><img src="realisations/chantier-6.jpg" alt="Renforcement de charpente" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-6.jpg</span></span></div>
+            <figcaption><span class="mono">Charpente · Renforcement</span><span class="work__place">Ville — année</span></figcaption>
+          </figure>
+        </li>
+      </ul>
+      <div class="works__cta">
+        <a class="btn-primary" href="#contact">Votre toiture est la prochaine ? Demander un devis <span aria-hidden="true">→</span></a>
+      </div>
     </div>
   </section>
 

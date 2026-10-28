@@ -54,6 +54,18 @@ if ('IntersectionObserver' in window) {
   }, { threshold: 0.15 }).observe(contact);
 }
 
+// Réalisations : chaque photo remplace son emplacement dès qu'elle est chargée
+document.querySelectorAll('.photo img').forEach((img) => {
+  const show = () => img.closest('.photo').classList.add('is-loaded');
+  if (img.complete && img.naturalWidth) show();
+  else img.addEventListener('load', show);
+});
+
+// Comparatif avant / après
+const compare = document.getElementById('compare');
+const compareRange = document.getElementById('compare-range');
+compareRange.addEventListener('input', () => compare.style.setProperty('--pos', `${compareRange.value}%`));
+
 // Diagnostic express : un premier avis selon ce que le visiteur constate
 const SYMPTOMS = {
   fuite: { label: 'Fuite ou tache au plafond', advice: 'Recherche de fuite et réparation', part: 'Couverture', type: 'Fuite', score: 90 },

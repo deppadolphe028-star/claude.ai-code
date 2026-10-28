@@ -1,0 +1,17 @@
+Photos des chantiers — section « Nos réalisations » de la page d'accueil
+=======================================================================
+
+Déposez vos photos dans ce dossier en gardant exactement ces noms :
+
+  avant.jpg  et  apres.jpg     le comparatif avant / après (même chantier, même cadrage si possible)
+  chantier-1.jpg à chantier-6.jpg   les six photos de la galerie
+
+Tant qu'une photo manque, son emplacement affiche « Photo à ajouter » avec le nom du fichier attendu.
+
+Conseils :
+- format JPG, environ 1600 pixels de large, moins de 500 Ko par photo ;
+- photos prises de jour, toiture bien visible, sans personne reconnaissable ni plaque d'immatriculation.
+
+Les légendes (type de travaux, ville, année) se modifient dans index.html, section « Nos réalisations »
+(chercher « Ville — année »). Vous pouvez aussi simplement envoyer les photos et les légendes à
+la personne qui gère le site.

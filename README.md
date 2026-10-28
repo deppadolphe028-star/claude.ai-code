@@ -20,7 +20,16 @@ ciel bleu avec des nuages.
   se pose depuis l'égout.
 - **Référencement et partage** : titre et description travaillés, fiche entreprise pour Google
   (données structurées `RoofingContractor`), image d'aperçu `og-image.jpg` pour WhatsApp, Facebook, SMS.
+- **Réalisations** : comparatif avant / après à faire glisser et galerie de six chantiers
+  (voir « Ajouter vos photos de chantiers » ci-dessous).
 - **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
+
+## Ajouter vos photos de chantiers
+Déposez vos photos dans le dossier `realisations/` avec ces noms : `avant.jpg` et `apres.jpg` pour le
+comparatif, `chantier-1.jpg` à `chantier-6.jpg` pour la galerie (JPG d'environ 1600 px de large).
+Chaque photo remplace automatiquement son emplacement « Photo à ajouter ». Les légendes (type de
+travaux, ville, année) se modifient dans `index.html`, section « Nos réalisations ».
+Le détail est dans `realisations/LISEZMOI.txt`.
 
 ## Animations 3D
 Une maison sur un îlot de pelouse, avec les vraies couleurs des matériaux : charpente en bois
@@ -28,6 +37,10 @@ Une maison sur un îlot de pelouse, avec les vraies couleurs des matériaux : ch
 les chevrons, écran sous-toiture et contre-liteaux, liteaux, ardoises fixées au crochet inox, tuiles
 faîtières en terre cuite scellées au mortier, gouttières demi-rondes en zinc et leurs crochets,
 descentes, bandes de rive, abergement et souche de cheminée en brique.
+
+Les couvertures ont une vraie matière : veinage et paillettes de l'ardoise, grain et nuances de la
+terre cuite (chaque pièce lit sa propre zone de texture, deux pièces ne se ressemblent jamais),
+reflets du ciel sur l'acier, le zinc et les vitres.
 
 Quatre couvertures au choix :
 - **Ardoise** naturelle fixée au crochet inox, faîtage en tuiles faîtières scellées au mortier ;
@@ -56,6 +69,7 @@ disponibles, la page reste complète (accueil centré, étapes en liste). Avec l
 - `script.js` — devis pré-remplis, diagnostic express, menu et barre d'action mobile,
   envoi du formulaire par e-mail (mailto), dessin des nuages
 - `og-image.jpg` — image d'aperçu pour le partage du lien
+- `realisations/` — vos photos de chantiers (mode d'emploi dans `LISEZMOI.txt`)
 
 ## Avant la mise en ligne
 Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTML :
@@ -64,6 +78,7 @@ Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTM
 - zone d'intervention (« Votre ville et ses environs », aussi dans les données structurées)
 - engagements affichés (garantie décennale, devis gratuit, chantier nettoyé) à vérifier
 - `mentions-legales.html` : forme juridique, SIRET, adresse, dirigeant, hébergeur, assureur décennal
+- photos de chantiers dans `realisations/` et légendes « Ville — année » dans `index.html`
 - une fois le site en ligne, mettre l'adresse complète de `og-image.jpg` dans la balise `og:image`
 
 Pour recevoir les demandes directement (sans passer par la messagerie du visiteur), le formulaire
