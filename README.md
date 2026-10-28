@@ -15,8 +15,9 @@ ciel bleu avec des nuages.
   le formulaire (type de travaux et message).
 - **Urgences** : lien d'appel dans l'accueil, encadré « Urgence » à côté du formulaire, bouton
   « Appeler maintenant » quand le diagnostic indique une urgence.
-- **Choix de la couverture** : sur la maison 3D de l'accueil, ardoise, tuile plate ou tuile romane ;
-  l'ancienne couverture se dépose depuis le faîtage et la nouvelle se pose depuis l'égout.
+- **Choix de la couverture** : ardoise, tuile plate, tuile romane ou bac acier, sur la maison de
+  l'accueil comme dans l'anatomie ; l'ancienne couverture se dépose depuis le faîtage et la nouvelle
+  se pose depuis l'égout.
 - **Référencement et partage** : titre et description travaillés, fiche entreprise pour Google
   (données structurées `RoofingContractor`), image d'aperçu `og-image.jpg` pour WhatsApp, Facebook, SMS.
 - **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
@@ -28,11 +29,20 @@ les chevrons, écran sous-toiture et contre-liteaux, liteaux, ardoises fixées a
 faîtières en terre cuite scellées au mortier, gouttières demi-rondes en zinc et leurs crochets,
 descentes, bandes de rive, abergement et souche de cheminée en brique.
 
+Quatre couvertures au choix :
+- **Ardoise** naturelle fixée au crochet inox, faîtage en tuiles faîtières scellées au mortier ;
+- **Tuile plate** en terre cuite, petites tuiles à joints croisés ;
+- **Tuile romane** en terre cuite, à emboîtement, avec son profil ondulé ;
+- **Bac acier** gris anthracite : plaques nervurées d'une seule pièce du faîtage à l'égout, vis à
+  rondelle d'étanchéité sur les nervures, faîtage en acier de la même teinte.
+
 - **Accueil** : la couverture se pose rang par rang, du bas vers le haut, puis la maison tourne
   lentement (on peut la faire pivoter en la faisant glisser).
-- **Anatomie d'une toiture** : en faisant défiler la page, la toiture se monte couche par couche
-  (charpente, isolation, écran sous-toiture, couverture, zinguerie, entretien), avec un gros plan
-  sur les ardoises et leurs crochets. Cette scène n'est construite qu'à l'approche de sa section.
+- **Anatomie d'une toiture** : on choisit le type de toiture avec le sélecteur sous la maison, puis
+  en faisant défiler la page, la toiture se monte couche par couche (charpente, isolation, écran
+  sous-toiture, couverture, zinguerie, entretien), avec un gros plan sur la couverture (crochets,
+  vis, faîtage). Le texte de l'étape Couverture suit le type choisi. Cette scène n'est construite
+  qu'à l'approche de sa section.
 
 La 3D utilise Three.js r128, chargé depuis cdnjs. Si WebGL ou la bibliothèque ne sont pas
 disponibles, la page reste complète (accueil centré, étapes en liste). Avec l'option

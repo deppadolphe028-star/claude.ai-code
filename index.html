@@ -110,6 +110,7 @@
           <button type="button" class="covering__btn" data-covering="ardoise" aria-pressed="true">Ardoise</button>
           <button type="button" class="covering__btn" data-covering="plate" aria-pressed="false">Tuile plate</button>
           <button type="button" class="covering__btn" data-covering="romane" aria-pressed="false">Tuile romane</button>
+          <button type="button" class="covering__btn" data-covering="acier" aria-pressed="false">Bac acier</button>
         </div>
         <p class="mono hero__hint" aria-hidden="true">Glissez pour faire tourner la maison</p>
       </div>
@@ -146,7 +147,7 @@
       <article class="tile tile--iris">
         <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11M7 13v14h18V13M7 18h18M7 22.5h18" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
         <h3>Couverture</h3>
-        <p>Réfection complète ou partielle. Tuiles mécaniques, tuiles plates, ardoises naturelles.</p>
+        <p>Réfection complète ou partielle : ardoise naturelle, tuiles plates, tuiles romanes ou mécaniques, bac acier.</p>
         <a class="tile__cta" href="#contact" data-travaux="Couverture">Devis couverture <span aria-hidden="true">→</span></a>
       </article>
       <article class="tile tile--cyan">
@@ -199,12 +200,27 @@
       <div class="head">
         <span class="mono">Anatomie d’une toiture</span>
         <h2 class="display-sm"><em>Couche</em> après couche.</h2>
-        <p class="subhead">Faites défiler : la toiture se monte sous vos yeux, dans l’ordre d’un vrai chantier.</p>
+        <p class="subhead">Choisissez votre toiture, puis faites défiler : elle se monte sous vos yeux, dans l’ordre d’un vrai chantier.</p>
       </div>
       <div class="anatomy">
         <div class="anatomy__stage">
           <div class="anatomy__view">
-            <canvas id="anatomy-roof" role="img" aria-label="Toiture en ardoise en 3D qui se monte couche par couche : charpente, laine de verre, écran sous-toiture, ardoises au crochet et tuiles faîtières, zinguerie"></canvas>
+            <canvas id="anatomy-roof" role="img" aria-label="Toiture en 3D qui se monte couche par couche : charpente, laine de verre, écran sous-toiture, couverture au choix, zinguerie"></canvas>
+          </div>
+          <!-- Le texte de l'étape Couverture suit le type de toiture choisi (data-title, data-text, data-dot) -->
+          <div class="covering covering--anatomy" role="group" aria-label="Choisir le type de toiture">
+            <button type="button" class="covering__btn" data-covering="ardoise" aria-pressed="true" data-dot="#3d444c"
+              data-title="Ardoise après ardoise"
+              data-text="Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier.">Ardoise</button>
+            <button type="button" class="covering__btn" data-covering="plate" aria-pressed="false" data-dot="#9d4f30"
+              data-title="Tuile après tuile"
+              data-text="Les petites tuiles plates en terre cuite s’accrochent aux liteaux par leur ergot, rang par rang depuis l’égout, à joints croisés. Au sommet, les tuiles faîtières sont scellées au mortier.">Tuile plate</button>
+            <button type="button" class="covering__btn" data-covering="romane" aria-pressed="false" data-dot="#b8582d"
+              data-title="Tuile après tuile"
+              data-text="Les tuiles romanes en terre cuite s’emboîtent les unes dans les autres sur les liteaux, rang par rang depuis l’égout. Au sommet, les tuiles faîtières sont scellées au mortier.">Tuile romane</button>
+            <button type="button" class="covering__btn" data-covering="acier" aria-pressed="false" data-dot="#3b4045"
+              data-title="Plaque après plaque"
+              data-text="Les plaques de bac acier nervurées vont d’une seule pièce du faîtage à l’égout. Elles sont posées d’un pignon à l’autre et vissées sur les nervures avec des vis à rondelle d’étanchéité. Au sommet, un faîtage en acier de la même teinte.">Bac acier</button>
           </div>
           <div class="anatomy__meter" aria-hidden="true">
             <span class="mono" id="anatomy-label">01 — Charpente</span>
@@ -227,7 +243,7 @@
             <h3>La barrière contre l’eau</h3>
             <p>Une membrane respirante, posée en lés depuis l’égout, arrête l’eau et la poussière et laisse sortir l’humidité. Les contre-liteaux qui la tiennent créent une lame d’air qui ventile la couverture.</p>
           </li>
-          <li class="astep" data-label="04 — Couverture" style="--dot: #3d444c">
+          <li class="astep" data-label="04 — Couverture" data-covering-step style="--dot: #3d444c">
             <span class="mono"><i class="dot"></i>04 — Couverture</span>
             <h3>Ardoise après ardoise</h3>
             <p>Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier.</p>
@@ -240,7 +256,7 @@
           <li class="astep" data-label="06 — Entretien" style="--dot: #90b8f0">
             <span class="mono"><i class="dot"></i>06 — Entretien</span>
             <h3>Une toiture qui dure</h3>
-            <p>Démoussage et traitement hydrofuge gardent les ardoises propres et imperméables plus longtemps.</p>
+            <p>Nettoyage, démoussage et traitement de protection gardent la couverture propre et étanche plus longtemps.</p>
           </li>
         </ol>
       </div>

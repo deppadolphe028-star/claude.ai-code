@@ -32,6 +32,8 @@
     hook: '#d4d9dd',        // crochets inox
     flatTile: '#9d4f30',    // tuile plate en terre cuite
     romanTile: '#b8582d',   // tuile romane en terre cuite
+    steel: '#3b4045',       // bac acier prélaqué gris anthracite
+    screw: '#c3c8cc',       // vis à rondelle d'étanchéité
     terracotta: '#b4603f',  // tuiles faîtières, mitrons
     mortar: '#d4cdbf',
     zinc: '#a2abb0',
@@ -191,17 +193,8 @@
     return mesh;
   }
 
-  // Profil d'une tuile romane : un plat puis un bourrelet arrondi, extrudé dans le sens de la pente
-  function romanTileGeometry(width, length) {
-    const thickness = 0.014;
-    const r = width * 0.22;
-    const cx = width / 2 - r - 0.01;
-    const top = [[-width / 2, 0], [cx - r, 0]];
-    for (let i = 1; i < 12; i++) {
-      const a = Math.PI - (i / 12) * Math.PI;
-      top.push([cx + r * Math.cos(a), r * Math.sin(a) * 0.9]);
-    }
-    top.push([cx + r, 0], [width / 2, 0]);
+  // Extrude un profil (points du dessus, épaisseur) dans le sens de la pente
+  function extrudeProfile(top, thickness, length) {
     const shape = new THREE.Shape();
     shape.moveTo(top[0][0], top[0][1]);
     top.slice(1).forEach(([x, y]) => shape.lineTo(x, y));
@@ -211,7 +204,32 @@
     return geo;
   }
 
-  function buildHouse({ variants = false } = {}) {
+  // Tuile romane : un plat puis un bourrelet arrondi
+  function romanTileGeometry(width, length) {
+    const r = width * 0.22;
+    const cx = width / 2 - r - 0.01;
+    const top = [[-width / 2, 0], [cx - r, 0]];
+    for (let i = 1; i < 12; i++) {
+      const a = Math.PI - (i / 12) * Math.PI;
+      top.push([cx + r * Math.cos(a), r * Math.sin(a) * 0.9]);
+    }
+    top.push([cx + r, 0], [width / 2, 0]);
+    return extrudeProfile(top, 0.014, length);
+  }
+
+  // Plaque de bac acier : trois nervures trapézoïdales
+  function steelPanelGeometry(width, length) {
+    const rib = 0.045;
+    const top = [[-width / 2, 0]];
+    for (let i = -1; i <= 1; i++) {
+      const c = (i * width) / 3;
+      top.push([c - 0.07, 0], [c - 0.03, rib], [c + 0.03, rib], [c + 0.07, 0]);
+    }
+    top.push([width / 2, 0]);
+    return extrudeProfile(top, 0.006, length);
+  }
+
+  function buildHouse() {
     const tex = textures();
     seed = 11;
     const group = new THREE.Group();
@@ -329,7 +347,7 @@
     // Les couches de la toiture, dans l'ordre du chantier
     const layers = [];
     function layer(glow, listed = true) {
-      const l = { glow: col(glow), group: new THREE.Group(), parts: [], queue: NaN, u: NaN };
+      const l = { glow: col(glow), group: new THREE.Group(), parts: [], state: '', u: 0, presence: 1 };
       group.add(l.group);
       if (listed) layers.push(l);
       return l;
@@ -399,7 +417,7 @@
     }));
     part(ecran, unit, std(M.batten, 0.85), counter, varied(counter.length, 0.12));
 
-    // 4. Couverture : liteaux, couverture (ardoise, tuile plate ou tuile romane), tuiles faîtières au mortier
+    // 4. Couverture : liteaux communs, puis l'une des quatre couvertures, chacune avec son faîtage
     const couverture = layer(M.slate);
     const ROW = 0.17;                       // pureau des ardoises
     const TW = 0.3;
@@ -409,8 +427,9 @@
     SLOPES.forEach((slope) => {
       const rows = Math.ceil((LEN + 0.03) / ROW);
       for (let r = 0; r < rows; r++) {
-        const lower = LEN + 0.03 - r * ROW;
-        battens.push({ m: onSlope(slope, 0, 0.229, lower - TL + 0.06, 2 * RX - 0.04, 0.027, 0.05), k: r / (rows - 1) });
+        const s = LEN + 0.03 - r * ROW - TL + 0.06;
+        if (s < -0.2) continue;                         // pas de liteau au-delà du faîtage
+        battens.push({ m: onSlope(slope, 0, 0.229, s, 2 * RX - 0.04, 0.027, 0.05), k: r / (rows - 1) });
       }
     });
     part(couverture, unit, std(M.batten, 0.85), battens, varied(battens.length, 0.12));
@@ -440,8 +459,29 @@
       return new THREE.Color(shade, shade * (0.92 + rand() * 0.12), shade * (0.88 + rand() * 0.12));
     });
 
-    // Ardoises au crochet inox (et deux autres couvertures pour la maison du hero)
-    const coverings = { ardoise: layer(M.slate, false) };
+    // Faîtage de l'ardoise et des tuiles : tuiles faîtières en terre cuite scellées au mortier
+    const ridgeGeo = new THREE.CylinderGeometry(0.17, 0.2, 0.44, 16, 1, true, 0, Math.PI);
+    ridgeGeo.rotateZ(Math.PI / 2);
+    const ridgeCount = Math.round((2 * RX) / 0.4);
+    function ridge(l) {
+      const tiles = [];
+      for (let i = 0; i < ridgeCount; i++) {
+        const x = -RX + 0.2 + (i * (2 * RX - 0.4)) / (ridgeCount - 1);
+        if (nearChimney(x, 0.1)) continue;
+        tiles.push({ m: inWorld(x, H + R + 0.31, 0), k: 0.9 + 0.1 * (i / (ridgeCount - 1)) });
+      }
+      part(l, ridgeGeo, std(M.terracotta, 0.8, 0, { side: THREE.DoubleSide }), tiles, varied(tiles.length, 0.1));
+      const mortar = [];
+      aroundChimney(-RX, RX, 0.04).forEach(([a, b]) => [1, -1].forEach((side) => {
+        mortar.push({ m: inWorld((a + b) / 2, H + R + 0.25, side * 0.15, b - a, 0.1, 0.1), k: 0.88 });
+      }));
+      part(l, unit, std(M.mortar, 0.95), mortar);
+    }
+
+    const coverings = {};
+
+    // Ardoises au crochet inox
+    coverings.ardoise = layer(M.slate, false);
     const slates = [];
     const hooks = [];
     const tints = [];
@@ -453,38 +493,60 @@
     });
     part(coverings.ardoise, unit, std(M.slate, 0.55, 0.1), slates, tints);
     part(coverings.ardoise, unit, std(M.hook, 0.3, 0.6), hooks);
+    ridge(coverings.ardoise);
 
-    if (variants) {
-      coverings.plate = layer(M.flatTile, false);
-      const flat = [];
-      lay({ row: 0.13, tw: 0.22, offset: true, clip: true }, (slope, x, w, lower, k) => {
-        flat.push({ m: onSlope(slope, x, 0.258, lower - 0.16, w - 0.012, 0.014, 0.32, -0.04), k });
+    // Petites tuiles plates à joints croisés
+    coverings.plate = layer(M.flatTile, false);
+    const flat = [];
+    lay({ row: 0.13, tw: 0.22, offset: true, clip: true }, (slope, x, w, lower, k) => {
+      flat.push({ m: onSlope(slope, x, 0.258, lower - 0.16, w - 0.012, 0.014, 0.32, -0.04), k });
+    });
+    part(coverings.plate, unit, std(M.flatTile, 0.85), flat, terracotta(flat.length));
+    ridge(coverings.plate);
+
+    // Tuiles romanes à emboîtement
+    coverings.romane = layer(M.romanTile, false);
+    const roman = [];
+    lay({ row: 0.33, tw: 0.3, offset: false, clip: false }, (slope, x, w, lower, k) => {
+      roman.push({ m: onSlope(slope, x, 0.256, lower - 0.21, 1, 1, 1, -0.035), k });
+    });
+    part(coverings.romane, romanTileGeometry(0.3, 0.42), std(M.romanTile, 0.75), roman, terracotta(roman.length));
+    ridge(coverings.romane);
+
+    // Bac acier : plaques nervurées du faîtage à l'égout, posées d'un pignon à l'autre,
+    // vissées sur les nervures ; faîtage en acier de la même teinte
+    coverings.acier = layer(M.steel, false);
+    const PANELS = 9;
+    const PW = (2 * RX) / PANELS;
+    const panelLen = LEN + 0.05;
+    const panels = [];
+    const screws = [];
+    SLOPES.forEach((slope) => {
+      for (let i = 0; i < PANELS; i++) {
+        const x = -RX + (i + 0.5) * PW;
+        const k = i / (PANELS - 1);
+        panels.push({ m: onSlope(slope, x, 0.2485, -0.02 + panelLen / 2), k });
+        for (let rib = -1; rib <= 1; rib++) {
+          const rx = x + (rib * PW) / 3;
+          [0.4, 1.5, 2.6, 3.7].forEach((s) => {              // une ligne de vis par liteau porteur
+            if (!(nearChimney(rx, 0.02) && s < 0.6)) screws.push({ m: onSlope(slope, rx, 0.2985, s), k: Math.min(1, k + 0.04) });
+          });
+        }
+      }
+    });
+    const screwGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.01, 8);
+    part(coverings.acier, steelPanelGeometry(PW, panelLen), std(M.steel, 0.42, 0.45), panels);
+    part(coverings.acier, screwGeo, std(M.screw, 0.35, 0.6), screws);
+    const steelRidge = [];
+    const ridgeScrews = [];
+    SLOPES.forEach((slope) => {
+      aroundChimney(-RX, RX, 0.04).forEach(([a, b]) => {
+        steelRidge.push({ m: onSlope(slope, (a + b) / 2, 0.305, 0.01, b - a, 0.008, 0.54), k: 0.95 });
+        for (let x = a + 0.2; x < b - 0.1; x += 0.6) ridgeScrews.push({ m: onSlope(slope, x, 0.312, 0.2), k: 1 });
       });
-      part(coverings.plate, unit, std(M.flatTile, 0.85), flat, terracotta(flat.length));
-
-      coverings.romane = layer(M.romanTile, false);
-      const roman = [];
-      lay({ row: 0.33, tw: 0.3, offset: false, clip: false }, (slope, x, w, lower, k) => {
-        roman.push({ m: onSlope(slope, x, 0.256, lower - 0.21, 1, 1, 1, -0.035), k });
-      });
-      part(coverings.romane, romanTileGeometry(0.3, 0.42), std(M.romanTile, 0.75), roman, terracotta(roman.length));
-    }
-
-    const ridgeGeo = new THREE.CylinderGeometry(0.17, 0.2, 0.44, 16, 1, true, 0, Math.PI);
-    ridgeGeo.rotateZ(Math.PI / 2);
-    const ridgeTiles = [];
-    const ridgeCount = Math.round((2 * RX) / 0.4);
-    for (let i = 0; i < ridgeCount; i++) {
-      const x = -RX + 0.2 + (i * (2 * RX - 0.4)) / (ridgeCount - 1);
-      if (nearChimney(x, 0.1)) continue;
-      ridgeTiles.push({ m: inWorld(x, H + R + 0.31, 0), k: 0.9 + 0.1 * (i / (ridgeCount - 1)) });
-    }
-    part(couverture, ridgeGeo, std(M.terracotta, 0.8, 0, { side: THREE.DoubleSide }), ridgeTiles, varied(ridgeTiles.length, 0.1));
-    const mortar = [];
-    aroundChimney(-RX, RX, 0.04).forEach(([a, b]) => [1, -1].forEach((side) => {
-      mortar.push({ m: inWorld((a + b) / 2, H + R + 0.25, side * 0.15, b - a, 0.1, 0.1), k: 0.88 });
-    }));
-    part(couverture, unit, std(M.mortar, 0.95), mortar);
+    });
+    part(coverings.acier, unit, std(M.steel, 0.42, 0.45), steelRidge);
+    part(coverings.acier, screwGeo, std(M.screw, 0.35, 0.6), ridgeScrews);
 
     // 5. Zinguerie : gouttières demi-rondes et leurs crochets, descentes, bandes de rive, abergement
     const zinguerie = layer(M.zinc);
@@ -526,7 +588,7 @@
     part(zinguerie, new THREE.CylinderGeometry(0.05, 0.05, 1, 12), zinc(), pipes);
     part(zinguerie, unit, zinc(), fittings);
 
-    // 6. Entretien : le traitement hydrofuge passe sur les ardoises
+    // 6. Entretien : le traitement passe sur la couverture
     const sweepMat = new THREE.MeshBasicMaterial({
       color: col(M.treatment), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false,
     });
@@ -546,20 +608,34 @@
       coverings,
       // Pose une couche : queue = hauteur d'attente, u = avancement de la pose (0 → 1).
       // Avec appear, chaque pièce n'apparaît qu'au moment où elle commence à descendre.
-      place(l, queue, u, gap, stagger, appear = false) {
-        if (Math.abs(l.queue - queue) < 1e-4 && Math.abs(l.u - u) < 1e-4) return;
-        l.queue = queue;
+      // presence fait apparaître la couche depuis l'égout (0 → 1) ou la retire depuis le faîtage (1 → 0).
+      place(l, { queue = 0, u = 1, gap = 1, stagger = 0.5, appear = false, presence = 1 } = {}) {
+        const state = `${queue.toFixed(4)}|${u.toFixed(4)}|${gap}|${presence.toFixed(4)}|${appear}`;
+        if (state === l.state) return;
+        l.state = state;
         l.u = u;
+        l.presence = presence;
+        let visible = false;
         for (const p of l.parts) {
           for (let i = 0; i < p.bases.length; i++) {
-            const t = clamp01((u - p.keys[i] * stagger) / (1 - stagger));
+            const k = p.keys[i];
+            const t = clamp01((u - k * stagger) / (1 - stagger));
+            let scale = appear ? (t > 0 ? 0.55 + 0.45 * easeOut(clamp01(t / 0.35)) : 0) : 1;
+            let lift = queue + gap * (1 - easeOut(t));
+            if (presence < 1) {
+              const shown = clamp01((presence - k * 0.6) / 0.4);
+              scale *= shown > 0 ? 0.55 + 0.45 * easeOut(shown) : 0;
+              lift += 1.6 * (1 - easeOut(shown));
+            }
             _m.copy(p.bases[i]);
-            if (appear) _m.scale(_s.setScalar(t > 0 ? 0.55 + 0.45 * easeOut(clamp01(t / 0.35)) : 0));
-            _m.elements[13] += queue + gap * (1 - easeOut(t));
+            if (scale !== 1) _m.scale(_s.setScalar(scale));
+            _m.elements[13] += lift;
             p.mesh.setMatrixAt(i, _m);
+            if (scale > 0) visible = true;
           }
           p.mesh.instanceMatrix.needsUpdate = true;
         }
+        l.group.visible = visible;
       },
       // Fait légèrement briller la couche en cours de pose, dans sa vraie couleur
       highlight(l, h) {
@@ -585,7 +661,7 @@
     stage.signature = '';
   }
 
-  function createStage(canvas, houseOptions) {
+  function createStage(canvas) {
     let renderer;
     try {
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -616,7 +692,7 @@
     fill.position.set(-12, 6, -9);
     scene.add(fill);
 
-    const house = buildHouse(houseOptions);
+    const house = buildHouse();
     scene.add(house.group);
 
     const stage = {
@@ -656,7 +732,7 @@
     cam.lookAt(stage.look);
   }
 
-  const hero = createStage(heroCanvas, { variants: true });
+  const hero = createStage(heroCanvas);
   if (!hero) {
     docEl.classList.add('no-3d');
     return;
@@ -689,20 +765,26 @@
   let spin = 0;
   let drag = null;
 
+  // Un sélecteur de couverture : met à jour les boutons et signale le choix
+  function coveringSelector(selector, onPick) {
+    const buttons = Array.from(document.querySelectorAll(selector));
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+        onPick(button);
+      });
+    });
+  }
+
   // Choix de la couverture : l'ancienne se dépose depuis le faîtage, la nouvelle se pose depuis l'égout
-  const coveringButtons = Array.from(document.querySelectorAll('.covering__btn'));
   let shown = 'ardoise';
   let wanted = 'ardoise';
   let swap = null;
+  const LAY = { gap: 2.4, stagger: 0.72, appear: true };
   Object.keys(coverings).forEach((name) => {
-    if (name !== shown) hero.house.place(coverings[name], 0, 0, 2.4, 0.72, true);
+    if (name !== shown) hero.house.place(coverings[name], { ...LAY, u: 0 });
   });
-  coveringButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      wanted = button.dataset.covering;
-      coveringButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
-    });
-  });
+  coveringSelector('.hero .covering__btn', (button) => { wanted = button.dataset.covering; });
 
   heroCanvas.addEventListener('pointerdown', (event) => {
     drag = { x: event.clientX, id: event.pointerId };
@@ -723,19 +805,19 @@
     if (heroStart === null) heroStart = now;
     const t = reduceMotion ? Infinity : (now - heroStart) / 1000;
     const intro = clamp01((t - 0.4) / 3.2);
-    hero.house.place(heroBase, 0, intro, 2.4, 0.72, true);
-    hero.house.place(heroZinc, 0, clamp01((t - 3.4) / 0.9), 1.4, 0.5, true);
+    hero.house.place(heroBase, { ...LAY, u: intro });
+    hero.house.place(heroZinc, { u: clamp01((t - 3.4) / 0.9), gap: 1.4, stagger: 0.5, appear: true });
     if (!swap && wanted !== shown && intro >= 1) swap = { from: shown, to: wanted, start: now };
     if (swap) {
       const s = reduceMotion ? Infinity : (now - swap.start) / 1000;
-      hero.house.place(coverings[swap.from], 0, 1 - clamp01(s / 1.1), 2.4, 0.72, true);
-      hero.house.place(coverings[swap.to], 0, clamp01((s - 1.1) / 2.2), 2.4, 0.72, true);
+      hero.house.place(coverings[swap.from], { ...LAY, u: 1 - clamp01(s / 1.1) });
+      hero.house.place(coverings[swap.to], { ...LAY, u: clamp01((s - 1.1) / 2.2) });
       if (s >= 3.3) {
         shown = swap.to;
         swap = null;
       }
     } else {
-      hero.house.place(coverings[shown], 0, intro, 2.4, 0.72, true);
+      hero.house.place(coverings[shown], { ...LAY, u: intro });
     }
     if (!drag) {
       yaw += spin * dt * 60 + (reduceMotion ? 0 : 0.12 * dt);
@@ -754,6 +836,18 @@
   const GAP = 0.95;
   let activeStep = -1;
 
+  // Type de toiture de l'anatomie : le texte de l'étape Couverture suit le choix
+  const coverStep = document.querySelector('[data-covering-step]');
+  let aShown = 'ardoise';
+  let aWanted = 'ardoise';
+  let aSwap = null;
+  coveringSelector('.anatomy .covering__btn', (button) => {
+    aWanted = button.dataset.covering;
+    coverStep.querySelector('h3').textContent = button.dataset.title;
+    coverStep.querySelector('p').textContent = button.dataset.text;
+    coverStep.style.setProperty('--dot', button.dataset.dot);
+  });
+
   function scrollProgress() {
     const first = steps[0].getBoundingClientRect();
     const last = steps[steps.length - 1].getBoundingClientRect();
@@ -769,26 +863,39 @@
   function updateAnatomy(now) {
     const t = scrollProgress();
     const house = anatomy.house;
-    // Pendant le gros plan sur les ardoises, la zinguerie en attente sort du cadre
+    // Pendant le gros plan sur la couverture, la zinguerie en attente sort du cadre
     const focus = smooth(3.5, 3.9, t) * (1 - smooth(4.35, 4.75, t));
+    const glowAt = (j) => smooth(j - 0.2, j + 0.4, t) * (1 - smooth(j + 1.15, j + 1.45, t));
     house.layers.forEach((l, j) => {
       const lift = j > 3 ? 1 + 30 * focus : 1;
-      const glow = smooth(j - 0.2, j + 0.4, t) * (1 - smooth(j + 1.15, j + 1.45, t));
-      // La couverture (étape 4) comprend les liteaux, les faîtières et les ardoises au crochet
-      (j === 3 ? [l, house.coverings.ardoise] : [l]).forEach((target) => {
-        house.place(target, GAP * Math.max(0, j - t) * lift, clamp01(t - j), GAP * lift, 0.45);
-        house.highlight(target, glow);
-      });
+      house.place(l, { queue: GAP * Math.max(0, j - t) * lift, u: clamp01(t - j), gap: GAP * lift, stagger: 0.45 });
+      house.highlight(l, glowAt(j));
     });
+
+    // La couverture choisie suit l'étape 4 ; un changement de type dépose l'ancienne et pose la nouvelle
+    if (!aSwap && aWanted !== aShown) aSwap = { from: aShown, to: aWanted, start: now };
+    const s = aSwap ? (reduceMotion ? Infinity : (now - aSwap.start) / 1000) : 0;
+    Object.entries(house.coverings).forEach(([name, covering]) => {
+      let presence = !aSwap && name === aShown ? 1 : 0;
+      if (aSwap && name === aSwap.from) presence = 1 - clamp01(s / 0.9);
+      if (aSwap && name === aSwap.to) presence = clamp01((s - 0.9) / 1.6);
+      if (presence === 0 && covering.presence === 0) return;   // déjà retirée : rien à recalculer
+      house.place(covering, { queue: GAP * Math.max(0, 3 - t), u: clamp01(t - 3), gap: GAP, stagger: 0.45, presence });
+      house.highlight(covering, glowAt(3));
+    });
+    if (aSwap && s >= 2.5) {
+      aShown = aSwap.to;
+      aSwap = null;
+    }
     house.sweep(clamp01((t - 5.05) / 0.9));
     const sway = reduceMotion ? 0 : Math.sin(now / 2600) * 0.05;
     house.group.rotation.y = -0.55 + (t / steps.length) * 0.75 + sway;
 
     // Les couches en attente se resserrent : la caméra se rapproche
     const top = Math.max(H + R + 1.7, H + R + 0.8 + GAP * Math.max(0, 5 - t));
-    let radius = Math.max(7.3, top / 2 + 1.2);
+    let radius = Math.max(7.6, top / 2 + 1.2);
     _c.set(0, top / 2 - 0.5, 0);
-    // Gros plan sur les ardoises et leurs crochets pendant la pose de la couverture
+    // Gros plan sur la couverture (crochets, vis, faîtage) pendant sa pose
     if (focus > 0) {
       _f.set(0.6, H + R - 1.1, 1.5).applyAxisAngle(Y_AXIS, house.group.rotation.y);
       _c.lerp(_f, focus);
@@ -803,7 +910,7 @@
       stepLabel.textContent = steps[k].dataset.label;
     }
     stepFill.style.transform = `scaleX(${(t / steps.length).toFixed(4)})`;
-    return `${t.toFixed(4)}|${sway.toFixed(4)}|${anatomy.eye.x.toFixed(3)}|${anatomy.eye.y.toFixed(3)}`;
+    return `${t.toFixed(4)}|${sway.toFixed(4)}|${anatomy.eye.x.toFixed(3)}|${anatomy.eye.y.toFixed(3)}|${aShown}|${s.toFixed(3)}`;
   }
 
   // Une seule boucle ; chaque scène n'est redessinée que si elle est visible et a changé
