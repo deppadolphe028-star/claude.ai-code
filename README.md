@@ -9,6 +9,8 @@ ciel bleu avec des nuages.
 ## Pour attirer et convertir les visiteurs
 - **Appel en un geste sur mobile** : barre fixe « Appeler / Devis gratuit » en bas de l'écran
   (masquée quand le formulaire est affiché), et menu de navigation.
+- **Page compacte** : sur mobile, les tuiles de services et de nettoyage défilent au doigt, comme
+  la galerie de réalisations ; l'anatomie 3D se monte sur une courte distance de défilement.
 - **Diagnostic express** : le visiteur touche ce qu'il constate (fuite, tempête, tuiles cassées,
   mousse…), obtient un premier avis avec un niveau d'urgence, puis une demande de devis déjà rédigée.
 - **Devis pré-remplis** : le champ de l'accueil et le lien « Devis » de chaque service remplissent

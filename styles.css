@@ -37,7 +37,7 @@
 
   /* Mise en page */
   --page-max-width: 1200px;
-  --section-gap: 80px;
+  --section-gap: 64px;
   --card-padding: 32px;
   --element-gap: 12px;
 
@@ -406,7 +406,7 @@ a { color: inherit; text-decoration: none; }
   flex-wrap: wrap;
   justify-content: center;
   gap: 24px 64px;
-  padding-top: 48px;
+  padding-top: 40px;
   padding-bottom: 8px;
 }
 .laurel { display: flex; align-items: center; gap: 10px; text-align: center; color: var(--color-pure); }
@@ -423,9 +423,9 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: 36px;
 }
 
 /* Tuiles de catégorie */
@@ -433,7 +433,7 @@ a { color: inherit; text-decoration: none; }
 .tile {
   border-radius: var(--radius-featurecards);
   padding: var(--card-padding);
-  min-height: 320px;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -445,7 +445,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 300;
   font-size: var(--text-heading-lg);
   line-height: .9;
-  margin-top: 40px;
+  margin-top: 28px;
 }
 .tile p { font-size: var(--text-body); line-height: 1.5; opacity: .8; }
 .tile__cta, .tile__link {
@@ -468,7 +468,7 @@ a { color: inherit; text-decoration: none; }
 .tile--peri   { background: var(--color-periwinkle); }
 /* Nettoyage : quatre tuiles, deux par deux */
 .tiles--pairs { grid-template-columns: repeat(2, 1fr); }
-.tiles--pairs .tile { min-height: 280px; }
+.tiles--pairs .tile { min-height: 220px; }
 .tiles--pairs .tile p { max-width: 440px; }
 
 /* Réalisations : emplacements photo, remplacés par les vraies photos dès qu'elles existent */
@@ -532,13 +532,13 @@ a { color: inherit; text-decoration: none; }
 .compare {
   --pos: 50%;
   position: relative;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--radius-featurecards);
 }
 .compare__side { position: absolute; inset: 0; }
 .compare__side img { object-position: var(--focus, 50% 50%); }
-.compare__caption { display: flex; flex-direction: column; gap: 2px; margin: 0 0 32px; padding: 12px 2px 0; }
+.compare__caption { display: flex; flex-direction: column; gap: 2px; margin: 0 0 24px; padding: 12px 2px 0; }
 .compare__side--after { clip-path: inset(0 0 0 var(--pos)); }
 .photo--before .photo__empty { right: 50%; }
 .photo--after .photo__empty { left: 50%; }
@@ -594,7 +594,7 @@ a { color: inherit; text-decoration: none; }
 .work .photo { aspect-ratio: 4 / 3; border-radius: var(--radius-cards); }
 .work figcaption { display: flex; flex-direction: column; gap: 2px; padding: 12px 2px 0; }
 .work__place { font-family: var(--font-lyon-display); font-weight: 300; font-size: 20px; color: var(--color-cloud); }
-.works__cta { display: flex; justify-content: center; margin-top: 40px; }
+.works__cta { display: flex; justify-content: center; margin-top: 28px; }
 
 /* Anatomie 3D : un ciel fixe derrière la section, la scène reste en place pendant que les étapes défilent */
 .sky-section { position: relative; background: #2a6fb8; }
@@ -651,9 +651,9 @@ a { color: inherit; text-decoration: none; }
   transform: scaleX(0);
   transform-origin: left;
 }
-.anatomy__steps { list-style: none; margin: 0; padding: 0 0 40vh; }
+.anatomy__steps { list-style: none; margin: 0; padding: 0 0 25vh; }
 .astep {
-  min-height: 70vh;
+  min-height: 50vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -696,10 +696,10 @@ a { color: inherit; text-decoration: none; }
 .mockup {
   background: var(--color-graphite);
   border-radius: var(--radius-cards);
-  padding: 90px;
+  padding: 64px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 48px;
   align-items: center;
   overflow: hidden;
 }
@@ -780,7 +780,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--color-silver);
   color: var(--color-void);
   border-radius: var(--radius-featurecards);
-  padding: 48px var(--card-padding);
+  padding: 36px var(--card-padding);
   display: grid;
   grid-template-columns: 1.3fr 1fr;
   gap: 48px;
@@ -814,7 +814,7 @@ a { color: inherit; text-decoration: none; }
   list-style: none;
   cursor: pointer;
   position: relative;
-  padding: 24px 40px 24px 0;
+  padding: 18px 40px 18px 0;
   font-family: var(--font-lyon-display);
   font-weight: 300;
   font-size: 24px;
@@ -980,7 +980,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
   .actionbar__call svg { width: 18px; height: 18px; }
   body { padding-bottom: 72px; }
   .tiles, .steps, .works { grid-template-columns: repeat(2, 1fr); }
-  .mockup { grid-template-columns: 1fr; padding: 60px; }
+  .mockup { grid-template-columns: 1fr; padding: 48px; }
   .stat, .contact { grid-template-columns: 1fr; }
   .anatomy { grid-template-columns: 1fr; gap: 0; }
   .anatomy__stage {
@@ -1000,12 +1000,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
   .cloud--f { left: 60%; top: 7%; width: 170px; }
   .cloud--g { left: 28%; top: 36%; width: 240px; }
   /* Un lien vers une étape la place sur la ligne de lecture, sous la maison */
-  .astep { min-height: 60vh; scroll-margin-top: calc(48vh - 50px); }
-  .anatomy__steps { padding-bottom: 25vh; }
+  .astep { min-height: 46vh; scroll-margin-top: calc(55vh - 50px); }
+  .anatomy__steps { padding-bottom: 20vh; }
 }
 
 @media (max-width: 640px) {
-  :root { --card-padding: 24px; --section-gap: 64px; }
+  :root { --card-padding: 24px; --section-gap: 48px; }
   .wrap { padding-left: 16px; padding-right: 16px; }
   .nav__inner { padding: 12px 16px; gap: 12px; }
   .nav__text, .nav__cta { display: none; }
@@ -1017,15 +1017,27 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
   .no-3d .hero { padding-bottom: 90px; }
   .astep h3 { font-size: 32px; }
   .badge { padding: 8px 18px; font-size: 11px; }
-  .tiles, .steps { grid-template-columns: 1fr; }
-  .tile { min-height: 0; }
-  .tile h3 { margin-top: 28px; }
-  .mockup { padding: 40px 24px; }
+  .steps { grid-template-columns: 1fr; gap: 10px; }
+  .steps li { padding: 20px; gap: 6px; }
+  .steps h3 { font-size: 24px; }
+  /* Services et nettoyage : les tuiles défilent au doigt, comme la galerie */
+  .tiles {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+  }
+  .tile { min-height: 0; scroll-snap-align: start; }
+  .tile h3 { margin-top: 24px; }
+  .mockup { padding: 32px 20px; gap: 36px; }
   .heading-lg { font-size: 32px; }
   .stat__grid dd { font-size: 24px; }
   .form__row { grid-template-columns: 1fr; }
   .faq summary { font-size: 20px; }
-  .coords div { flex-direction: column; gap: 0; }
+  .contact { gap: 36px; }
+  .coords div { flex-wrap: wrap; gap: 0 16px; }
   /* Réalisations : comparatif plus haut, galerie qui défile au doigt */
   .compare { aspect-ratio: 4 / 3; }
   .works {
