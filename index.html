@@ -62,6 +62,7 @@
       <a class="btn-glass" href="#services">Services</a>
       <a class="btn-glass" href="#nettoyage">Nettoyage</a>
       <a class="btn-glass" href="#realisations">Réalisations</a>
+      <a class="btn-glass" href="#avis">Avis</a>
       <a class="btn-glass" href="#anatomie">Anatomie</a>
       <a class="btn-glass" href="#diagnostic">Diagnostic</a>
     </nav>
@@ -78,6 +79,7 @@
     <a href="#services">Services toiture</a>
     <a href="#nettoyage">Nettoyage</a>
     <a href="#realisations">Nos réalisations</a>
+    <a href="#avis">Avis clients</a>
     <a href="#anatomie">Anatomie d’une toiture</a>
     <a href="#diagnostic">Diagnostic express</a>
     <a href="#methode">Comment ça se passe</a>
@@ -108,7 +110,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
           </button>
         </form>
-        <p class="hero__call fade">Une urgence ? <a href="tel:+33600000000">Appelez le 06 00 00 00 00</a></p>
+        <p class="hero__call fade"><i class="live-dot" aria-hidden="true"></i>Une urgence ? <a href="tel:+33600000000">Appelez le 06 00 00 00 00</a></p>
       </div>
       <!-- Maison 3D : la couverture se pose rang par rang ; on peut changer de matériau -->
       <div class="hero__stage">
@@ -294,6 +296,44 @@
       </ul>
       <div class="works__cta">
         <a class="btn-primary" href="#contact">Votre toiture est la prochaine ? Demander un devis <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Avis clients : uniquement de vrais avis, recopiés sans modification (les faux avis sont interdits).
+       À COMPLÉTER pour chaque avis : le texte, le prénom et l'initiale, la ville, le mois et l'année,
+       la note dans --note (5 pour cinq étoiles, 4.5 pour quatre et demie…), puis retirer « is-empty ».
+       Les avis vont du plus récent au plus ancien.
+       À REMPLACER : ajouter href sur les deux liens du bas, l'adresse de la fiche Google pour « Voir tous
+       nos avis », le lien « Demander des avis » de la fiche pour « Laissez-nous un avis ». Grisés sans lien. -->
+  <section class="section band" id="avis">
+    <div class="wrap">
+      <div class="head">
+        <span class="mono">Avis clients</span>
+        <h2 class="display-sm"><em>Ils</em> nous ont fait confiance.</h2>
+        <p class="subhead">Ce que nos clients disent de nos chantiers, sur Google.</p>
+      </div>
+      <ul class="reviews">
+        <li class="review is-empty">
+          <p class="review__stars" style="--note: 0" aria-label="Note à compléter">★★★★★</p>
+          <blockquote class="review__text">Avis à ajouter : le texte d’un avis laissé par un client sur Google.</blockquote>
+          <p class="review__author"><b>Prénom N.</b><span class="mono">Ville · mois année</span></p>
+        </li>
+        <li class="review is-empty">
+          <p class="review__stars" style="--note: 0" aria-label="Note à compléter">★★★★★</p>
+          <blockquote class="review__text">Avis à ajouter : le texte d’un avis laissé par un client sur Google.</blockquote>
+          <p class="review__author"><b>Prénom N.</b><span class="mono">Ville · mois année</span></p>
+        </li>
+        <li class="review is-empty">
+          <p class="review__stars" style="--note: 0" aria-label="Note à compléter">★★★★★</p>
+          <blockquote class="review__text">Avis à ajouter : le texte d’un avis laissé par un client sur Google.</blockquote>
+          <p class="review__author"><b>Prénom N.</b><span class="mono">Ville · mois année</span></p>
+        </li>
+      </ul>
+      <p class="reviews__note">Une sélection d’avis publiés par nos clients sur Google, reproduits sans modification et classés du plus récent au plus ancien. Tous nos avis sont consultables sur notre fiche Google.</p>
+      <div class="reviews__cta">
+        <a class="btn-ghost" data-lien-google="fiche">Voir tous nos avis Google <span aria-hidden="true">→</span></a>
+        <a class="reviews__leave" data-lien-google="laisser-un-avis">Vous êtes client ? Laissez-nous un avis</a>
       </div>
     </div>
   </section>

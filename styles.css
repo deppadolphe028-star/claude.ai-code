@@ -20,6 +20,12 @@
   --color-cloud: #f5f5f7;
   --color-pure: #ffffff;
   --color-void: #000000;
+  /* Accents : l'orange est réservé aux boutons d'action (devis), le rouge à l'urgence */
+  --color-ember: #ff7a45;
+  --color-ember-hover: #ff9466;
+  --color-alarm: #ff4f45;
+  --color-alarm-deep: #d92d2f;
+  --color-star: #ffb547;
 
   /* Polices (substituts Google Fonts de Lyon Display / Suisse Int'l) */
   --font-lyon-display: 'Newsreader', 'Lyon Display', Georgia, serif;
@@ -110,7 +116,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--color-pure);
+  background: var(--color-ember);
   color: var(--color-void);
   border: 0;
   border-radius: var(--radius-buttons);
@@ -118,9 +124,10 @@ a { color: inherit; text-decoration: none; }
   font: 400 var(--text-body)/1 var(--font-suisse-intl);
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity .2s ease;
+  box-shadow: 0 8px 24px -10px rgba(255,122,69,.7);
+  transition: background-color .2s ease, transform .2s ease;
 }
-.btn-primary:hover { opacity: .85; }
+.btn-primary:hover { background: var(--color-ember-hover); transform: translateY(-1px); }
 .btn-block { width: 100%; }
 
 .btn-glass {
@@ -282,6 +289,20 @@ a { color: inherit; text-decoration: none; }
   font-size: var(--text-body-sm);
   color: rgba(245,245,247,.9);
 }
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--color-alarm);
+  vertical-align: 1px;
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,79,69,.65); }
+  70%, 100% { box-shadow: 0 0 0 8px rgba(255,79,69,0); }
+}
 .hero__call a {
   color: var(--color-pure);
   text-decoration: underline;
@@ -318,15 +339,15 @@ a { color: inherit; text-decoration: none; }
   width: 40px;
   height: 40px;
   border-radius: 100%;
-  border: 1px solid var(--color-pure);
-  background: rgba(255,255,255,.2);
-  color: var(--color-pure);
+  border: 0;
+  background: var(--color-ember);
+  color: var(--color-void);
   display: grid;
   place-items: center;
   cursor: pointer;
   transition: background-color .2s ease;
 }
-.ask button:hover { background: rgba(255,255,255,.35); }
+.ask button:hover { background: var(--color-ember-hover); }
 .ask svg { width: 18px; height: 18px; }
 
 /* Maison 3D : sous le texte sur mobile, à droite sur ordinateur */
@@ -596,6 +617,45 @@ a { color: inherit; text-decoration: none; }
 .work__place { font-family: var(--font-lyon-display); font-weight: 300; font-size: 20px; color: var(--color-cloud); }
 .works__cta { display: flex; justify-content: center; margin-top: 28px; }
 
+/* Avis clients : étoiles remplies selon --note (sur 5) ; un avis à compléter garde l'aspect d'un emplacement */
+.reviews { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: var(--card-padding);
+  border-radius: var(--radius-cards);
+  background: var(--color-graphite);
+}
+.review__stars {
+  align-self: flex-start;
+  font-size: 18px;
+  letter-spacing: .12em;
+  background: linear-gradient(90deg, var(--color-star) calc(var(--note, 5) * 20%), rgba(255,255,255,.18) 0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.review__text {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-lyon-display);
+  font-weight: 300;
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--color-cloud);
+}
+.review__author { display: flex; flex-direction: column; gap: 2px; }
+.review__author b { font-weight: 400; color: var(--color-pure); }
+.review.is-empty { background: repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 14px, transparent 14px 28px), var(--color-graphite); }
+.review.is-empty .review__text { font-family: var(--font-suisse-intl); font-size: var(--text-body); line-height: 1.5; color: var(--color-ash); }
+.review.is-empty .review__author b { color: var(--color-ash); }
+.reviews__note { max-width: 640px; margin: 20px auto 0; text-align: center; font-size: 12px; line-height: 1.5; color: var(--color-fog); }
+.reviews__cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 24px; margin-top: 24px; }
+.reviews__leave { color: var(--color-pure); font-size: var(--text-body-sm); text-decoration: underline; text-underline-offset: 3px; }
+/* Tant que le lien de la fiche Google n'est pas renseigné, ces liens restent grisés */
+.reviews__cta a:not([href]) { opacity: .4; pointer-events: none; }
+
 /* Anatomie 3D : un ciel fixe derrière la section, la scène reste en place pendant que les étapes défilent */
 .sky-section { position: relative; background: #2a6fb8; }
 /* Le calque couvre toute la section ; la vue du ciel y reste collée à l'écran sans jamais en déborder */
@@ -749,15 +809,15 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
   color: var(--color-void);
 }
-.phone__pill.is-urgent { background: #ff8a6a; }
+.phone__pill.is-urgent { background: var(--color-alarm); }
 .phone__pill.is-soon { background: #f2c14e; }
 .phone__pill.is-watch { background: #8fd6b3; }
 .phone__list li.is-empty { color: var(--color-fog); }
 .phone__call {
   padding: 10px;
   border-radius: var(--radius-buttons);
-  background: var(--color-pure);
-  color: var(--color-void);
+  background: var(--color-alarm-deep);
+  color: var(--color-pure);
   font-size: 13px;
   text-align: center;
 }
@@ -858,12 +918,12 @@ a { color: inherit; text-decoration: none; }
   gap: 10px;
   margin-top: 8px;
   padding: 20px;
-  border: 1px solid rgba(255,255,255,.12);
+  border: 1px solid rgba(255,79,69,.35);
   border-radius: var(--radius-cards);
-  background: rgba(255,255,255,.03);
+  background: rgba(255,79,69,.06);
 }
 .urgent .mono { display: inline-flex; align-items: center; gap: 8px; color: var(--color-cloud); }
-.urgent .mono::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ff8a6a; }
+.urgent .mono::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--color-alarm); animation: pulse 2s ease-out infinite; }
 
 .form {
   background: var(--color-graphite);
@@ -940,7 +1000,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .fade, .cloud { animation: none; }
+  .fade, .cloud, .live-dot, .urgent .mono::before { animation: none; }
 }
 
 /* ---------- Responsive ---------- */
@@ -979,7 +1039,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
   }
   .actionbar__call svg { width: 18px; height: 18px; }
   body { padding-bottom: 72px; }
-  .tiles, .steps, .works { grid-template-columns: repeat(2, 1fr); }
+  .tiles, .steps, .works, .reviews { grid-template-columns: repeat(2, 1fr); }
   .mockup { grid-template-columns: 1fr; padding: 48px; }
   .stat, .contact { grid-template-columns: 1fr; }
   .anatomy { grid-template-columns: 1fr; gap: 0; }
@@ -1030,6 +1090,16 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 1px soli
     scroll-snap-type: x mandatory;
   }
   .tile { min-height: 0; scroll-snap-align: start; }
+  .reviews {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+  }
+  .review { scroll-snap-align: start; }
+  .review__text { font-size: 20px; }
   .tile h3 { margin-top: 24px; }
   .mockup { padding: 32px 20px; gap: 36px; }
   .heading-lg { font-size: 32px; }

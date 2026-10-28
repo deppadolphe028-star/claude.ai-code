@@ -29,6 +29,12 @@ ciel bleu avec des nuages.
 - **Nettoyage** : une section à part (lien « Nettoyage » dans le menu) avec quatre tuiles, dallages,
   terrasses, maisons et locaux professionnels, chacune avec son devis pré-rempli. Le formulaire
   range les types de travaux en « Toiture » et « Nettoyage » et adapte le message proposé.
+- **Avis clients** : section « Ils nous ont fait confiance » (lien « Avis » dans le menu), prête à
+  recevoir vos vrais avis Google, avec « Voir tous nos avis Google » et « Laissez-nous un avis »
+  (voir « Ajouter vos avis clients » ci-dessous).
+- **Des couleurs qui font agir** : l'orange est réservé aux boutons de devis, seuls éléments orange de
+  la page, donc vus en premier ; le rouge ne signale que l'urgence (point qui pulse près de l'appel,
+  encadré « Urgence », diagnostic urgent) ; le bleu du ciel inspire confiance.
 - **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
 
 ## Ajouter vos photos de chantiers
@@ -43,6 +49,19 @@ ardoise), `chantier-1.jpg` (démoussage d'une toiture en tuiles) et `chantier-2.
 refaite en tuiles). Ces deux dernières sont des montages avant / après, signalés par des étiquettes
 « Avant » et « Après ». Pour changer une photo, il suffit de la remplacer par une autre portant le
 même nom (pour une photo simple à la place d'un montage, retirer aussi les étiquettes).
+
+## Ajouter vos avis clients
+Uniquement de vrais avis, recopiés mot pour mot : inventer ou modifier un avis est interdit, et la
+loi demande d'indiquer d'où viennent les avis affichés et comment ils sont choisis (c'est la mention
+sous les cartes). Dans `index.html`, section « Avis clients », pour chaque carte :
+- remplacer le texte, le prénom et l'initiale, la ville, le mois et l'année ;
+- mettre la note dans `--note` (5 pour cinq étoiles, 4.5 pour quatre et demie) ;
+- retirer la classe `is-empty` (la carte quitte son aspect d'emplacement).
+
+Les avis vont du plus récent au plus ancien. Ajoutez ensuite le lien de votre fiche Google
+(`href` de « Voir tous nos avis Google ») et le lien « Demander des avis » de la fiche (`href` de
+« Laissez-nous un avis ») : sans lien, ces deux boutons restent grisés. Vous pouvez aussi envoyer des
+copies d'écran de vos avis à la personne qui gère le site.
 
 ## Animations 3D
 Une maison sur un îlot de pelouse, avec les vraies couleurs des matériaux : charpente en bois
@@ -99,6 +118,7 @@ Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTM
 - engagements affichés (garantie décennale, devis gratuit, chantier nettoyé) à vérifier
 - `mentions-legales.html` : forme juridique, SIRET, adresse, dirigeant, hébergeur, assureur décennal
 - textes des quatre prestations de nettoyage (section « Nettoyage » de `index.html`)
+- vrais avis clients et liens de la fiche Google (section « Avis clients »)
 - photos de chantiers dans `realisations/` et légendes « Ville — année » dans `index.html`
 - une fois le site en ligne, mettre l'adresse complète de `og-image.jpg` dans la balise `og:image`
 
