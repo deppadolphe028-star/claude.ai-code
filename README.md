@@ -112,8 +112,6 @@ immobiles et la démonstration du démoussage ne se lance qu'avec son bouton.
 
 ## Avant la mise en ligne
 Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTML :
-- numéro de téléphone (`06 00 00 00 00` et `+33600000000`, présents à plusieurs endroits)
-- adresse e-mail (`contact@ar-renovation.fr`, aussi dans `data-email` du formulaire)
 - zone d'intervention (« Votre ville et ses environs », aussi dans les données structurées)
 - engagements affichés (garantie décennale, devis gratuit, chantier nettoyé) à vérifier
 - `mentions-legales.html` : forme juridique, SIRET, adresse, dirigeant, hébergeur, assureur décennal
