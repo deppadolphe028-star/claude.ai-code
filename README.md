@@ -22,6 +22,8 @@ ciel bleu avec des nuages.
   (données structurées `RoofingContractor`), image d'aperçu `og-image.jpg` pour WhatsApp, Facebook, SMS.
 - **Réalisations** : comparatif avant / après à faire glisser et galerie de six chantiers
   (voir « Ajouter vos photos de chantiers » ci-dessous).
+- **Démoussage en démonstration 3D** : la tuile Démoussage des services mène à une démonstration
+  sur la maison (voir « Animations 3D »).
 - **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
 
 ## Ajouter vos photos de chantiers
@@ -30,6 +32,10 @@ comparatif, `chantier-1.jpg` à `chantier-6.jpg` pour la galerie (JPG d'environ 
 Chaque photo remplace automatiquement son emplacement « Photo à ajouter ». Les légendes (type de
 travaux, ville, année) se modifient dans `index.html`, section « Nos réalisations ».
 Le détail est dans `realisations/LISEZMOI.txt`.
+
+Déjà en place : `avant.jpg` et `apres.jpg` (démoussage et traitement hydrofuge d'une toiture en
+ardoise) et `chantier-1.jpg` (démoussage d'une toiture en tuiles, avant / après). Pour changer une
+photo, il suffit de la remplacer par une autre portant le même nom.
 
 ## Animations 3D
 Une maison sur un îlot de pelouse, avec les vraies couleurs des matériaux : charpente en bois
@@ -53,19 +59,26 @@ Quatre couvertures au choix :
   lentement (on peut la faire pivoter en la faisant glisser).
 - **Anatomie d'une toiture** : on choisit le type de toiture avec le sélecteur sous la maison, puis
   en faisant défiler la page, la toiture se monte couche par couche (charpente, isolation, écran
-  sous-toiture, couverture, zinguerie, entretien), avec un gros plan sur la couverture (crochets,
+  sous-toiture, couverture, zinguerie, démoussage), avec un gros plan sur la couverture (crochets,
   vis, faîtage). Le texte de l'étape Couverture suit le type choisi. Cette scène n'est construite
   qu'à l'approche de sa section.
+- **Démoussage** (dernière étape de l'anatomie) : sur la couverture choisie, mousses et lichens
+  s'installent en plaques, surtout vers l'égout, et la toiture s'encrasse ; le nettoyage descend
+  ensuite du faîtage vers l'égout, suivi du traitement anti-mousse et hydrofuge. La phase en cours
+  s'affiche sous la maison. La démonstration démarre en arrivant sur l'étape, se rejoue avec le
+  bouton « Revoir la démonstration », et repart de zéro si l'on change de couverture.
 
 La 3D utilise Three.js r128, chargé depuis cdnjs. Si WebGL ou la bibliothèque ne sont pas
 disponibles, la page reste complète (accueil centré, étapes en liste). Avec l'option
-« réduire les animations » du système, la maison s'affiche directement terminée et les nuages restent immobiles.
+« réduire les animations » du système, la maison s'affiche directement terminée, les nuages restent
+immobiles et la démonstration du démoussage ne se lance qu'avec son bouton.
 
 ## Fichiers
 - `index.html` — la page d'accueil
 - `mentions-legales.html` — mentions légales, assurance, données personnelles
 - `styles.css` — design (tokens de couleurs en tête de fichier)
-- `roof3d.js` — les deux scènes 3D (maison du hero, anatomie de la toiture)
+- `roof3d.js` — les deux scènes 3D (maison du hero, anatomie de la toiture et démonstration du
+  démoussage)
 - `script.js` — devis pré-remplis, diagnostic express, menu et barre d'action mobile,
   envoi du formulaire par e-mail (mailto), dessin des nuages
 - `og-image.jpg` — image d'aperçu pour le partage du lien

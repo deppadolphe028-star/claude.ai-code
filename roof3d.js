@@ -83,6 +83,8 @@
   const _v = new THREE.Vector3();
   const _c = new THREE.Vector3();
   const _f = new THREE.Vector3();
+  const _col = new THREE.Color();
+  const _tint = new THREE.Color();
   const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
   // Repère de chaque versant : x le long du faîtage, y perpendiculaire au versant, z dans le sens de la pente
@@ -440,8 +442,15 @@
         mesh.setMatrixAt(i, item.m);
         if (colors) mesh.setColorAt(i, colors[i]);
       });
-      l.parts.push({ mesh, mat, bases: items.map((it) => it.m), keys: items.map((it) => it.k) });
+      const p = {
+        mesh, mat, colors,
+        bases: items.map((it) => it.m),
+        keys: items.map((it) => it.k),
+        ys: items.map((it) => it.m.elements[13]),        // hauteur de chaque pièce, pour le démoussage
+      };
+      l.parts.push(p);
       l.group.add(mesh);
+      return p;
     }
 
     // 1. Charpente en bois : chevrons, panne faîtière, pannes, sablières, chevêtre
@@ -583,7 +592,7 @@
     const slateMat = withUvOffset(new THREE.MeshStandardMaterial({
       map: textures().slate, bumpMap: textures().slate, bumpScale: 0.025, roughness: 0.55, metalness: 0.1,
     }));
-    part(coverings.ardoise, unit, slateMat, slates, tints);
+    coverings.ardoise.surface = part(coverings.ardoise, unit, slateMat, slates, tints);
     part(coverings.ardoise, unit, std(M.hook, 0.3, 0.6), hooks);
     ridge(coverings.ardoise);
 
@@ -593,7 +602,7 @@
     lay({ row: 0.13, tw: 0.22, offset: true, clip: true }, (slope, x, w, lower, k) => {
       flat.push({ m: onSlope(slope, x, 0.258, lower - 0.16, w - 0.012, 0.014, 0.32, -0.04), k });
     });
-    part(coverings.plate, unit, clayMat(M.flatTile, textures().clay, { roughness: 0.85 }), flat, terracotta(flat.length));
+    coverings.plate.surface = part(coverings.plate, unit, clayMat(M.flatTile, textures().clay, { roughness: 0.85 }), flat, terracotta(flat.length));
     ridge(coverings.plate);
 
     // Tuiles romanes à emboîtement
@@ -602,7 +611,7 @@
     lay({ row: 0.33, tw: 0.3, offset: false, clip: false }, (slope, x, w, lower, k) => {
       roman.push({ m: onSlope(slope, x, 0.256, lower - 0.21, 1, 1, 1, -0.035), k });
     });
-    part(coverings.romane, romanTileGeometry(0.3, 0.42), clayMat(M.romanTile, textures().clayRoman, { roughness: 0.75 }), roman, terracotta(roman.length));
+    coverings.romane.surface = part(coverings.romane, romanTileGeometry(0.3, 0.42), clayMat(M.romanTile, textures().clayRoman, { roughness: 0.75 }), roman, terracotta(roman.length));
     ridge(coverings.romane);
 
     // Bac acier : plaques nervurées du faîtage à l'égout, posées d'un pignon à l'autre,
@@ -628,7 +637,8 @@
     });
     const screwGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.01, 8);
     const steelMat = () => new THREE.MeshStandardMaterial({ color: col(M.steel), map: textures().steel, roughness: 0.35, metalness: 0.55 });
-    part(coverings.acier, steelPanelGeometry(PW, panelLen), steelMat(), panels);
+    coverings.acier.surface = part(coverings.acier, steelPanelGeometry(PW, panelLen), steelMat(), panels,
+      panels.map(() => new THREE.Color(1, 1, 1)));
     part(coverings.acier, screwGeo, std(M.screw, 0.35, 0.6), screws);
     // Faîtage en acier sur closoirs en mousse, qui ferment les nervures jusqu'à la cheminée
     const steelRidge = [];
@@ -685,19 +695,118 @@
     part(zinguerie, new THREE.CylinderGeometry(0.05, 0.05, 1, 12), zinc(), pipes);
     part(zinguerie, unit, zinc(), fittings);
 
-    // 6. Entretien : le traitement passe sur la couverture
-    const sweepMat = new THREE.MeshBasicMaterial({
-      color: col(M.treatment), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false,
+    // 6. Démoussage : mousses et lichens sur chaque couverture, nettoyage du faîtage vers l'égout,
+    //    puis traitement anti-mousse et hydrofuge
+    const lichenGeo = new THREE.CircleGeometry(1, 14);
+    lichenGeo.rotateX(-Math.PI / 2);                            // à plat sur le versant
+    const clumpGeo = new THREE.IcosahedronGeometry(1, 1);
+    const LICHEN = ['#c9c4a0', '#b9bb92', '#a7ad80', '#d3b65a', '#c4a24a', '#bfc0a2'];
+    const MOSS = ['#5f7a2c', '#6e8a35', '#4f6a26', '#86983f', '#6b6a30', '#435a22'];
+    const pick = (list) => col(list[Math.floor(rand() * list.length)]);
+    // Les mousses poussent en plaques, plus nombreuses vers l'égout où l'eau s'attarde
+    const bell = () => (rand() + rand() + rand() - 1.5) / 1.5;          // -1 → 1, resserré au centre
+    const patches = SLOPES.map(() => Array.from({ length: 16 }, () => ({
+      x: (rand() * 2 - 1) * (RX - 0.3),
+      s: 0.5 + Math.sqrt(rand()) * (LEN - 0.8),
+      r: 0.3 + rand() * 0.5,
+    })));
+    // Une pousse : le plus souvent dans une plaque, parfois isolée
+    function sprout(j) {
+      if (rand() < 0.15) return { x: (rand() * 2 - 1) * RX, s: 0.3 + rand() * (LEN - 0.4) };
+      const p = patches[j][Math.floor(rand() * patches[j].length)];
+      return { x: p.x + bell() * p.r * 1.6, s: Math.min(LEN - 0.1, Math.max(0.3, p.s + bell() * p.r)) };
+    }
+    // Où se fixent les lichens (à plat, rayon maximal rMax) et les coussinets de mousse sur chaque couverture :
+    // sur les tuiles romanes et le bac acier, dans le plat entre les bourrelets ou les nervures
+    const alongRidge = (x) => Math.max(0.15 - RX, Math.min(RX - 0.15, x));
+    const spots = {
+      ardoise: (x) => ({ x: alongRidge(x), h: 0.273, rMax: 0.135 }),
+      plate: (x) => ({ x: alongRidge(x), h: 0.274, rMax: 0.135 }),
+      romane: (x, flat) => {
+        const center = -4.35 + (Math.min(28, Math.max(0, Math.floor((x + 4.35) / 0.3))) + 0.5) * 0.3;
+        return flat ? { x: center - 0.071, h: 0.266, rMax: 0.06 } : { x: center - 0.06 + (rand() - 0.5) * 0.05, h: 0.258 };
+      },
+      acier: (x) => {
+        const panel = Math.min(PANELS - 1, Math.max(0, Math.floor((x + RX) / PW)));
+        return { x: -RX + (panel + 0.5) * PW + (rand() < 0.5 ? -1 : 1) * (PW / 6), h: 0.2505, rMax: 0.08 };
+      },
+    };
+    // Encrassement de chaque pièce : plus fort autour des plaques de mousse, jamais uniforme
+    const patchCenters = patches.flatMap((list, j) => list.map((p) => {
+      const e = onSlope(SLOPES[j], p.x, 0.26, p.s).elements;
+      return { x: e[12], y: e[13], z: e[14], r2: 2 * (1.4 * p.r) ** 2 };
+    }));
+    function grimeOf(surface) {
+      return surface.bases.map((m) => {
+        const e = m.elements;
+        let near = 0;
+        for (const c of patchCenters) {
+          const d2 = (e[12] - c.x) ** 2 + (e[13] - c.y) ** 2 + (e[14] - c.z) ** 2;
+          near = Math.max(near, Math.exp(-d2 / c.r2));
+        }
+        return clamp01(0.3 + 0.75 * near + 0.3 * (rand() - 0.5));
+      });
+    }
+    const mosses = {};
+    const grime = {};
+    Object.keys(coverings).forEach((name) => {
+      const moss = layer(M.grass, false);
+      const lichens = [];
+      const lichenColors = [];
+      const clumps = [];
+      const clumpColors = [];
+      SLOPES.forEach((slope, j) => {
+        for (let i = 0; i < 150; i++) {
+          const at = sprout(j);
+          const { x, h, rMax } = spots[name](at.x, true);
+          if (nearChimney(x, 0.15) && at.s < 0.7) continue;
+          const r = Math.min(rMax, 0.025 + rand() * rand() * 0.11);
+          lichens.push({ m: onSlope(slope, x, h, at.s, r, 1, r), k: rand() });
+          lichenColors.push(pick(LICHEN));
+        }
+        for (let i = 0; i < 320; i++) {
+          const at = sprout(j);
+          const { x, h } = spots[name](at.x, false);
+          if (nearChimney(x, 0.15) && at.s < 0.7) continue;
+          const r = 0.03 + rand() * 0.05;
+          clumps.push({ m: onSlope(slope, x, h + r * 0.25, at.s, r * 1.3, r * 0.55, r), k: rand() });
+          clumpColors.push(pick(MOSS));
+        }
+      });
+      part(moss, lichenGeo, new THREE.MeshStandardMaterial({ roughness: 1 }), lichens, lichenColors);
+      part(moss, clumpGeo, new THREE.MeshStandardMaterial({ roughness: 1, flatShading: true }), clumps, clumpColors);
+      moss.group.visible = false;
+      mosses[name] = moss;
+      grime[name] = grimeOf(coverings[name].surface);
     });
+
+    // Bandes du jet de nettoyage et du traitement, qui descendent le long des versants
+    const bandMat = (hex) => new THREE.MeshBasicMaterial({
+      color: col(hex), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    const washMat = bandMat('#e3f2ff');
+    const treatMat = bandMat(M.treatment);
+    const bandGeo = new THREE.BoxGeometry(2 * RX + 0.3, 0.02, 0.34);
     const bands = SLOPES.map((slope) => {
       const holder = new THREE.Group();
       slope.decompose(holder.position, holder.quaternion, holder.scale);
-      const band = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.02, LEN + 0.2), sweepMat);
-      band.position.set(0, 0.29, LEN / 2);
-      holder.add(band);
+      const wash = new THREE.Mesh(bandGeo, washMat);
+      const treat = new THREE.Mesh(bandGeo, treatMat);
+      holder.add(wash, treat);
       group.add(holder);
-      return band;
+      return { wash, treat };
     });
+    const BAND_H = 0.36;
+    const sAt = (y) => (APEX.y + BAND_H * Math.cos(ALPHA) - y) / Math.sin(ALPHA);
+    const WASH_TOP = H + R + 0.5;
+    const WASH_BOTTOM = H - 0.4;
+    const DIRT = {
+      ardoise: new THREE.Color(0.8, 0.98, 0.62),
+      plate: new THREE.Color(0.52, 0.58, 0.4),
+      romane: new THREE.Color(0.52, 0.58, 0.4),
+      acier: new THREE.Color(0.8, 0.86, 0.72),
+    };
+    let demoState = '';
 
     return {
       group,
@@ -738,10 +847,44 @@
       highlight(l, h) {
         for (const p of l.parts) p.mat.emissive.copy(l.glow).multiplyScalar(0.32 * h);
       },
-      sweep(progress) {
-        const x = -RX - 0.8 + progress * (2 * RX + 1.6);
-        bands.forEach((band) => { band.position.x = x; });
-        sweepMat.opacity = 0.6 * Math.sin(Math.PI * clamp01(progress));
+      // Démoussage d'une couverture : grow = mousses (0 → 1), wash = jet de nettoyage du faîtage vers
+      // l'égout (0 → 1, puis jusqu'à 1,3 le temps que la couverture sèche), treat = traitement (0 → 1)
+      demo(name, grow, wash, treat) {
+        const state = `${name}|${grow.toFixed(3)}|${wash.toFixed(3)}|${treat.toFixed(3)}`;
+        if (state === demoState) return;
+        demoState = state;
+        const line = WASH_TOP + (WASH_BOTTOM - WASH_TOP) * wash;
+        const cleaned = (y) => (wash <= 0 ? 0 : clamp01((y - line) / 0.12));
+        const moss = mosses[name];
+        let visible = false;
+        for (const p of moss.parts) {
+          for (let i = 0; i < p.bases.length; i++) {
+            const v = clamp01((grow - p.keys[i] * 0.6) / 0.4) * (1 - cleaned(p.ys[i]));
+            _m.copy(p.bases[i]);
+            if (v < 1) _m.scale(_s.setScalar(v));
+            p.mesh.setMatrixAt(i, _m);
+            if (v > 0) visible = true;
+          }
+          p.mesh.instanceMatrix.needsUpdate = true;
+        }
+        moss.group.visible = visible;
+        const surface = coverings[name].surface;
+        for (let i = 0; i < surface.bases.length; i++) {
+          const c = cleaned(surface.ys[i]);
+          const wet = c * (1 - clamp01((surface.ys[i] - line) / 0.9));   // juste rincée : encore mouillée
+          _col.copy(surface.colors[i])
+            .multiply(_tint.setRGB(1, 1, 1).lerp(DIRT[name], grow * (1 - c) * grime[name][i]))
+            .multiplyScalar(1 - 0.25 * wet);
+          surface.mesh.setColorAt(i, _col);
+        }
+        surface.mesh.instanceColor.needsUpdate = true;
+        const treatLine = WASH_TOP + (WASH_BOTTOM - WASH_TOP) * treat;
+        bands.forEach((b) => {
+          b.wash.position.set(0, BAND_H, sAt(line));
+          b.treat.position.set(0, BAND_H + 0.01, sAt(treatLine));
+        });
+        washMat.opacity = wash > 0 && wash < 1 ? 0.55 * Math.sin(Math.PI * wash) : 0;
+        treatMat.opacity = treat > 0 && treat < 1 ? 0.5 * Math.sin(Math.PI * treat) : 0;
       },
     };
   }
@@ -964,6 +1107,28 @@
     coverStep.style.setProperty('--dot', button.dataset.dot);
   });
 
+  // Démonstration du démoussage (étape 6) : se lance en arrivant sur l'étape, se revoit avec le bouton
+  const demoStatus = document.getElementById('demo-status');
+  const demoReplay = document.getElementById('demo-replay');
+  // [début (s), texte de l'étape, libellé court sous la maison]
+  const DEMO_PHASES = [
+    [0, 'Les années passent : mousses et lichens s’installent…', 'Mousses et lichens'],
+    [1.9, 'Nettoyage du faîtage vers l’égout…', 'Nettoyage'],
+    [5.9, 'Traitement anti-mousse et hydrofuge…', 'Traitement'],
+    [7.8, 'Toiture propre et protégée.', 'Toiture protégée'],
+  ];
+  const DEMO_END = 9.5;           // la caméra est revenue : la démonstration s'arrête là
+  let demoTime = null;            // secondes écoulées dans la démonstration (null : pas lancée)
+  let demoCovering = null;
+  let demoPhase = null;
+  // Avec les animations réduites, elle ne part que sur demande
+  const DEMO_IDLE = reduceMotion ? 'La démonstration se lance avec le bouton ci-dessous.' : demoStatus.textContent;
+  if (reduceMotion) {
+    demoReplay.textContent = 'Voir la démonstration';
+    demoStatus.textContent = DEMO_IDLE;
+  }
+  demoReplay.addEventListener('click', () => { demoTime = 0; });
+
   function scrollProgress() {
     const first = steps[0].getBoundingClientRect();
     const last = steps[steps.length - 1].getBoundingClientRect();
@@ -976,7 +1141,7 @@
     return Math.min(steps.length, Math.max(0, (line - first.top) / stepHeight + 0.5));
   }
 
-  function updateAnatomy(now) {
+  function updateAnatomy(now, dt) {
     const t = scrollProgress();
     const house = anatomy.house;
     // Pendant le gros plan sur la couverture, la zinguerie en attente sort du cadre
@@ -1003,7 +1168,28 @@
       aShown = aSwap.to;
       aSwap = null;
     }
-    house.sweep(clamp01((t - 5.05) / 0.9));
+
+    // Démoussage : la démonstration démarre en arrivant sur l'étape 6 et se rejoue si l'on y revient.
+    // Elle avance image par image (pas plafonné) : un chargement lent ne lui fait pas sauter d'étape.
+    // Pendant un changement de couverture, elle attend la nouvelle pour repartir de zéro.
+    const k = Math.min(steps.length - 1, Math.max(0, Math.round(t) - 1));
+    if (demoTime !== null) demoTime = aSwap ? 0 : Math.min(DEMO_END, demoTime + dt);
+    else if (k === 5 && !reduceMotion) demoTime = 0;
+    if (t < 4.9) demoTime = null;
+    if (demoCovering !== aShown) {
+      if (demoCovering) house.demo(demoCovering, 0, 0, 0);
+      demoCovering = aShown;
+    }
+    const d = demoTime === null ? -1 : demoTime;
+    if (d < 0) house.demo(aShown, 0, 0, 0);
+    else house.demo(aShown, clamp01(d / 1.4), Math.min(1.3, Math.max(0, (d - 2) / 3.6)), clamp01((d - 6) / 1.6));
+    const phase = d < 0 ? null : DEMO_PHASES.filter(([at]) => d >= at).pop();
+    if (phase !== demoPhase) {
+      demoPhase = phase;
+      demoStatus.textContent = phase ? phase[1] : DEMO_IDLE;
+    }
+    const demoFocus = d < 0 ? 0 : smooth(0, 1, d) * (1 - smooth(8.2, 9.4, d));
+
     const sway = reduceMotion ? 0 : Math.sin(now / 2600) * 0.05;
     house.group.rotation.y = -0.55 + (t / steps.length) * 0.75 + sway;
 
@@ -1017,16 +1203,23 @@
       _c.lerp(_f, focus);
       radius += (2.6 - radius) * focus;
     }
-    frame(anatomy, _c, radius, 0.7, 0.34 + 0.12 * focus, 0.12);
+    // Pendant le démoussage, la caméra se rapproche du versant
+    if (demoFocus > 0) {
+      _f.set(0.2, H + R - 1.3, 1.6).applyAxisAngle(Y_AXIS, house.group.rotation.y);
+      _c.lerp(_f, demoFocus);
+      radius += (4.2 - radius) * demoFocus;
+    }
+    frame(anatomy, _c, radius, 0.7, 0.34 + 0.12 * focus + 0.1 * demoFocus, 0.12);
 
-    const k = Math.min(steps.length - 1, Math.max(0, Math.round(t) - 1));
     if (k !== activeStep) {
       activeStep = k;
       steps.forEach((s, i) => s.classList.toggle('is-active', i === k));
-      stepLabel.textContent = steps[k].dataset.label;
     }
+    // Pendant la démonstration, la phase en cours s'affiche sous la maison (visible aussi sur mobile)
+    const label = k === 5 && demoPhase ? `06 — ${demoPhase[2]}` : steps[k].dataset.label;
+    if (stepLabel.textContent !== label) stepLabel.textContent = label;
     stepFill.style.transform = `scaleX(${(t / steps.length).toFixed(4)})`;
-    return `${t.toFixed(4)}|${sway.toFixed(4)}|${anatomy.eye.x.toFixed(3)}|${anatomy.eye.y.toFixed(3)}|${aShown}|${s.toFixed(3)}`;
+    return `${t.toFixed(4)}|${sway.toFixed(4)}|${anatomy.eye.x.toFixed(3)}|${anatomy.eye.y.toFixed(3)}|${aShown}|${s.toFixed(3)}|${d.toFixed(2)}`;
   }
 
   // Une seule boucle ; chaque scène n'est redessinée que si elle est visible et a changé

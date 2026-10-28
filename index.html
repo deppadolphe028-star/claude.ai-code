@@ -180,6 +180,7 @@
         <h3>Démoussage</h3>
         <p>Nettoyage de la toiture, traitement anti-mousse et hydrofuge pour la protéger plus longtemps.</p>
         <a class="tile__cta" href="#contact" data-travaux="Démoussage">Devis démoussage <span aria-hidden="true">→</span></a>
+        <a class="tile__link" href="#demo-demoussage">Voir la démo en 3D <span aria-hidden="true">→</span></a>
       </article>
     </div>
   </section>
@@ -194,13 +195,13 @@
         <p class="subhead">Quelques chantiers récents, de la réparation à la réfection complète.</p>
       </div>
 
-      <div class="compare" id="compare">
+      <div class="compare" id="compare" style="--focus: 50% 18%">
         <figure class="compare__side photo photo--before">
-          <img src="realisations/avant.jpg" alt="Toiture avant les travaux" loading="lazy">
+          <img src="realisations/avant.jpg" alt="Toiture en ardoise couverte de lichens, avant le démoussage" loading="lazy">
           <span class="photo__empty"><b>Photo avant travaux</b><span>realisations/avant.jpg</span></span>
         </figure>
         <figure class="compare__side compare__side--after photo photo--after">
-          <img src="realisations/apres.jpg" alt="La même toiture après les travaux" loading="lazy">
+          <img src="realisations/apres.jpg" alt="La même toiture en ardoise, propre et traitée après le démoussage" loading="lazy">
           <span class="photo__empty"><b>Photo après travaux</b><span>realisations/apres.jpg</span></span>
         </figure>
         <span class="mono compare__tag compare__tag--before">Avant</span>
@@ -208,12 +209,13 @@
         <span class="compare__line" aria-hidden="true"></span>
         <input class="compare__range" id="compare-range" type="range" min="0" max="100" value="50" aria-label="Glisser pour comparer avant et après les travaux">
       </div>
+      <p class="compare__caption"><span class="mono">Ardoise · Démoussage et traitement hydrofuge</span><span class="work__place">Ville — année</span></p>
 
       <ul class="works">
         <li class="work">
           <figure>
-            <div class="photo"><img src="realisations/chantier-1.jpg" alt="Réfection d’une toiture en ardoise" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-1.jpg</span></span></div>
-            <figcaption><span class="mono">Ardoise · Réfection complète</span><span class="work__place">Ville — année</span></figcaption>
+            <div class="photo"><img src="realisations/chantier-1.jpg" alt="Toiture en tuiles avant et après démoussage" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-1.jpg</span></span></div>
+            <figcaption><span class="mono">Tuiles · Démoussage, avant / après</span><span class="work__place">Ville — année</span></figcaption>
           </figure>
         </li>
         <li class="work">
@@ -236,8 +238,8 @@
         </li>
         <li class="work">
           <figure>
-            <div class="photo"><img src="realisations/chantier-5.jpg" alt="Démoussage et traitement d’une toiture" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-5.jpg</span></span></div>
-            <figcaption><span class="mono">Démoussage · Traitement hydrofuge</span><span class="work__place">Ville — année</span></figcaption>
+            <div class="photo"><img src="realisations/chantier-5.jpg" alt="Réfection d’une toiture en ardoise" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-5.jpg</span></span></div>
+            <figcaption><span class="mono">Ardoise · Réfection complète</span><span class="work__place">Ville — année</span></figcaption>
           </figure>
         </li>
         <li class="work">
@@ -323,10 +325,12 @@
             <h3>L’eau va où il faut</h3>
             <p>Gouttières demi-rondes sur leurs crochets, descentes, bandes de rive et abergement autour de la cheminée évacuent la pluie loin des murs.</p>
           </li>
-          <li class="astep" data-label="06 — Entretien" style="--dot: #90b8f0">
-            <span class="mono"><i class="dot"></i>06 — Entretien</span>
-            <h3>Une toiture qui dure</h3>
-            <p>Nettoyage, démoussage et traitement de protection gardent la couverture propre et étanche plus longtemps.</p>
+          <li class="astep" id="demo-demoussage" data-label="06 — Démoussage" style="--dot: #90b8f0">
+            <span class="mono"><i class="dot"></i>06 — Démoussage</span>
+            <h3>Le démoussage, en démonstration</h3>
+            <p>Avec les années, mousses et lichens s’installent et retiennent l’humidité. Nous nettoyons la couverture du faîtage vers l’égout, puis appliquons un traitement anti-mousse et un hydrofuge qui la protègent plus longtemps.</p>
+            <p class="mono demo__status" id="demo-status" aria-live="polite">La démonstration démarre en arrivant ici.</p>
+            <button type="button" class="btn-ghost demo__replay" id="demo-replay">Revoir la démonstration</button>
           </li>
         </ol>
       </div>
