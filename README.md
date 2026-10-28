@@ -2,38 +2,62 @@
 
 Site statique (HTML/CSS/JS, sans build) pour l'entreprise de couverture A R Rénovation.
 Design calqué sur la référence de style « Origin Financial » (midnight gallery) : mêmes couleurs,
-fond quasi noir, ciel en dégradé dans le hero, grands titres serif en graisse légère avec un mot en italique,
-six tuiles de services colorées, carte argentée inversée, module téléphone, libellés en monospace.
+fond quasi noir, grands titres serif en graisse légère avec un mot en italique, six tuiles de services
+colorées, carte argentée inversée, module téléphone, libellés en monospace. Les scènes 3D sont sur un
+ciel bleu avec des nuages.
+
+## Pour attirer et convertir les visiteurs
+- **Appel en un geste sur mobile** : barre fixe « Appeler / Devis gratuit » en bas de l'écran
+  (masquée quand le formulaire est affiché), et menu de navigation.
+- **Diagnostic express** : le visiteur touche ce qu'il constate (fuite, tempête, tuiles cassées,
+  mousse…), obtient un premier avis avec un niveau d'urgence, puis une demande de devis déjà rédigée.
+- **Devis pré-remplis** : le champ de l'accueil et le lien « Devis » de chaque service remplissent
+  le formulaire (type de travaux et message).
+- **Urgences** : lien d'appel dans l'accueil, encadré « Urgence » à côté du formulaire, bouton
+  « Appeler maintenant » quand le diagnostic indique une urgence.
+- **Choix de la couverture** : sur la maison 3D de l'accueil, ardoise, tuile plate ou tuile romane ;
+  l'ancienne couverture se dépose depuis le faîtage et la nouvelle se pose depuis l'égout.
+- **Référencement et partage** : titre et description travaillés, fiche entreprise pour Google
+  (données structurées `RoofingContractor`), image d'aperçu `og-image.jpg` pour WhatsApp, Facebook, SMS.
+- **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
 
 ## Animations 3D
-Une maison en ardoise sur un îlot de pelouse, sous un ciel bleu avec des nuages, avec les vraies couleurs
-des matériaux : charpente en bois (sablières, pannes, faîtière, chevrons, chevêtre autour de la cheminée),
-laine de verre jaune entre les chevrons, écran sous-toiture et contre-liteaux, liteaux, ardoises fixées au
-crochet inox, tuiles faîtières en terre cuite scellées au mortier, gouttières demi-rondes en zinc et leurs
-crochets, descentes, bandes de rive, abergement et souche de cheminée en brique.
+Une maison sur un îlot de pelouse, avec les vraies couleurs des matériaux : charpente en bois
+(sablières, pannes, faîtière, chevrons, chevêtre autour de la cheminée), laine de verre jaune entre
+les chevrons, écran sous-toiture et contre-liteaux, liteaux, ardoises fixées au crochet inox, tuiles
+faîtières en terre cuite scellées au mortier, gouttières demi-rondes en zinc et leurs crochets,
+descentes, bandes de rive, abergement et souche de cheminée en brique.
 
-- **Accueil** : les ardoises se posent rang par rang, du bas vers le haut, puis la maison tourne
+- **Accueil** : la couverture se pose rang par rang, du bas vers le haut, puis la maison tourne
   lentement (on peut la faire pivoter en la faisant glisser).
 - **Anatomie d'une toiture** : en faisant défiler la page, la toiture se monte couche par couche
   (charpente, isolation, écran sous-toiture, couverture, zinguerie, entretien), avec un gros plan
-  sur les ardoises et leurs crochets pendant la pose de la couverture.
+  sur les ardoises et leurs crochets. Cette scène n'est construite qu'à l'approche de sa section.
 
 La 3D utilise Three.js r128, chargé depuis cdnjs. Si WebGL ou la bibliothèque ne sont pas
 disponibles, la page reste complète (accueil centré, étapes en liste). Avec l'option
 « réduire les animations » du système, la maison s'affiche directement terminée et les nuages restent immobiles.
 
 ## Fichiers
-- `index.html` — contenu de la page
+- `index.html` — la page d'accueil
+- `mentions-legales.html` — mentions légales, assurance, données personnelles
 - `styles.css` — design (tokens de couleurs en tête de fichier)
 - `roof3d.js` — les deux scènes 3D (maison du hero, anatomie de la toiture)
-- `script.js` — champ du hero qui pré-remplit le formulaire, envoi du formulaire par e-mail (mailto), dessin des nuages
+- `script.js` — devis pré-remplis, diagnostic express, menu et barre d'action mobile,
+  envoi du formulaire par e-mail (mailto), dessin des nuages
+- `og-image.jpg` — image d'aperçu pour le partage du lien
 
 ## Avant la mise en ligne
-Cherchez `À REMPLACER` / `À VÉRIFIER` dans `index.html` :
-- numéro de téléphone (`06 00 00 00 00`, en-tête et contact)
+Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTML :
+- numéro de téléphone (`06 00 00 00 00` et `+33600000000`, présents à plusieurs endroits)
 - adresse e-mail (`contact@ar-renovation.fr`, aussi dans `data-email` du formulaire)
-- zone d'intervention (« Votre ville & ses environs »)
+- zone d'intervention (« Votre ville et ses environs », aussi dans les données structurées)
 - engagements affichés (garantie décennale, devis gratuit, chantier nettoyé) à vérifier
+- `mentions-legales.html` : forme juridique, SIRET, adresse, dirigeant, hébergeur, assureur décennal
+- une fois le site en ligne, mettre l'adresse complète de `og-image.jpg` dans la balise `og:image`
+
+Pour recevoir les demandes directement (sans passer par la messagerie du visiteur), le formulaire
+peut être branché sur un service d'envoi de formulaires.
 
 ## Aperçu local
 Ouvrez `index.html` dans un navigateur, ou : `python3 -m http.server` puis http://localhost:8000
