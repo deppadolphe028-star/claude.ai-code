@@ -1,6 +1,6 @@
 # A R Rénovation — site vitrine
 
-Site statique (HTML/CSS/JS, sans build) pour l'entreprise de couverture A R Rénovation.
+Site statique (HTML/CSS/JS, sans build) pour A R Rénovation, entreprise de couverture et de nettoyage.
 Design calqué sur la référence de style « Origin Financial » (midnight gallery) : mêmes couleurs,
 fond quasi noir, grands titres serif en graisse légère avec un mot en italique, six tuiles de services
 colorées, carte argentée inversée, module téléphone, libellés en monospace. Les scènes 3D sont sur un
@@ -24,6 +24,9 @@ ciel bleu avec des nuages.
   (voir « Ajouter vos photos de chantiers » ci-dessous).
 - **Démoussage en démonstration 3D** : la tuile Démoussage des services mène à une démonstration
   sur la maison (voir « Animations 3D »).
+- **Nettoyage** : une section à part (lien « Nettoyage » dans le menu) avec quatre tuiles, dallages,
+  terrasses, maisons et locaux professionnels, chacune avec son devis pré-rempli. Le formulaire
+  range les types de travaux en « Toiture » et « Nettoyage » et adapte le message proposé.
 - **Confiance** : questions fréquentes (délais, TVA, garantie), mentions légales et données personnelles.
 
 ## Ajouter vos photos de chantiers
@@ -34,8 +37,10 @@ travaux, ville, année) se modifient dans `index.html`, section « Nos réalisat
 Le détail est dans `realisations/LISEZMOI.txt`.
 
 Déjà en place : `avant.jpg` et `apres.jpg` (démoussage et traitement hydrofuge d'une toiture en
-ardoise) et `chantier-1.jpg` (démoussage d'une toiture en tuiles, avant / après). Pour changer une
-photo, il suffit de la remplacer par une autre portant le même nom.
+ardoise), `chantier-1.jpg` (démoussage d'une toiture en tuiles) et `chantier-2.jpg` (couverture
+refaite en tuiles). Ces deux dernières sont des montages avant / après, signalés par des étiquettes
+« Avant » et « Après ». Pour changer une photo, il suffit de la remplacer par une autre portant le
+même nom (pour une photo simple à la place d'un montage, retirer aussi les étiquettes).
 
 ## Animations 3D
 Une maison sur un îlot de pelouse, avec les vraies couleurs des matériaux : charpente en bois
@@ -91,6 +96,7 @@ Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTM
 - zone d'intervention (« Votre ville et ses environs », aussi dans les données structurées)
 - engagements affichés (garantie décennale, devis gratuit, chantier nettoyé) à vérifier
 - `mentions-legales.html` : forme juridique, SIRET, adresse, dirigeant, hébergeur, assureur décennal
+- textes des quatre prestations de nettoyage (section « Nettoyage » de `index.html`)
 - photos de chantiers dans `realisations/` et légendes « Ville — année » dans `index.html`
 - une fois le site en ligne, mettre l'adresse complète de `og-image.jpg` dans la balise `og:image`
 

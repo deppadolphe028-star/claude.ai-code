@@ -8,6 +8,11 @@ Déposez vos photos dans ce dossier en gardant exactement ces noms :
 
 Tant qu'une photo manque, son emplacement affiche « Photo à ajouter » avec le nom du fichier attendu.
 
+Les photos 1 et 2 de la galerie sont des montages avant / après (côte à côte pour la 1, l'une sous
+l'autre pour la 2) : les étiquettes « Avant » et « Après » s'affichent par-dessus. Si vous les
+remplacez par une photo simple, il faut retirer ces étiquettes dans index.html (lignes contenant
+« photo__tag »).
+
 Conseils :
 - format JPG, environ 1600 pixels de large, moins de 500 Ko par photo ;
 - photos prises de jour, toiture bien visible, sans personne reconnaissable ni plaque d'immatriculation.

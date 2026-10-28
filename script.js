@@ -1,11 +1,27 @@
 // A R Rénovation — interactions
 
-// Ouvre le formulaire de devis, pré-rempli quand le visiteur a déjà décrit son besoin
 const contact = document.getElementById('contact');
 const message = document.getElementById('f-msg');
 const travaux = document.getElementById('f-type');
+
+// Le message proposé s'adapte au type de travaux choisi (toiture ou nettoyage)
+const HINTS = {
+  Toiture: message.placeholder,
+  Nettoyage: 'Décrivez ce qu’il faut nettoyer : surface, superficie approximative, accès. Vous pourrez joindre des photos à l’e-mail.',
+};
+function updateHint() {
+  const option = travaux.selectedOptions[0];
+  message.placeholder = (option && HINTS[option.parentElement.label])
+    || 'Décrivez votre demande. Vous pourrez joindre des photos à l’e-mail.';
+}
+travaux.addEventListener('change', updateHint);
+
+// Ouvre le formulaire de devis, pré-rempli quand le visiteur a déjà décrit son besoin
 function openDevis({ type, text } = {}) {
-  if (type) travaux.value = type;
+  if (type) {
+    travaux.value = type;
+    updateHint();
+  }
   if (text) message.value = text;
   contact.scrollIntoView();
   document.getElementById(text ? 'f-nom' : 'f-msg').focus({ preventScroll: true });
