@@ -126,3 +126,11 @@ peut être branché sur un service d'envoi de formulaires.
 
 ## Aperçu local
 Ouvrez `index.html` dans un navigateur, ou : `python3 -m http.server` puis http://localhost:8000
+
+## Site « Rénovation de l'habitat » (dossier `habitat/`)
+Deuxième site, autonome, pour une activité de rénovation générale de l'habitat (intérieur et extérieur,
+clé en main) : accueil avec appel à l'action, chiffres clés, huit services (rénovation complète, cuisine,
+salle de bain, isolation, peinture, sols, façade, toiture), atouts, méthode en quatre étapes, comparatif
+avant / après, emplacements pour de vrais avis clients, questions fréquentes et formulaire de devis
+(il ouvre la messagerie avec la demande rédigée). Il réutilise les photos du dossier `realisations/`
+et les mentions légales du site principal. Ouvrir `habitat/index.html`.
