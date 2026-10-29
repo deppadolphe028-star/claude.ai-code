@@ -71,9 +71,13 @@ les chevrons, écran sous-toiture et contre-liteaux, liteaux, ardoises fixées a
 faîtières en terre cuite scellées au mortier, gouttières demi-rondes en zinc et leurs crochets,
 descentes, bandes de rive, abergement et souche de cheminée en brique.
 
-Les couvertures ont une vraie matière : veinage et paillettes de l'ardoise, grain et nuances de la
-terre cuite (chaque pièce lit sa propre zone de texture, deux pièces ne se ressemblent jamais),
-reflets du ciel sur l'acier, le zinc et les vitres.
+Rendu réaliste : lumière de plein jour (le ciel éclaire et se reflète sur toutes les matières,
+le soleil porte des ombres douces), tons filmiques comme sur une photo, et des matières en relief
+calculées dans `textures/` : ardoise clivée et pailletée, terre cuite avec flammés et grain de sable,
+bois de charpente veiné, laine de verre, écran sous-toiture, brique, crépi, dalles de pierre,
+planches des volets, gazon et terre de l'îlot vue en coupe. Chaque ardoise, tuile ou pièce de bois lit
+sa propre zone de texture : deux pièces ne se ressemblent jamais. Les massifs sont faits de centaines
+de bouquets de feuilles ; la maison a ses encadrements de fenêtres, son auvent et son applique.
 
 Quatre couvertures au choix :
 - **Ardoise** naturelle fixée au crochet inox, faîtage en tuiles faîtières scellées au mortier ;
@@ -96,7 +100,13 @@ Quatre couvertures au choix :
   bouton « Revoir la démonstration », et repart de zéro si l'on change de couverture.
 
 La 3D utilise Three.js r128, chargé depuis cdnjs. Si WebGL ou la bibliothèque ne sont pas
-disponibles, la page reste complète (accueil centré, étapes en liste). Avec l'option
+disponibles, la page reste complète (accueil centré, étapes en liste). Si l'appareil peine (moins de
+26 images par seconde), la 3D baisse d'elle-même sa définition pour rester fluide.
+
+Les matières (environ 1,5 Mo d'images WebP) sont calculées par `textures/generer.py` (Python avec
+numpy et Pillow, sans aucune image extérieure) ; il suffit de le relancer pour les recréer. La page
+ouverte directement depuis le disque (`file://`) utilise des matières plus simples, dessinées par le
+navigateur : pour voir le rendu réaliste en local, passer par `python3 -m http.server`. Avec l'option
 « réduire les animations » du système, la maison s'affiche directement terminée, les nuages restent
 immobiles et la démonstration du démoussage ne se lance qu'avec son bouton.
 
@@ -110,6 +120,7 @@ immobiles et la démonstration du démoussage ne se lance qu'avec son bouton.
   envoi du formulaire par e-mail (mailto), dessin des nuages
 - `og-image.jpg` — image d'aperçu pour le partage du lien
 - `realisations/` — vos photos de chantiers (mode d'emploi dans `LISEZMOI.txt`)
+- `textures/` — les matières de la maison 3D, et `generer.py` qui les calcule
 
 ## Avant la mise en ligne
 Cherchez `À REMPLACER`, `À VÉRIFIER` et `À COMPLÉTER` dans les fichiers HTML :

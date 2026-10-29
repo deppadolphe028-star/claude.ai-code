@@ -14,12 +14,15 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Définition du rendu : baissée automatiquement si l'appareil peine (voir adapt)
+  const quality = { ratio: Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.5 : 2), frames: 0, time: 0, skip: 40 };
+
   // Couleurs réelles des matériaux
   const M = {
-    wall: '#e8e4dc',        // enduit
+    wall: '#e4dccc',        // enduit gratté, ton pierre claire
     plinth: '#8c8b86',      // soubassement en pierre
     frame: '#f3f2ee',       // menuiseries blanches
-    glass: '#6f8ea9',
+    glass: '#2b3a48',       // vitre : sombre, le ciel s'y reflète
     sill: '#d6d1c5',        // appuis de fenêtre
     shutter: '#5f7c93',     // volets
     door: '#56728a',
@@ -29,13 +32,13 @@
     wool: '#e2b93b',        // laine de verre
     screen: '#c3ccd4',      // écran sous-toiture
     slate: '#3d444c',       // ardoise naturelle
-    hook: '#d4d9dd',        // crochets inox
-    flatTile: '#9d4f30',    // tuile plate en terre cuite
-    romanTile: '#b8582d',   // tuile romane en terre cuite
-    steel: '#3b4045',       // bac acier prélaqué gris anthracite
+    hook: '#a9b0b6',        // crochets inox
+    flatTile: '#86402a',    // tuile plate en terre cuite, brun rouge
+    romanTile: '#a94f2a',   // tuile romane en terre cuite
+    steel: '#272b30',       // bac acier prélaqué gris anthracite (RAL 7016)
     screw: '#c3c8cc',       // vis à rondelle d'étanchéité
     terracotta: '#b4603f',  // tuiles faîtières, mitrons
-    mortar: '#d4cdbf',
+    mortar: '#b9b1a3',      // mortier de l'embarrure
     zinc: '#a2abb0',
     concrete: '#9d9c97',
     grass: '#6aa84f',
@@ -129,10 +132,9 @@
     return mat;
   }
 
-  // Textures dessinées une fois : laine de verre, écran, brique, pelouse, ardoise, terre cuite, acier, ciel
-  let textureCache = null;
-  function textures() {
-    if (textureCache) return textureCache;
+  // Textures de secours, dessinées : servent quand la page est ouverte en local (file://),
+  // où le navigateur refuse au WebGL les images du dossier textures/
+  function drawnTextures() {
     seed = 3;
     const make = (size, repeatX, repeatY, draw) => {
       const canvas = document.createElement('canvas');
@@ -197,17 +199,7 @@
       speckles(ctx, s, 'rgba(90,45,25,0.35)', 2600, 1.6);       // grain de sable
       speckles(ctx, s, 'rgba(255,245,235,0.35)', 1400, 1.4);
     });
-    const sky = document.createElement('canvas');
-    sky.width = 4;
-    sky.height = 256;
-    const skyCtx = sky.getContext('2d');
-    const skyGradient = skyCtx.createLinearGradient(0, 0, 0, 256);
-    [[0, '#2f6fb8'], [0.45, '#8cc3ee'], [0.5, '#dcecf8'], [0.55, '#7d9a5e'], [1, '#4b6b3a']].forEach(([at, c]) => skyGradient.addColorStop(at, c));
-    skyCtx.fillStyle = skyGradient;
-    skyCtx.fillRect(0, 0, 4, 256);
-    const skyTexture = new THREE.CanvasTexture(sky);
-    skyTexture.encoding = THREE.sRGBEncoding;
-    textureCache = {
+    return {
       slate,
       clay,
       clayRoman: variant(clay, 1, 1),        // UV en mètres sur les pièces extrudées
@@ -218,7 +210,6 @@
         blotches(ctx, s, ['rgba(255,255,255,0.25)', 'rgba(0,0,0,0.06)'], 40, 10, 60);
         speckles(ctx, s, 'rgba(0,0,0,0.08)', 1500, 1);
       }),
-      sky: skyTexture,
       wool: make(128, 1, 5, (ctx, s) => fibres(ctx, s, M.wool, ['#f3d36a', '#c4951f', '#f8e39a', '#b5871a'], 900, 3, 10)),
       screen: make(256, 4, 1, (ctx, s) => {
         ctx.fillStyle = M.screen;
@@ -246,7 +237,109 @@
       }),
       grass: make(256, 5, 5, (ctx, s) => fibres(ctx, s, M.grass, ['#7cbc5c', '#5a9442', '#8fc76a', '#4e8639'], 2600, 2, 6)),
     };
-    return textureCache;
+  }
+
+  // Matières réalistes : fichiers de textures/ (calculés par textures/generer.py), couleur et relief.
+  // La maison n'apparaît qu'une fois tout chargé, pour ne jamais montrer de surface vide.
+  const FILES = location.protocol !== 'file:';
+  let pending = 0;
+  let arrived = 0;
+  let ready = !FILES;
+  function settled() {
+    pending -= 1;
+    arrived += 1;
+    if (pending === 0) ready = true;
+  }
+  if (!ready) setTimeout(() => { ready = true; }, 6000);   // réseau très lent : les matières arrivent ensuite
+  // Fichier absent : une image neutre d'un pixel, la matière garde sa couleur et reste lisse
+  function neutral(texture, fill) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = fill;
+    ctx.fillRect(0, 0, 1, 1);
+    texture.image = canvas;
+    texture.needsUpdate = true;
+  }
+  let mapCache = null;
+  function maps() {
+    if (mapCache) return mapCache;
+    const loader = new THREE.TextureLoader();
+    const file = (name, repeat, color = true) => {
+      pending += 1;
+      const texture = loader.load(`textures/${name}.webp`, settled, undefined, () => {
+        neutral(texture, color ? '#ffffff' : '#8080ff');
+        settled();
+      });
+      texture.encoding = color ? THREE.sRGBEncoding : THREE.LinearEncoding;
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(...[].concat(repeat, repeat).slice(0, 2));
+      texture.anisotropy = 4;
+      return texture;
+    };
+    const drawn = FILES ? null : drawnTextures();
+    const redraw = (texture, repeat) => {
+      if (!texture) return null;
+      const copy = texture.clone();
+      copy.repeat.set(...[].concat(repeat, repeat).slice(0, 2));
+      copy.needsUpdate = true;
+      return copy;
+    };
+    // colored : la texture porte déjà la couleur (sinon elle nuance la couleur de la matière)
+    const pair = (name, repeat, { fallback, colored = false, relief = true } = {}) => (FILES
+      ? { map: file(name, repeat), normalMap: relief ? file(`${name}_n`, repeat, false) : null, colored }
+      : { map: redraw(drawn[fallback], repeat), normalMap: null, colored });
+    mapCache = {
+      slate: pair('ardoise', 0.35, { fallback: 'slate', colored: true }),
+      clay: pair('terre_cuite', 0.3, { fallback: 'clay' }),
+      clayRoman: pair('terre_cuite', 1, { fallback: 'clay' }),        // UV en mètres sur les pièces extrudées
+      clayRidge: pair('terre_cuite', 0.5, { fallback: 'clay' }),
+      wood: pair('bois', 1),
+      wool: pair('laine', [1, 8], { fallback: 'wool', colored: true }),
+      screen: pair('ecran', [4, 1], { fallback: 'screen', colored: true }),
+      brick: pair('brique', [1 / 0.46, 1 / 0.52], { fallback: 'brick', colored: true }),   // UV en mètres
+      render: pair('crepi', 1 / 1.2),                                                         // UV en mètres
+      grass: pair('gazon', 6, { fallback: 'grass', colored: true, relief: false }),
+      soil: pair('terre', [26, 1], { colored: true }),
+      paving: pair('dalle', 0.5, { colored: true }),
+      planks: pair('planches', 1),
+      steel: FILES ? { map: null, normalMap: file('acier_n', 4, false) } : { map: drawn.steel, normalMap: null },
+      leaves: FILES ? file('feuilles', 1) : null,
+    };
+    return mapCache;
+  }
+
+  // Matière texturée : couleur blanche si la texture porte la couleur, sinon la couleur réelle nuancée
+  function surface(pair, hex, roughness, extra = {}) {
+    return new THREE.MeshStandardMaterial({
+      color: pair.map && pair.colored ? new THREE.Color(1, 1, 1) : col(hex),
+      map: pair.map,
+      normalMap: pair.normalMap,
+      roughness,
+      ...extra,
+    });
+  }
+
+  // Boîte dont les UV sont en mètres : la texture garde la même échelle sur toutes les faces
+  function metricBox(w, h, d) {
+    const geo = new THREE.BoxGeometry(w, h, d);
+    const uv = geo.attributes.uv;
+    const sizes = [[d, h], [d, h], [w, d], [w, d], [w, h], [w, h]];   // faces +x, -x, +y, -y, +z, -z
+    for (let i = 0; i < uv.count; i++) {
+      const [su, sv] = sizes[Math.floor(i / 4)];
+      uv.setXY(i, uv.getX(i) * su, uv.getY(i) * sv);
+    }
+    return geo;
+  }
+
+  // Pièce de bois de 1 m de côté, mise à l'échelle par instance : le fil du bois suit sa longueur (x ou z)
+  function grainBox(axis) {
+    const geo = new THREE.BoxGeometry(1, 1, 1);
+    if (axis === 'z') {
+      const uv = geo.attributes.uv;
+      for (let i = 8; i < 16; i++) uv.setXY(i, uv.getY(i), uv.getX(i));   // dessus et dessous
+    }
+    return geo;
   }
 
   // Ombre de contact douce sous la maison
@@ -307,7 +400,7 @@
   }
 
   function buildHouse() {
-    const tex = textures();
+    const T = maps();
     seed = 11;
     const group = new THREE.Group();
     const std = (hex, roughness = 0.85, metalness = 0, extra = {}) =>
@@ -321,10 +414,10 @@
     const unit = new THREE.BoxGeometry(1, 1, 1);
     const varied = (n, amount) => Array.from({ length: n }, () => new THREE.Color().setScalar(1 - amount + rand() * amount * 1.4));
 
-    // Terrain : îlot de pelouse, allée et massifs
-    const island = new THREE.Mesh(new THREE.CylinderGeometry(6.3, 6.0, 0.5, 72), [
-      std(M.soil, 1),
-      new THREE.MeshStandardMaterial({ map: tex.grass, roughness: 1 }),
+    // Terrain : îlot vu en coupe (terre végétale, cailloux), gazon, allée et terrasse en dalles, massifs
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(6.3, 6.0, 0.5, 96), [
+      surface(T.soil, M.soil, 1),
+      surface(T.grass, M.grass, 1),
       std(M.soil, 1),
     ]);
     island.position.y = -0.25;
@@ -332,26 +425,65 @@
     group.add(island);
     group.add(contactShadow());
 
-    const stoneMat = std(M.stone, 0.9);
-    const stoneGeo = new THREE.CylinderGeometry(0.26, 0.28, 0.06, 14);
-    for (let i = 0; i < 4; i++) {
-      const stone = add(new THREE.Mesh(stoneGeo, stoneMat));
-      stone.position.set(-2.3 + (rand() - 0.5) * 0.2, 0.03, 4.0 + i * 0.55);
-      stone.scale.set(1.3, 1, 0.9);
-    }
-    const bushGeo = new THREE.IcosahedronGeometry(0.6, 1);
-    const bushMats = [std(M.bush, 0.95, 0, { flatShading: true }), std(M.bushDark, 0.95, 0, { flatShading: true })];
-    [[-4.75, 2.6, 0.62, 0], [4.85, 2.7, 0.7, 1], [-4.55, -3.2, 0.55, 1], [4.5, -3.4, 0.6, 0], [-1.25, HALF + 0.55, 0.38, 0], [1.4, HALF + 0.5, 0.34, 1]]
-      .forEach(([x, z, r, m]) => {
-        const bush = add(new THREE.Mesh(bushGeo, bushMats[m]));
+    const stoneMat = withUvOffset(surface(T.paving, M.stone, 0.85));
+    const slabs = [];
+    const slab = (x, z, w, d) => slabs.push({ m: inWorld(x, 0.025, z, w, 0.05, d), k: 0 });
+    for (let i = 0; i < 4; i++) [-1, 1].forEach((side) => slab(-2.3 + side * 0.3, 3.86 + i * 0.47, 0.57, 0.44));
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) slab(-3.1 + i * 0.62, -HALF - 0.37 - j * 0.62, 0.6, 0.6);
+    const slabGeo = new THREE.BoxGeometry(1, 1, 1);
+    slabGeo.setAttribute('uvOffset', new THREE.InstancedBufferAttribute(Float32Array.from({ length: slabs.length * 2 }, rand), 2));
+    const slabMesh = new THREE.InstancedMesh(slabGeo, stoneMat, slabs.length);
+    slabs.forEach((item, i) => {
+      slabMesh.setMatrixAt(i, item.m);
+      slabMesh.setColorAt(i, new THREE.Color().setScalar(0.86 + rand() * 0.22));
+    });
+    slabMesh.receiveShadow = true;
+    slabMesh.castShadow = true;
+    group.add(slabMesh);
+
+    // Massifs : des centaines de bouquets de feuilles détourés, plus sombres vers le cœur
+    const BUSHES = [[-4.75, 2.6, 0.66], [4.85, 2.7, 0.74], [-4.55, -3.2, 0.6], [4.5, -3.4, 0.66], [-1.2, HALF + 0.55, 0.42], [1.45, HALF + 0.5, 0.38], [3.6, -HALF - 0.6, 0.45]];
+    if (T.leaves) {
+      const cards = [];
+      const shades = [];
+      BUSHES.forEach(([x, z, r]) => {
+        const n = Math.round(150 * r * r / 0.36);
+        for (let i = 0; i < n; i++) {
+          const th = rand() * Math.PI * 2;
+          const up = Math.acos(1 - rand() * 1.15);              // surtout le dessus et les flancs
+          const depth = 0.55 + 0.45 * Math.cbrt(rand());
+          _p.set(Math.sin(up) * Math.cos(th), Math.cos(up) * 0.9 + 0.2, Math.sin(up) * Math.sin(th)).multiplyScalar(r * depth);
+          _q.setFromEuler(_e.set(rand() * Math.PI, rand() * Math.PI * 2, rand() * Math.PI));
+          const size = r * (0.75 + 0.5 * rand());
+          cards.push(new THREE.Matrix4().compose(_v.set(x + _p.x, Math.max(0.05, _p.y + r * 0.55), z + _p.z), _q, _s.set(size, size, size)));
+          const light = 0.55 + 0.45 * depth * (0.6 + 0.4 * Math.cos(up));
+          shades.push(new THREE.Color(light * (0.98 + rand() * 0.14), light, light * (0.66 + rand() * 0.16)));
+        }
+      });
+      const leafMat = new THREE.MeshStandardMaterial({ map: T.leaves, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.9, envMapIntensity: 0.3 });
+      const leafMesh = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), leafMat, cards.length);
+      cards.forEach((m, i) => {
+        leafMesh.setMatrixAt(i, m);
+        leafMesh.setColorAt(i, shades[i]);
+      });
+      leafMesh.castShadow = true;
+      leafMesh.receiveShadow = true;
+      leafMesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: T.leaves, alphaTest: 0.45 });
+      group.add(leafMesh);
+    } else {
+      const bushGeo = new THREE.IcosahedronGeometry(0.6, 1);
+      const bushMats = [std(M.bush, 0.95, 0, { flatShading: true }), std(M.bushDark, 0.95, 0, { flatShading: true })];
+      BUSHES.forEach(([x, z, r], i) => {
+        const bush = add(new THREE.Mesh(bushGeo, bushMats[i % 2]));
         bush.position.set(x, r * 0.75, z);
         bush.scale.setScalar(r / 0.6);
         bush.rotation.set(rand(), rand() * 3, rand());
       });
+    }
 
     // Maçonnerie : murs enduits, pignons, soubassement
-    const wallMat = std(M.wall, 0.95);
-    add(new THREE.Mesh(new THREE.BoxGeometry(W, H, D), wallMat)).position.y = H / 2;
+    const wallMat = surface(T.render, M.wall, 0.95);
+    add(new THREE.Mesh(metricBox(W, H, D), wallMat)).position.y = H / 2;
     const gable = new THREE.Shape();
     gable.moveTo(-HALF, 0);
     gable.lineTo(HALF, 0);
@@ -363,13 +495,14 @@
     [-1, 1].forEach((sx) => {
       add(new THREE.Mesh(gableGeo, wallMat)).position.set(sx * (W / 2 - 0.12), H, 0);
     });
-    add(new THREE.Mesh(new THREE.BoxGeometry(W + 0.12, 0.45, D + 0.12), std(M.plinth, 0.9))).position.y = 0.225;
+    add(new THREE.Mesh(metricBox(W + 0.12, 0.45, D + 0.12), surface(T.render, M.plinth, 0.9))).position.y = 0.225;
 
     // Menuiseries : fenêtres à deux vantaux, appuis, volets, porte d'entrée
-    const frameMat = std(M.frame, 0.5);
-    const glassMat = std(M.glass, 0.12, 0.35);
-    const sillMat = std(M.sill, 0.8);
-    const shutterMat = std(M.shutter, 0.7);
+    const frameMat = std(M.frame, 0.4);
+    const glassMat = std(M.glass, 0.04, 0.3, { envMapIntensity: 1.7 });
+    const surroundMat = surface(T.render, '#efe8da', 0.9);
+    const sillMat = surface(T.paving, M.sill, 0.75);
+    const shutterMat = surface(T.planks, M.shutter, 0.6);
     const onWall = (axis, side, u, y, w, h, depth, out, mat) => {
       const mesh = add(new THREE.Mesh(unit, mat));
       const d = (axis === 'z' ? HALF : W / 2) + out;
@@ -382,6 +515,7 @@
       }
     };
     const windowAt = (axis, side, u, y, w, h, shutters) => {
+      onWall(axis, side, u, y + 0.02, w + 0.36, h + 0.36, 0.03, 0, surroundMat);    // encadrement en relief
       onWall(axis, side, u, y, w + 0.12, h + 0.12, 0.05, 0.005, frameMat);
       onWall(axis, side, u, y, w, h, 0.05, 0.02, glassMat);
       onWall(axis, side, u, y, 0.05, h, 0.05, 0.03, frameMat);
@@ -398,9 +532,15 @@
       windowAt('x', sx, 0, H + 0.95, 0.6, 0.7, false);
     });
     onWall('z', 1, -2.3, 1.5, 1.12, 2.16, 0.05, 0.005, frameMat);
-    onWall('z', 1, -2.3, 1.48, 1.0, 2.06, 0.05, 0.02, std(M.door, 0.6));
+    onWall('z', 1, -2.3, 1.48, 1.0, 2.06, 0.05, 0.02, surface(T.planks, M.door, 0.5));
     onWall('z', 1, -2.3, 2.15, 0.5, 0.5, 0.05, 0.03, glassMat);
     onWall('z', 1, -1.95, 1.45, 0.05, 0.18, 0.05, 0.05, std(M.handle, 0.4, 0.6));
+    onWall('z', 1, -2.3, 1.5, 1.4, 2.34, 0.03, 0, surroundMat);
+    // Auvent en béton au-dessus de la porte, applique murale allumée à côté
+    const canopy = add(new THREE.Mesh(metricBox(1.7, 0.1, 0.8), surface(T.render, M.concrete, 0.85)));
+    canopy.position.set(-2.3, 2.86, HALF + 0.4);
+    onWall('z', 1, -1.32, 2.2, 0.12, 0.2, 0.1, 0.05, std('#2b2d2f', 0.5, 0.4));
+    onWall('z', 1, -1.32, 2.2, 0.08, 0.12, 0.1, 0.07, std('#fff3d6', 0.4, 0, { emissive: col('#ffcf87'), emissiveIntensity: 0.6 }));
     const step = (w, h, d, y, z) => {
       const mesh = add(new THREE.Mesh(unit, stoneMat));
       mesh.scale.set(w, h, d);
@@ -411,10 +551,9 @@
 
     // Souche de cheminée en brique, couronnement et mitrons
     const chimneyTop = H + R + 1.25;
-    const chimney = add(new THREE.Mesh(unit, new THREE.MeshStandardMaterial({ map: tex.brick, roughness: 0.9 })));
-    chimney.scale.set(CW, chimneyTop - H, CW);
+    const chimney = add(new THREE.Mesh(metricBox(CW, chimneyTop - H, CW), surface(T.brick, M.terracotta, 0.9)));
     chimney.position.set(CX, (chimneyTop + H) / 2, 0);
-    const capping = add(new THREE.Mesh(unit, std(M.concrete, 0.9)));
+    const capping = add(new THREE.Mesh(unit, surface(T.render, M.concrete, 0.9)));
     capping.scale.set(CW + 0.14, 0.12, CW + 0.14);
     capping.position.set(CX, chimneyTop + 0.06, 0);
     const potGeo = new THREE.CylinderGeometry(0.1, 0.13, 0.34, 14);
@@ -460,7 +599,8 @@
       const s0 = rafterStart(x);
       rafters.push({ m: onSlope(slope, x, 0.09, (s0 + LEN) / 2, 0.08, 0.18, LEN - s0), k: i / 16 });
     }));
-    part(charpente, unit, std(M.wood, 0.8), rafters, varied(rafters.length, 0.12));
+    const woodMat = (hex) => withUvOffset(surface(T.wood, hex, 0.85));
+    part(charpente, grainBox('z'), woodMat(M.wood), rafters, varied(rafters.length, 0.12));
     const cut = RAFTERS.filter((x) => rafterStart(x) > 0);
     const trimLeft = Math.max(...RAFTERS.filter((x) => x < cut[0]));
     const trimRight = Math.min(...RAFTERS.filter((x) => x > cut[cut.length - 1]));
@@ -473,7 +613,7 @@
       beams.push({ m: onSlope(slope, 0, -0.08, RAMPANT * 0.5, W - 0.5, 0.16, 0.12), k: 0.3 });
       beams.push({ m: onSlope(slope, (trimLeft + trimRight) / 2, 0.09, 0.62, trimRight - trimLeft, 0.18, 0.08), k: 0.8 });
     });
-    part(charpente, unit, std(M.wood, 0.8), beams, varied(beams.length, 0.1));
+    part(charpente, grainBox('x'), woodMat(M.wood), beams, varied(beams.length, 0.1));
 
     // 2. Isolation : laine de verre entre les chevrons
     const isolation = layer(M.wool);
@@ -487,7 +627,7 @@
         wool.push({ m: onSlope(slope, x, 0.09, (s0 + s1) / 2, bay - 0.09, 0.17, s1 - s0), k: i / 15 });
       }
     });
-    part(isolation, unit, new THREE.MeshStandardMaterial({ map: tex.wool, roughness: 1 }), wool);
+    part(isolation, unit, withUvOffset(surface(T.wool, M.wool, 1)), wool);
 
     // 3. Écran sous-toiture, posé en lés depuis l'égout, tenu par les contre-liteaux
     const ecran = layer(M.screen);
@@ -497,13 +637,13 @@
         strips.push({ m: onSlope(slope, 0, 0.183 + r * 0.002, LEN - (r + 0.5) * (LEN / 3), 2 * RX - 0.1, 0.006, LEN / 3 + 0.12), k: r / 2 });
       }
     });
-    part(ecran, unit, new THREE.MeshStandardMaterial({ map: tex.screen, roughness: 0.7 }), strips);
+    part(ecran, unit, surface(T.screen, M.screen, 0.6), strips);
     const counter = [];
     SLOPES.forEach((slope) => RAFTERS.forEach((x, i) => {
       const s0 = rafterStart(x);
       counter.push({ m: onSlope(slope, x, 0.2, (s0 + LEN) / 2, 0.045, 0.03, LEN - s0), k: 0.4 + 0.6 * (i / 16) });
     }));
-    part(ecran, unit, std(M.batten, 0.85), counter, varied(counter.length, 0.12));
+    part(ecran, grainBox('z'), woodMat(M.batten), counter, varied(counter.length, 0.12));
 
     // 4. Couverture : liteaux communs, puis l'une des quatre couvertures, chacune avec son faîtage
     const couverture = layer(M.slate);
@@ -520,7 +660,7 @@
         battens.push({ m: onSlope(slope, 0, 0.229, s, 2 * RX - 0.04, 0.027, 0.05), k: r / (rows - 1) });
       }
     });
-    part(couverture, unit, std(M.batten, 0.85), battens, varied(battens.length, 0.12));
+    part(couverture, grainBox('x'), woodMat(M.batten), battens, varied(battens.length, 0.12));
 
     // Pose rang par rang depuis l'égout ; offset = joints croisés, clip = demi-pièces en rive
     function lay({ row, tw, offset, clip }, put) {
@@ -555,9 +695,7 @@
     const ridgeEnd = new THREE.CircleGeometry(0.19, 16, 0, Math.PI);
     ridgeEnd.rotateY(Math.PI / 2);
     const ridgeCount = Math.round((2 * RIDGE_HALF) / 0.4);
-    const clayMat = (hex, map, extra = {}) => withUvOffset(new THREE.MeshStandardMaterial({
-      color: col(hex), map, bumpMap: map, bumpScale: 0.02, roughness: 0.8, ...extra,
-    }));
+    const clayMat = (hex, pair, extra = {}) => withUvOffset(surface(pair, hex, 0.8, extra));
     function ridge(l) {
       const tiles = [];
       for (let i = 0; i < ridgeCount; i++) {
@@ -565,13 +703,13 @@
         if (Math.abs(x - CX) < CW / 2) continue;               // seule la tuile prise dans la souche disparaît
         tiles.push({ m: inWorld(x, H + R + 0.31, 0), k: 0.9 + 0.1 * (i / (ridgeCount - 1)) });
       }
-      part(l, ridgeGeo, clayMat(M.terracotta, textures().clayRidge, { side: THREE.DoubleSide }), tiles, varied(tiles.length, 0.1));
+      part(l, ridgeGeo, clayMat(M.terracotta, T.clayRidge, { side: THREE.DoubleSide }), tiles, varied(tiles.length, 0.1));
       const mortar = [];
       aroundChimney(-RIDGE_HALF, RIDGE_HALF, -0.05).forEach(([a, b]) => [1, -1].forEach((side) => {
         mortar.push({ m: inWorld((a + b) / 2, H + R + 0.25, side * 0.15, b - a, 0.1, 0.1), k: 0.88 });
       }));
       [-1, 1].forEach((side) => mortar.push({ m: inWorld(side * (RIDGE_HALF - 0.01), H + R + 0.24, 0, 0.02, 0.12, 0.38), k: 1 }));
-      part(l, unit, std(M.mortar, 0.95), mortar);
+      part(l, unit, surface(T.render, M.mortar, 0.95), mortar);
       part(l, ridgeEnd, std(M.mortar, 0.95, 0, { side: THREE.DoubleSide }),
         [-1, 1].map((side) => ({ m: inWorld(side * (RIDGE_HALF - 0.01), H + R + 0.31, 0), k: 1 })));
     }
@@ -586,14 +724,12 @@
     lay({ row: ROW, tw: TW, offset: true, clip: true }, (slope, x, w, lower, k) => {
       slates.push({ m: onSlope(slope, x, 0.258, lower - TL / 2, w - 0.012, 0.012, TL, -0.03), k });
       hooks.push({ m: onSlope(slope, x, 0.266, lower + 0.012, 0.016, 0.008, 0.05), k });
-      const shade = 0.82 + rand() * 0.32;
-      tints.push(new THREE.Color(shade * (0.96 + rand() * 0.04), shade * (0.97 + rand() * 0.04), shade * (1 + rand() * 0.08)));
+      const shade = 0.66 + rand() * 0.26;                    // ardoises naturelles : gris anthracite nuancé
+      tints.push(new THREE.Color(shade * (0.97 + rand() * 0.05), shade * (0.97 + rand() * 0.04), shade * (0.97 + rand() * 0.06)));
     });
-    const slateMat = withUvOffset(new THREE.MeshStandardMaterial({
-      map: textures().slate, bumpMap: textures().slate, bumpScale: 0.025, roughness: 0.55, metalness: 0.1,
-    }));
+    const slateMat = withUvOffset(surface(T.slate, M.slate, 0.62));
     coverings.ardoise.surface = part(coverings.ardoise, unit, slateMat, slates, tints);
-    part(coverings.ardoise, unit, std(M.hook, 0.3, 0.6), hooks);
+    part(coverings.ardoise, unit, std(M.hook, 0.3, 0.8), hooks);
     ridge(coverings.ardoise);
 
     // Petites tuiles plates à joints croisés
@@ -602,7 +738,7 @@
     lay({ row: 0.13, tw: 0.22, offset: true, clip: true }, (slope, x, w, lower, k) => {
       flat.push({ m: onSlope(slope, x, 0.258, lower - 0.16, w - 0.012, 0.014, 0.32, -0.04), k });
     });
-    coverings.plate.surface = part(coverings.plate, unit, clayMat(M.flatTile, textures().clay, { roughness: 0.85 }), flat, terracotta(flat.length));
+    coverings.plate.surface = part(coverings.plate, unit, clayMat(M.flatTile, T.clay, { roughness: 0.85 }), flat, terracotta(flat.length));
     ridge(coverings.plate);
 
     // Tuiles romanes à emboîtement
@@ -611,7 +747,7 @@
     lay({ row: 0.33, tw: 0.3, offset: false, clip: false }, (slope, x, w, lower, k) => {
       roman.push({ m: onSlope(slope, x, 0.256, lower - 0.21, 1, 1, 1, -0.035), k });
     });
-    coverings.romane.surface = part(coverings.romane, romanTileGeometry(0.3, 0.42), clayMat(M.romanTile, textures().clayRoman, { roughness: 0.75 }), roman, terracotta(roman.length));
+    coverings.romane.surface = part(coverings.romane, romanTileGeometry(0.3, 0.42), clayMat(M.romanTile, T.clayRoman, { roughness: 0.75 }), roman, terracotta(roman.length));
     ridge(coverings.romane);
 
     // Bac acier : plaques nervurées du faîtage à l'égout, posées d'un pignon à l'autre,
@@ -636,7 +772,9 @@
       }
     });
     const screwGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.01, 8);
-    const steelMat = () => new THREE.MeshStandardMaterial({ color: col(M.steel), map: textures().steel, roughness: 0.35, metalness: 0.55 });
+    const steelMat = () => new THREE.MeshStandardMaterial({
+      color: col(M.steel), map: T.steel.map, normalMap: T.steel.normalMap, roughness: 0.45, metalness: 0.15, envMapIntensity: 1,
+    });
     coverings.acier.surface = part(coverings.acier, steelPanelGeometry(PW, panelLen), steelMat(), panels,
       panels.map(() => new THREE.Color(1, 1, 1)));
     part(coverings.acier, screwGeo, std(M.screw, 0.35, 0.6), screws);
@@ -688,7 +826,7 @@
     SLOPES.forEach((slope) => [-1, 1].forEach((sx) => {
       fittings.push({ m: onSlope(slope, sx * (span + 0.02), 0.272, LEN / 2, 0.07, 0.06, LEN + 0.04), k: 0.6 });
     }));
-    fittings.push({ m: inWorld(CX, H + R + 0.05, 0, CW + 0.14, 0.7, CW + 0.14), k: 0.75 });
+    fittings.push({ m: inWorld(CX, H + R + 0.02, 0, CW + 0.08, 0.38, CW + 0.08), k: 0.75 });   // abergement
     part(zinguerie, gutterGeo, zinc(true), gutters);
     part(zinguerie, lipGeo, zinc(), lips);
     part(zinguerie, hangerGeo, zinc(), hangers);
@@ -801,10 +939,10 @@
     const WASH_TOP = H + R + 0.5;
     const WASH_BOTTOM = H - 0.4;
     const DIRT = {
-      ardoise: new THREE.Color(0.8, 0.98, 0.62),
-      plate: new THREE.Color(0.52, 0.58, 0.4),
-      romane: new THREE.Color(0.52, 0.58, 0.4),
-      acier: new THREE.Color(0.8, 0.86, 0.72),
+      ardoise: new THREE.Color(0.72, 0.9, 0.52),
+      plate: new THREE.Color(0.4, 0.44, 0.28),
+      romane: new THREE.Color(0.4, 0.44, 0.28),
+      acier: new THREE.Color(0.72, 0.8, 0.6),
     };
     let demoState = '';
 
@@ -901,6 +1039,34 @@
     stage.signature = '';
   }
 
+  // Direction du soleil : de face, sur la gauche, assez bas pour des ombres longues sous les débords
+  const SUN = new THREE.Vector3(-8, 9.5, 8).normalize();
+
+  // Ciel d'éclairage : dégradé du zénith à l'horizon, sol herbeux, soleil très lumineux
+  function skyLight(renderer) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 8;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 256);
+    [[0, '#2c68b4'], [0.3, '#5d97d8'], [0.47, '#bcd8f0'], [0.5, '#e6eef2'], [0.53, '#8f9c78'], [1, '#4a5a34']]
+      .forEach(([at, c]) => gradient.addColorStop(at, c));
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 8, 256);
+    const sky = new THREE.CanvasTexture(canvas);
+    sky.encoding = THREE.sRGBEncoding;
+    const envScene = new THREE.Scene();
+    envScene.add(new THREE.Mesh(new THREE.SphereGeometry(10, 48, 24), new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide })));
+    const sunDisk = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(14, 12.5, 10.5) }));
+    sunDisk.position.copy(SUN).multiplyScalar(9);
+    envScene.add(sunDisk);
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const env = pmrem.fromScene(envScene, 0.015).texture;
+    pmrem.dispose();
+    sky.dispose();
+    return env;
+  }
+
   function createStage(canvas) {
     let renderer;
     try {
@@ -908,8 +1074,10 @@
     } catch (err) {
       return null;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.5 : 2));
+    renderer.setPixelRatio(quality.ratio);
     renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;          // tons filmiques, comme une photo
+    renderer.toneMappingExposure = 1.0;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0x000000, 0);
@@ -917,40 +1085,24 @@
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(28, 1, 0.5, 200);
 
-    // Lumière de plein jour : ciel bleu, soleil, rebond de la pelouse
-    scene.add(new THREE.HemisphereLight(col('#cfe5ff'), col('#5f7f45'), 0.7));
-    const sun = new THREE.DirectionalLight(col('#fff3df'), 1.55);
-    sun.position.set(10, 16, 12);
+    // Lumière de plein jour : le ciel éclaire et se reflète sur toutes les matières, le soleil porte les ombres
+    scene.environment = skyLight(renderer);
+    const sun = new THREE.DirectionalLight(col('#fff0d8'), 3.1);
+    sun.position.copy(SUN).multiplyScalar(18);
     sun.castShadow = true;
     sun.shadow.mapSize.setScalar(window.innerWidth < 700 ? 1024 : 2048);
-    Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 60 });
+    Object.assign(sun.shadow.camera, { left: -8.5, right: 8.5, top: 8.5, bottom: -8.5, near: 4, far: 40 });
     sun.shadow.camera.updateProjectionMatrix();
-    sun.shadow.bias = -0.0004;
-    sun.shadow.normalBias = 0.02;
+    sun.shadow.bias = -0.0003;
+    sun.shadow.normalBias = 0.025;
     scene.add(sun);
-    const fill = new THREE.DirectionalLight(col('#dbeaff'), 0.35);
-    fill.position.set(-12, 6, -9);
-    scene.add(fill);
 
     const house = buildHouse();
     scene.add(house.group);
-
-    // Reflets du ciel sur l'acier, le zinc et les vitres
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    const envScene = new THREE.Scene();
-    envScene.add(new THREE.Mesh(
-      new THREE.SphereGeometry(10, 32, 16),
-      new THREE.MeshBasicMaterial({ map: textures().sky, side: THREE.BackSide })
-    ));
-    const env = pmrem.fromScene(envScene, 0.02).texture;
-    pmrem.dispose();
+    // Le ciel éclaire moins que le soleil : ombres franches, comme en plein jour
     house.group.traverse((obj) => {
       [].concat(obj.material || []).forEach((mat) => {
-        if (mat.metalness >= 0.25) {
-          mat.envMap = env;
-          mat.envMapIntensity = 0.9;
-          mat.needsUpdate = true;
-        }
+        if (mat.isMeshStandardMaterial && mat.metalness < 0.2) mat.envMapIntensity = 0.5;
       });
     });
 
@@ -1222,19 +1374,51 @@
     return `${t.toFixed(4)}|${sway.toFixed(4)}|${anatomy.eye.x.toFixed(3)}|${anatomy.eye.y.toFixed(3)}|${aShown}|${s.toFixed(3)}|${d.toFixed(2)}`;
   }
 
+  // Fluidité : si la 3D tourne à moins de 26 images par seconde, sa définition baisse d'un cran
+  // (le seuil laisse passer les écrans bridés à 30 images par seconde, en mode économie d'énergie)
+  function adapt(frameTime) {
+    if (quality.skip > 0) {           // premières images : envoi des matières à la carte graphique
+      quality.skip -= 1;
+      return;
+    }
+    quality.frames += 1;
+    quality.time += frameTime;
+    if (quality.frames < 45) return;
+    const slow = quality.time / quality.frames > 1 / 26;
+    quality.frames = 0;
+    quality.time = 0;
+    if (!slow || quality.ratio <= 0.8) return;
+    quality.ratio = Math.max(0.8, quality.ratio * 0.75);
+    quality.skip = 20;
+    [hero, anatomy].forEach((stage) => {
+      if (!stage) return;
+      stage.renderer.setPixelRatio(quality.ratio);
+      stage.width = 0;                // force le redimensionnement
+      resize(stage);
+    });
+  }
+
   // Une seule boucle ; chaque scène n'est redessinée que si elle est visible et a changé
   let last = performance.now();
   function tick(now) {
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const frameTime = (now - last) / 1000;
+    const dt = Math.min(0.05, frameTime);
     last = now;
+    if (!ready) {                     // la maison attend ses matières
+      requestAnimationFrame(tick);
+      return;
+    }
+    let drawn = false;
     for (const [stage, update] of [[hero, updateHero], [anatomy, updateAnatomy]]) {
       if (!stage || !stage.visible) continue;
-      const signature = `${update(now, dt)}|${stage.width}x${stage.height}`;
+      const signature = `${update(now, dt)}|${stage.width}x${stage.height}|${arrived}`;
       if (signature !== stage.signature) {
         stage.signature = signature;
         stage.renderer.render(stage.scene, stage.camera);
+        drawn = true;
       }
     }
+    if (drawn) adapt(frameTime);
     requestAnimationFrame(tick);
   }
   docEl.classList.add('has-3d');
