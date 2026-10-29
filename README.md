@@ -34,7 +34,9 @@ Google Fonts ou un autre service.
    WhatsApp (le site n'enregistre rien).
 
 Sur mobile : menu plein écran, barre fixe « Appeler / Devis gratuit » en bas de l'écran (masquée
-quand le formulaire est affiché).
+quand le formulaire est affiché). La page y est resserrée (environ 11 écrans de haut) : services et
+prestations de nettoyage en cartes à faire glisser au doigt, couvertures de la maquette sur une ligne,
+étapes en liste compacte, encadré urgence sur une ligne, formulaire sur deux colonnes.
 
 Autres pages : `tarifs.html` (barème des prix, obligatoire pour les dépannages et l'entretien de
 toiture) et `mentions-legales.html` (mentions, assurance, médiation, données personnelles).
