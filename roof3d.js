@@ -1,13 +1,13 @@
 // A R Rénovation — toiture en 3D (Three.js r128)
-// Deux scènes : la maison du hero, dont les ardoises se posent rang par rang,
-// et l'anatomie de la toiture, qui se monte couche par couche au défilement.
+// Trois scènes : la maison de l'accueil, dont les ardoises se posent rang par rang ;
+// la maquette de la toiture, montée couche par couche avec les boutons et le curseur ;
+// la simulation du démoussage, du faîtage vers la gouttière.
 (function () {
   'use strict';
 
   const docEl = document.documentElement;
   const heroCanvas = document.getElementById('hero-roof');
-  const anatomyCanvas = document.getElementById('anatomy-roof');
-  if (!window.THREE || !heroCanvas || !anatomyCanvas) {
+  if (!window.THREE || !heroCanvas) {
     docEl.classList.add('no-3d');
     return;
   }
@@ -1042,14 +1042,14 @@
   // Direction du soleil : de face, sur la gauche, assez bas pour des ombres longues sous les débords
   const SUN = new THREE.Vector3(-8, 9.5, 8).normalize();
 
-  // Ciel d'éclairage : dégradé du zénith à l'horizon, sol herbeux, soleil très lumineux
+  // Ciel d'éclairage : zénith bleuté, horizon crème, sol chaud, soleil très lumineux
   function skyLight(renderer) {
     const canvas = document.createElement('canvas');
     canvas.width = 8;
     canvas.height = 256;
     const ctx = canvas.getContext('2d');
     const gradient = ctx.createLinearGradient(0, 0, 0, 256);
-    [[0, '#2c68b4'], [0.3, '#5d97d8'], [0.47, '#bcd8f0'], [0.5, '#e6eef2'], [0.53, '#8f9c78'], [1, '#4a5a34']]
+    [[0, '#58789c'], [0.3, '#93aecb'], [0.47, '#e2ddd3'], [0.5, '#f1ebe1'], [0.53, '#b9ad99'], [1, '#5f574a']]
       .forEach(([at, c]) => gradient.addColorStop(at, c));
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 8, 256);
@@ -1149,153 +1149,151 @@
     return;
   }
 
-  // La scène de l'anatomie n'est construite qu'à l'approche de sa section
-  let anatomy = null;
-  const startAnatomy = () => {
-    if (anatomy) return;
-    anatomy = createStage(anatomyCanvas);
-    if (!anatomy) docEl.classList.add('no-3d-anatomy');
-  };
-  if ('IntersectionObserver' in window) {
+  // Glisser pour faire tourner une scène, à la souris ou au doigt ; l'élan se perd doucement
+  function draggable(canvas) {
+    const state = { yaw: 0, spin: 0, drag: null };
+    canvas.addEventListener('pointerdown', (event) => {
+      state.drag = { x: event.clientX, id: event.pointerId };
+      canvas.setPointerCapture(event.pointerId);
+    });
+    canvas.addEventListener('pointermove', (event) => {
+      if (!state.drag || event.pointerId !== state.drag.id) return;
+      const dx = event.clientX - state.drag.x;
+      state.drag.x = event.clientX;
+      state.yaw += dx * 0.01;
+      state.spin = dx * 0.01;
+    });
+    const release = () => { state.drag = null; };
+    canvas.addEventListener('pointerup', release);
+    canvas.addEventListener('pointercancel', release);
+    return state;
+  }
+  function coast(state, dt) {
+    if (state.drag) return;
+    state.yaw += state.spin * dt * 60;
+    state.spin *= Math.pow(0.0005, dt);
+  }
+
+  // Une scène n'est construite qu'à l'approche de sa section
+  function whenNear(canvas, build) {
+    if (!canvas) return;
+    if (!('IntersectionObserver' in window)) {
+      build();
+      return;
+    }
     const watcher = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
       watcher.disconnect();
-      startAnatomy();
+      build();
     }, { rootMargin: '800px 0px' });
-    watcher.observe(anatomyCanvas);
-  } else {
-    startAnatomy();
+    watcher.observe(canvas);
   }
 
-  // Maison du hero : couverture posée à l'arrivée, rotation lente, glisser pour la faire tourner
+  // Un curseur colore la partie parcourue (--val), comme dans script.js
+  const paintRange = (input) => input.style.setProperty('--val', `${((input.value - input.min) / (input.max - input.min)) * 100}%`);
+
+  // ---------- Accueil : l'ardoise se pose à l'arrivée, la maison tourne lentement ----------
+
   const heroBase = hero.house.layers[3];
   const heroZinc = hero.house.layers[4];
-  const coverings = hero.house.coverings;
+  const heroSlate = hero.house.coverings.ardoise;
+  const heroDrag = draggable(heroCanvas);
+  heroDrag.yaw = 0.5;
   let heroStart = null;
-  let yaw = 0.5;
-  let spin = 0;
-  let drag = null;
-
-  // Un sélecteur de couverture : met à jour les boutons et signale le choix
-  function coveringSelector(selector, onPick) {
-    const buttons = Array.from(document.querySelectorAll(selector));
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
-        onPick(button);
-      });
-    });
-  }
-
-  // Choix de la couverture : l'ancienne se dépose depuis le faîtage, la nouvelle se pose depuis l'égout
-  let shown = 'ardoise';
-  let wanted = 'ardoise';
-  let swap = null;
   const LAY = { gap: 2.4, stagger: 0.72, appear: true };
-  Object.keys(coverings).forEach((name) => {
-    if (name !== shown) hero.house.place(coverings[name], { ...LAY, u: 0 });
+  Object.entries(hero.house.coverings).forEach(([name, covering]) => {
+    if (name !== 'ardoise') hero.house.place(covering, { ...LAY, u: 0 });
   });
-  coveringSelector('.hero .covering__btn', (button) => { wanted = button.dataset.covering; });
-
-  heroCanvas.addEventListener('pointerdown', (event) => {
-    drag = { x: event.clientX, id: event.pointerId };
-    heroCanvas.setPointerCapture(event.pointerId);
-  });
-  heroCanvas.addEventListener('pointermove', (event) => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const dx = event.clientX - drag.x;
-    drag.x = event.clientX;
-    yaw += dx * 0.01;
-    spin = dx * 0.01;
-  });
-  const release = () => { drag = null; };
-  heroCanvas.addEventListener('pointerup', release);
-  heroCanvas.addEventListener('pointercancel', release);
 
   function updateHero(now, dt) {
     if (heroStart === null) heroStart = now;
     const t = reduceMotion ? Infinity : (now - heroStart) / 1000;
     const intro = clamp01((t - 0.4) / 3.2);
     hero.house.place(heroBase, { ...LAY, u: intro });
+    hero.house.place(heroSlate, { ...LAY, u: intro });
     hero.house.place(heroZinc, { u: clamp01((t - 3.4) / 0.9), gap: 1.4, stagger: 0.5, appear: true });
-    if (!swap && wanted !== shown && intro >= 1) swap = { from: shown, to: wanted, start: now };
-    if (swap) {
-      const s = reduceMotion ? Infinity : (now - swap.start) / 1000;
-      hero.house.place(coverings[swap.from], { ...LAY, u: 1 - clamp01(s / 1.1) });
-      hero.house.place(coverings[swap.to], { ...LAY, u: clamp01((s - 1.1) / 2.2) });
-      if (s >= 3.3) {
-        shown = swap.to;
-        swap = null;
-      }
-    } else {
-      hero.house.place(coverings[shown], { ...LAY, u: intro });
-    }
-    if (!drag) {
-      yaw += spin * dt * 60 + (reduceMotion ? 0 : 0.12 * dt);
-      spin *= Math.pow(0.0005, dt);
-    }
-    hero.house.group.rotation.y = yaw;
+    coast(heroDrag, dt);
+    if (!heroDrag.drag && !reduceMotion) heroDrag.yaw += 0.12 * dt;
+    hero.house.group.rotation.y = heroDrag.yaw;
     frame(hero, _c.set(0, 2.5, 0), 6.9, 0.62, 0.4, 1);
-    const laid = Object.values(coverings).map((l) => l.u).join('|');
-    return `${yaw.toFixed(4)}|${heroBase.u}|${heroZinc.u}|${laid}`;
+    return `${heroDrag.yaw.toFixed(4)}|${heroBase.u}|${heroZinc.u}`;
   }
 
-  // Anatomie : la toiture se monte couche par couche au défilement
-  const steps = Array.from(document.querySelectorAll('.astep'));
-  const stepLabel = document.getElementById('anatomy-label');
-  const stepFill = document.getElementById('anatomy-fill');
-  const GAP = 0.95;
-  let activeStep = -1;
+  // ---------- 01 / Toiture : la maquette se monte couche par couche ----------
+  // 0 = vue éclatée (les cinq couches attendent au-dessus de la maison), 5 = toit complet.
 
-  // Type de toiture de l'anatomie : le texte de l'étape Couverture suit le choix
-  const coverStep = document.querySelector('[data-covering-step]');
+  const maquetteCanvas = document.getElementById('maquette-roof');
+  const maquetteBox = document.getElementById('maquette');
+  const layerRange = document.getElementById('couches');
+  const playButton = document.getElementById('maquette-play');
+  const viewButtons = Array.from(document.querySelectorAll('[data-view]'));
+  const GAP = 0.95;
+  let maquette = null;
+  let maquetteDrag = null;
+  let mTarget = reduceMotion ? 5 : 0;     // couches demandées
+  let mShown = mTarget;                   // couches affichées, qui rejoignent la demande en douceur
+  let mPlaying = false;
+  let mAutoplayed = reduceMotion;         // la première fois qu'elle paraît, la maquette se monte toute seule
+  let mStep = -1;
   let aShown = 'ardoise';
   let aWanted = 'ardoise';
   let aSwap = null;
-  coveringSelector('.anatomy .covering__btn', (button) => {
-    aWanted = button.dataset.covering;
-    coverStep.querySelector('h3').textContent = button.dataset.title;
-    coverStep.querySelector('p').textContent = button.dataset.text;
-    coverStep.style.setProperty('--dot', button.dataset.dot);
+
+  function setTarget(value, byUser) {
+    mTarget = Math.min(5, Math.max(0, value));
+    if (byUser) mPlaying = false;
+    if (+layerRange.value !== mTarget) layerRange.value = mTarget;
+    paintRange(layerRange);
+    viewButtons.forEach((button) => {
+      const on = button.dataset.view === 'eclate' ? mTarget === 0 : mTarget === 5;
+      button.setAttribute('aria-pressed', String(on));
+    });
+    playButton.textContent = mPlaying ? 'Pause' : mTarget >= 5 ? 'Revoir' : 'Lecture';
+  }
+  if (maquetteCanvas) {
+    setTarget(mTarget, false);
+    layerRange.addEventListener('input', () => setTarget(+layerRange.value, true));
+    viewButtons.forEach((button) => button.addEventListener('click', () => setTarget(button.dataset.view === 'eclate' ? 0 : 5, true)));
+    document.querySelectorAll('.couches button').forEach((button) => {
+      button.addEventListener('click', () => setTarget(+button.dataset.step, true));
+    });
+    playButton.addEventListener('click', () => {
+      if (mPlaying) {
+        mPlaying = false;
+      } else {
+        if (mTarget >= 5) mTarget = 0;   // relance depuis la vue éclatée
+        mPlaying = true;
+      }
+      setTarget(mTarget, false);
+    });
+    document.querySelectorAll('.cover-card').forEach((card) => {
+      card.addEventListener('click', () => { aWanted = card.dataset.covering; });
+    });
+  }
+  whenNear(maquetteCanvas, () => {
+    maquette = createStage(maquetteCanvas);
+    if (!maquette) {
+      docEl.classList.add('no-3d-maquette');
+      return;
+    }
+    maquetteDrag = draggable(maquetteCanvas);
   });
 
-  // Démonstration du démoussage (étape 6) : se lance en arrivant sur l'étape, se revoit avec le bouton
-  const demoStatus = document.getElementById('demo-status');
-  const demoReplay = document.getElementById('demo-replay');
-  // [début (s), texte de l'étape, libellé court sous la maison]
-  const DEMO_PHASES = [
-    [0, 'Les années passent : mousses et lichens s’installent…', 'Mousses et lichens'],
-    [1.9, 'Nettoyage du faîtage vers l’égout…', 'Nettoyage'],
-    [5.9, 'Traitement anti-mousse et hydrofuge…', 'Traitement'],
-    [7.8, 'Toiture propre et protégée.', 'Toiture protégée'],
-  ];
-  const DEMO_END = 9.5;           // la caméra est revenue : la démonstration s'arrête là
-  let demoTime = null;            // secondes écoulées dans la démonstration (null : pas lancée)
-  let demoCovering = null;
-  let demoPhase = null;
-  // Avec les animations réduites, elle ne part que sur demande
-  const DEMO_IDLE = reduceMotion ? 'La démonstration se lance avec le bouton ci-dessous.' : demoStatus.textContent;
-  if (reduceMotion) {
-    demoReplay.textContent = 'Voir la démonstration';
-    demoStatus.textContent = DEMO_IDLE;
-  }
-  demoReplay.addEventListener('click', () => { demoTime = 0; });
+  function updateMaquette(now, dt) {
+    if (!mAutoplayed) {
+      mAutoplayed = true;
+      mPlaying = true;
+    }
+    if (mPlaying) {
+      mTarget = Math.min(5, mTarget + dt * 0.55);
+      if (mTarget >= 5) mPlaying = false;
+      setTarget(mTarget, false);
+    }
+    mShown += (mTarget - mShown) * Math.min(1, dt * 5);
+    if (Math.abs(mTarget - mShown) < 0.002) mShown = mTarget;
+    const t = mShown;
+    const house = maquette.house;
 
-  function scrollProgress() {
-    const first = steps[0].getBoundingClientRect();
-    const last = steps[steps.length - 1].getBoundingClientRect();
-    const stepHeight = (last.bottom - first.top) / steps.length;
-    const view = window.innerHeight;
-    const stageBox = anatomyCanvas.getBoundingClientRect();
-    const sideBySide = stageBox.right <= first.left + 1;
-    const line = sideBySide ? view * 0.55 : (Math.max(stageBox.bottom, 0) + view) / 2;
-    // Une couche est posée quand le centre de son étape atteint la ligne de lecture
-    return Math.min(steps.length, Math.max(0, (line - first.top) / stepHeight + 0.5));
-  }
-
-  function updateAnatomy(now, dt) {
-    const t = scrollProgress();
-    const house = anatomy.house;
     // Pendant le gros plan sur la couverture, la zinguerie en attente sort du cadre
     const focus = smooth(3.5, 3.9, t) * (1 - smooth(4.35, 4.75, t));
     const glowAt = (j) => smooth(j - 0.2, j + 0.4, t) * (1 - smooth(j + 1.15, j + 1.45, t));
@@ -1305,7 +1303,7 @@
       house.highlight(l, glowAt(j));
     });
 
-    // La couverture choisie suit l'étape 4 ; un changement de type dépose l'ancienne et pose la nouvelle
+    // La couverture choisie suit la couche 4 ; un changement de type dépose l'ancienne et pose la nouvelle
     if (!aSwap && aWanted !== aShown) aSwap = { from: aShown, to: aWanted, start: now };
     const s = aSwap ? (reduceMotion ? Infinity : (now - aSwap.start) / 1000) : 0;
     Object.entries(house.coverings).forEach(([name, covering]) => {
@@ -1321,29 +1319,16 @@
       aSwap = null;
     }
 
-    // Démoussage : la démonstration démarre en arrivant sur l'étape 6 et se rejoue si l'on y revient.
-    // Elle avance image par image (pas plafonné) : un chargement lent ne lui fait pas sauter d'étape.
-    // Pendant un changement de couverture, elle attend la nouvelle pour repartir de zéro.
-    const k = Math.min(steps.length - 1, Math.max(0, Math.round(t) - 1));
-    if (demoTime !== null) demoTime = aSwap ? 0 : Math.min(DEMO_END, demoTime + dt);
-    else if (k === 5 && !reduceMotion) demoTime = 0;
-    if (t < 4.9) demoTime = null;
-    if (demoCovering !== aShown) {
-      if (demoCovering) house.demo(demoCovering, 0, 0, 0);
-      demoCovering = aShown;
+    // La couche demandée est signalée à la page (texte et numéros sous la maquette)
+    const step = mTarget < 0.02 ? 0 : Math.min(5, Math.ceil(mTarget - 0.02));
+    if (step !== mStep) {
+      mStep = step;
+      maquetteBox.dispatchEvent(new CustomEvent('couche', { detail: step }));
     }
-    const d = demoTime === null ? -1 : demoTime;
-    if (d < 0) house.demo(aShown, 0, 0, 0);
-    else house.demo(aShown, clamp01(d / 1.4), Math.min(1.3, Math.max(0, (d - 2) / 3.6)), clamp01((d - 6) / 1.6));
-    const phase = d < 0 ? null : DEMO_PHASES.filter(([at]) => d >= at).pop();
-    if (phase !== demoPhase) {
-      demoPhase = phase;
-      demoStatus.textContent = phase ? phase[1] : DEMO_IDLE;
-    }
-    const demoFocus = d < 0 ? 0 : smooth(0, 1, d) * (1 - smooth(8.2, 9.4, d));
 
+    coast(maquetteDrag, dt);
     const sway = reduceMotion ? 0 : Math.sin(now / 2600) * 0.05;
-    house.group.rotation.y = -0.55 + (t / steps.length) * 0.75 + sway;
+    house.group.rotation.y = -0.55 + (t / 5) * 0.75 + sway + maquetteDrag.yaw;
 
     // Les couches en attente se resserrent : la caméra se rapproche
     const top = Math.max(H + R + 1.7, H + R + 0.8 + GAP * Math.max(0, 5 - t));
@@ -1355,23 +1340,74 @@
       _c.lerp(_f, focus);
       radius += (2.6 - radius) * focus;
     }
-    // Pendant le démoussage, la caméra se rapproche du versant
-    if (demoFocus > 0) {
-      _f.set(0.2, H + R - 1.3, 1.6).applyAxisAngle(Y_AXIS, house.group.rotation.y);
-      _c.lerp(_f, demoFocus);
-      radius += (4.2 - radius) * demoFocus;
-    }
-    frame(anatomy, _c, radius, 0.7, 0.34 + 0.12 * focus + 0.1 * demoFocus, 0.12);
+    frame(maquette, _c, radius, 0.7, 0.34 + 0.12 * focus, 0.12);
+    return `${t.toFixed(4)}|${sway.toFixed(4)}|${maquette.eye.x.toFixed(3)}|${maquette.eye.y.toFixed(3)}|${aShown}|${s.toFixed(3)}|${house.group.rotation.y.toFixed(4)}`;
+  }
 
-    if (k !== activeStep) {
-      activeStep = k;
-      steps.forEach((s, i) => s.classList.toggle('is-active', i === k));
+  // ---------- 02 / Entretien : la simulation du démoussage ----------
+  // Avancement 0 : toiture encrassée ; 0,75 : nettoyée du faîtage vers la gouttière ; 1 : traitée.
+
+  const cleanCanvas = document.getElementById('nettoyage-roof');
+  const cleanRange = document.getElementById('clean-range');
+  const cleanPlay = document.getElementById('clean-play');
+  const cleanValue = document.getElementById('clean-value');
+  let clean = null;
+  let cleanDrag = null;
+  let cWanted = 'ardoise';
+  let cShown = null;
+  let cProgress = 0;
+  let cPlaying = false;
+  if (cleanCanvas) {
+    paintRange(cleanRange);
+    document.querySelectorAll('.clean-pill').forEach((pill) => {
+      pill.addEventListener('click', () => { cWanted = pill.dataset.covering; });
+    });
+    cleanRange.addEventListener('input', () => {
+      cPlaying = false;
+      cProgress = cleanRange.value / 100;
+    });
+    cleanPlay.addEventListener('click', () => {
+      if (cProgress >= 1) cProgress = 0;
+      cPlaying = true;
+    });
+  }
+  whenNear(cleanCanvas, () => {
+    clean = createStage(cleanCanvas);
+    if (!clean) {
+      docEl.classList.add('no-3d-clean');
+      return;
     }
-    // Pendant la démonstration, la phase en cours s'affiche sous la maison (visible aussi sur mobile)
-    const label = k === 5 && demoPhase ? `06 — ${demoPhase[2]}` : steps[k].dataset.label;
-    if (stepLabel.textContent !== label) stepLabel.textContent = label;
-    stepFill.style.transform = `scaleX(${(t / steps.length).toFixed(4)})`;
-    return `${t.toFixed(4)}|${sway.toFixed(4)}|${anatomy.eye.x.toFixed(3)}|${anatomy.eye.y.toFixed(3)}|${aShown}|${s.toFixed(3)}|${d.toFixed(2)}`;
+    cleanDrag = draggable(cleanCanvas);
+    Object.values(clean.house.coverings).forEach((covering) => clean.house.place(covering, { u: 0, appear: true }));
+  });
+
+  function updateClean(now, dt) {
+    const house = clean.house;
+    if (cShown !== cWanted) {
+      if (cShown) {
+        house.demo(cShown, 0, 0, 0);
+        house.place(house.coverings[cShown], { u: 0, appear: true });
+      }
+      house.place(house.coverings[cWanted], { u: 1 });
+      cShown = cWanted;
+    }
+    if (cPlaying) {
+      cProgress = Math.min(1, cProgress + dt / 4.5);
+      if (cProgress >= 1) cPlaying = false;
+      cleanRange.value = Math.round(cProgress * 100);
+      paintRange(cleanRange);
+    }
+    house.demo(cShown, 1, 1.3 * clamp01(cProgress / 0.75), clamp01((cProgress - 0.72) / 0.28));
+    const percent = `${Math.round(cProgress * 100)} %`;
+    if (cleanValue.textContent !== percent) cleanValue.textContent = percent;
+
+    coast(cleanDrag, dt);
+    const sway = reduceMotion ? 0 : Math.sin(now / 3000) * 0.03;
+    house.group.rotation.y = -0.35 + sway + cleanDrag.yaw;
+    // Vue rapprochée sur le versant avant
+    _f.set(0.2, H + R - 1.3, 1.6).applyAxisAngle(Y_AXIS, house.group.rotation.y);
+    frame(clean, _f, 4.4, 0.7, 0.46, 1);
+    return `${cShown}|${cProgress.toFixed(3)}|${house.group.rotation.y.toFixed(4)}`;
   }
 
   // Fluidité : si la 3D tourne à moins de 26 images par seconde, sa définition baisse d'un cran
@@ -1390,7 +1426,7 @@
     if (!slow || quality.ratio <= 0.8) return;
     quality.ratio = Math.max(0.8, quality.ratio * 0.75);
     quality.skip = 20;
-    [hero, anatomy].forEach((stage) => {
+    [hero, maquette, clean].forEach((stage) => {
       if (!stage) return;
       stage.renderer.setPixelRatio(quality.ratio);
       stage.width = 0;                // force le redimensionnement
@@ -1409,7 +1445,7 @@
       return;
     }
     let drawn = false;
-    for (const [stage, update] of [[hero, updateHero], [anatomy, updateAnatomy]]) {
+    for (const [stage, update] of [[hero, updateHero], [maquette, updateMaquette], [clean, updateClean]]) {
       if (!stage || !stage.visible) continue;
       const signature = `${update(now, dt)}|${stage.width}x${stage.height}|${arrived}`;
       if (signature !== stage.signature) {

@@ -18,6 +18,7 @@ travaux.addEventListener('change', updateHint);
 
 // Ouvre le formulaire de devis, pré-rempli quand le visiteur a déjà décrit son besoin
 function openDevis({ type, text } = {}) {
+  showSend(false);
   if (type) {
     travaux.value = type;
     updateHint();
@@ -27,14 +28,8 @@ function openDevis({ type, text } = {}) {
   document.getElementById(text ? 'f-nom' : 'f-msg').focus({ preventScroll: true });
 }
 
-// Le champ du hero
-document.getElementById('ask').addEventListener('submit', (event) => {
-  event.preventDefault();
-  openDevis({ text: document.getElementById('ask-input').value.trim() });
-});
-
 // Chaque service mène à un devis avec le bon type de travaux
-document.querySelectorAll('.tile__cta').forEach((link) => {
+document.querySelectorAll('.js-devis').forEach((link) => {
   link.addEventListener('click', (event) => {
     event.preventDefault();
     openDevis({ type: link.dataset.travaux });
@@ -70,7 +65,69 @@ if ('IntersectionObserver' in window) {
   }, { threshold: 0.15 }).observe(contact);
 }
 
-// Réalisations : chaque photo remplace son emplacement dès qu'elle est chargée
+// Curseurs : la partie parcourue est colorée (--val)
+function paintRange(input) {
+  input.style.setProperty('--val', `${((input.value - input.min) / (input.max - input.min)) * 100}%`);
+}
+document.querySelectorAll('.range input').forEach((input) => {
+  paintRange(input);
+  input.addEventListener('input', () => paintRange(input));
+});
+
+// Maquette de la toiture : la couverture choisie a sa description, reprise par la couche 4
+const coverCards = Array.from(document.querySelectorAll('.cover-card'));
+const coverStep = document.querySelector('[data-cover-step]');
+coverCards.forEach((card) => {
+  card.addEventListener('click', () => {
+    coverCards.forEach((other) => other.setAttribute('aria-pressed', String(other === card)));
+    document.getElementById('cover-kind').textContent = card.dataset.kind;
+    document.getElementById('cover-title').textContent = card.dataset.title;
+    document.getElementById('cover-text').textContent = card.dataset.text;
+    document.getElementById('cover-fix').textContent = card.dataset.fix;
+    document.getElementById('cover-ridge').textContent = card.dataset.ridge;
+    coverStep.dataset.title = card.dataset.title;
+    coverStep.dataset.text = card.dataset.text;
+    if (shownStep === 4) showStep(4);
+  });
+});
+
+// Les couches : un clic, ou la maquette 3D qui avance, affiche la description de la couche
+const layerButtons = Array.from(document.querySelectorAll('.couches button'));
+const layerNum = document.getElementById('couche-num');
+const layerTitle = document.getElementById('couche-title');
+const layerText = document.getElementById('couche-text');
+let shownStep = -1;
+function showStep(step) {
+  shownStep = step;
+  layerButtons.forEach((button) => {
+    const n = +button.dataset.step;
+    button.classList.toggle('is-done', n <= step);
+    if (n === step) button.setAttribute('aria-current', 'step');
+    else button.removeAttribute('aria-current');
+  });
+  if (step === 0) {
+    layerNum.textContent = 'Vue éclatée';
+    layerTitle.textContent = 'Les cinq couches d’une toiture.';
+    layerText.textContent = 'Faites glisser le curseur ou touchez une couche pour la poser.';
+    return;
+  }
+  const button = layerButtons[step - 1];
+  layerNum.textContent = `Couche ${step} sur 5`;
+  layerTitle.textContent = `${button.dataset.title}.`;
+  layerText.textContent = button.dataset.text;
+}
+layerButtons.forEach((button) => button.addEventListener('click', () => showStep(+button.dataset.step)));
+document.getElementById('maquette').addEventListener('couche', (event) => showStep(event.detail));
+
+// Simulation du démoussage : une seule couverture à la fois
+const cleanPills = Array.from(document.querySelectorAll('.clean-pill'));
+cleanPills.forEach((pill) => {
+  pill.addEventListener('click', () => {
+    cleanPills.forEach((other) => other.setAttribute('aria-pressed', String(other === pill)));
+  });
+});
+
+// Réalisations : chaque photo apparaît dès qu'elle est chargée
 document.querySelectorAll('.photo img').forEach((img) => {
   const show = () => img.closest('.photo').classList.add('is-loaded');
   if (img.complete && img.naturalWidth) show();
@@ -119,66 +176,44 @@ document.getElementById('diag-cta').addEventListener('click', (event) => {
   });
 });
 
-// Le formulaire ouvre la messagerie avec la demande déjà rédigée
+// Envoi de la demande : rien n'est stocké par le site. La demande est rédigée ici,
+// puis le visiteur l'envoie lui-même, par e-mail ou par WhatsApp.
+const EMAIL = 'adolpherudy0@gmail.com';
+const WHATSAPP = '33782627856';
 const form = document.getElementById('devis');
+const submitButton = document.getElementById('devis-submit');
+const send = document.getElementById('send');
+
+function showSend(open) {
+  send.hidden = !open;
+  submitButton.hidden = open;
+}
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
   const data = new FormData(form);
-  const subject = `Demande de devis — ${data.get('travaux')}`;
-  const body = [
-    `Nom : ${data.get('nom')}`,
-    `Téléphone : ${data.get('telephone')}`,
-    `E-mail : ${data.get('email')}`,
-    `Ville : ${data.get('ville')}`,
-    `Travaux : ${data.get('travaux')}`,
-    '',
-    data.get('message'),
-  ].join('\n');
-  window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  document.getElementById('form-note').textContent = 'Merci, votre messagerie va s’ouvrir.';
+  const field = (name) => String(data.get(name) || '').trim();
+  const subject = `Demande de devis — ${field('travaux')}`;
+  const lines = [`Nom : ${field('nom')}`, `Téléphone : ${field('telephone')}`];
+  if (field('email')) lines.push(`E-mail : ${field('email')}`);
+  if (field('ville')) lines.push(`Ville : ${field('ville')}`);
+  lines.push(`Travaux : ${field('travaux')}`, '', field('message'));
+  const body = lines.join('\n');
+  document.getElementById('send-mail').href =
+    `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  document.getElementById('send-wa').href =
+    `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`${subject}\n\n${body}`)}`;
+  showSend(true);
+  document.getElementById('send-title').focus();
+});
+
+// Si la demande change, elle doit être préparée à nouveau
+form.addEventListener('input', () => {
+  if (!send.hidden) showSend(false);
+});
+document.getElementById('send-edit').addEventListener('click', () => {
+  showSend(false);
+  document.getElementById('f-msg').focus();
 });
 
 document.getElementById('year').textContent = new Date().getFullYear();
-
-// Nuages : chaque forme est dessinée une fois dans un canvas, à partir d'une graine
-document.querySelectorAll('.cloud').forEach((el) => {
-  let seed = Number(el.dataset.seed) || 7;
-  const rand = () => {
-    seed = (seed * 16807) % 2147483647;
-    return (seed - 1) / 2147483646;
-  };
-  const w = 640;
-  const h = 280;
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d');
-  const base = h * 0.78;
-  const puffs = Array.from({ length: 30 }, () => {
-    const t = rand();
-    const bump = Math.sin(Math.PI * t);
-    const r = h * (0.09 + 0.2 * bump + 0.06 * rand());
-    return { x: w * (0.08 + 0.84 * t), y: base - r * (0.25 + 0.8 * bump * rand()), r };
-  });
-  const puff = (x, y, r, inner, outer) => {
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
-    gradient.addColorStop(0, inner);
-    gradient.addColorStop(0.6, inner);
-    gradient.addColorStop(1, outer);
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  };
-  // Dessous ombré, puis corps blanc éclairé par le haut
-  puffs.forEach(({ x, y, r }) => puff(x, y + r * 0.3, r, 'rgba(168,190,218,0.6)', 'rgba(168,190,218,0)'));
-  puffs.forEach(({ x, y, r }) => puff(x - r * 0.12, y - r * 0.18, r * 0.92, 'rgba(255,255,255,0.96)', 'rgba(255,255,255,0)'));
-  // Base aplatie et estompée
-  ctx.globalCompositeOperation = 'destination-out';
-  const fade = ctx.createLinearGradient(0, base - h * 0.04, 0, base + h * 0.12);
-  fade.addColorStop(0, 'rgba(0,0,0,0)');
-  fade.addColorStop(1, 'rgba(0,0,0,1)');
-  ctx.fillStyle = fade;
-  ctx.fillRect(0, base - h * 0.04, w, h);
-  el.appendChild(canvas);
-});

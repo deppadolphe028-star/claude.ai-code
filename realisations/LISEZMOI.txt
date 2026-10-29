@@ -1,22 +1,23 @@
-Photos des chantiers — section « Nos réalisations » de la page d'accueil
-=======================================================================
+Photos des chantiers — section « Réalisations » de la page d'accueil
+====================================================================
 
-Déposez vos photos dans ce dossier en gardant exactement ces noms :
+Uniquement des chantiers d'A R Rénovation, publiés avec l'accord du client.
 
-  avant.jpg  et  apres.jpg     le comparatif avant / après (même chantier, même cadrage si possible)
-  chantier-1.jpg à chantier-6.jpg   les six photos de la galerie
+Déjà en place :
+  avant.jpg et apres.jpg    le comparatif avant / après (toiture en ardoise démoussée et traitée)
+  chantier-2.jpg            couverture refaite en tuiles (montage : avant en haut, après en bas)
+  chantier-1.jpg            démoussage d'une toiture en tuiles (montage côte à côte), pas affichée
+                            actuellement
+  fond-accueil.jpg          la photo d'ardoises en fond de l'accueil (recadrée depuis apres.jpg)
 
-Tant qu'une photo manque, son emplacement affiche « Photo à ajouter » avec le nom du fichier attendu.
+Pour ajouter un chantier :
+1. mettez la photo dans ce dossier (JPG, environ 1600 pixels de large, moins de 500 Ko) ;
+2. dans index.html, section « Réalisations », copiez un bloc <figure class="work"> ... </figure> ;
+3. changez le nom du fichier (src), la description de la photo (alt) et la légende.
 
-Les photos 1 et 2 de la galerie sont des montages avant / après (côte à côte pour la 1, l'une sous
-l'autre pour la 2) : les étiquettes « Avant » et « Après » s'affichent par-dessus. Si vous les
-remplacez par une photo simple, il faut retirer ces étiquettes dans index.html (lignes contenant
-« photo__tag »).
+Pour un montage avant / après (deux photos l'une sous l'autre), gardez la classe « photo--pair » et
+les deux étiquettes « Avant » et « Après » ; pour une photo simple, retirez-les.
 
-Conseils :
-- format JPG, environ 1600 pixels de large, moins de 500 Ko par photo ;
-- photos prises de jour, toiture bien visible, sans personne reconnaissable ni plaque d'immatriculation.
-
-Les légendes (type de travaux, ville, année) se modifient dans index.html, section « Nos réalisations »
-(chercher « Ville — année »). Vous pouvez aussi simplement envoyer les photos et les légendes à
-la personne qui gère le site.
+Conseils : photos prises de jour, toiture bien visible, sans personne reconnaissable ni plaque
+d'immatriculation. Vous pouvez aussi simplement envoyer les photos et les légendes (ville, année)
+à la personne qui gère le site.

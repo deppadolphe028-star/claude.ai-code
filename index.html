@@ -3,31 +3,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>A R Rénovation — Couverture et nettoyage | Devis gratuit</title>
-  <meta name="description" content="A R Rénovation : réfection de toiture, réparation de fuites, zinguerie, charpente, isolation et démoussage, mais aussi nettoyage de dallages, terrasses, maisons et locaux professionnels. Devis gratuit.">
-  <meta name="theme-color" content="#143f7c">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f1011'/%3E%3Cpath d='M6 19 16 9l10 10' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E">
+  <title>A R Rénovation — Couvreur dans le Morbihan | Devis gratuit</title>
+  <meta name="description" content="A R Rénovation, couvreur dans le Morbihan (56) : réfection de toiture, réparation de fuites, zinguerie, charpente, isolation et démoussage. Nettoyage de dallages, terrasses, maisons et locaux professionnels. Devis gratuit.">
+  <meta name="theme-color" content="#15181b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2315181b'/%3E%3Cpath d='M6 19 16 9l10 10' fill='none' stroke='%23d7a46c' stroke-width='2'/%3E%3C/svg%3E">
 
-  <!-- Partage sur les réseaux et messageries -->
-  <!-- À REMPLACER : une fois le site en ligne, mettre l'adresse complète de l'image (https://…/og-image.jpg) -->
+  <!-- Partage sur les réseaux et messageries.
+       À COMPLÉTER une fois le site en ligne : mettre l'adresse complète de l'image (https://votre-domaine.fr/og-image.jpg) et ajouter og:url -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="A R Rénovation">
-  <meta property="og:title" content="A R Rénovation — Couverture et nettoyage, devis gratuit">
-  <meta property="og:description" content="Réfection de toiture, réparation de fuites, zinguerie, charpente et isolation. Nettoyage de dallages, terrasses, maisons et locaux professionnels.">
+  <meta property="og:title" content="A R Rénovation — Couvreur dans le Morbihan, devis gratuit">
+  <meta property="og:description" content="Réfection de toiture, réparation de fuites, zinguerie, charpente et isolation dans tout le Morbihan. Diagnostic et devis gratuits.">
   <meta property="og:image" content="og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A R Rénovation, couvreur dans le Morbihan : une maison en 3D dont la toiture se construit">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Fiche entreprise pour les moteurs de recherche — À REMPLACER : zone d'intervention, adresse du site -->
+  <!-- Fiche entreprise pour les moteurs de recherche — À COMPLÉTER : adresse et site une fois connus -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "RoofingContractor",
     "name": "A R Rénovation",
-    "description": "Couvreur : réfection de toiture, réparation de fuites, zinguerie, charpente, isolation et démoussage. Nettoyage de dallages, terrasses, maisons et locaux professionnels. Diagnostic et devis gratuits.",
+    "description": "Couvreur dans le Morbihan : réfection de toiture, réparation de fuites, zinguerie, charpente, isolation et démoussage. Nettoyage de dallages, terrasses, maisons et locaux professionnels. Diagnostic et devis gratuits.",
     "telephone": "+33782627856",
     "email": "adolpherudy0@gmail.com",
-    "areaServed": "Votre ville et ses environs",
+    "areaServed": { "@type": "AdministrativeArea", "name": "Morbihan" },
     "image": "og-image.jpg",
     "makesOffer": [
       { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réfection et rénovation de toiture" } },
@@ -44,471 +47,488 @@
   }
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=Inter:wght@300;400&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Polices hébergées avec le site (aucune requête vers un service extérieur) -->
+  <link rel="preload" href="fonts/oswald.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#accueil">Aller au contenu</a>
 
-<!-- Barre de navigation (verre dépoli) -->
+<!-- Barre de navigation -->
 <header class="nav">
   <div class="nav__inner">
     <a class="logo" href="#accueil" aria-label="A R Rénovation, accueil">
       <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 15 14 5l11 10M7 12v11h14V12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
-      <span>A R Rénovation</span>
+      <span class="logo__text"><b>A R Rénovation</b><small>Couvreur · Morbihan</small></span>
     </a>
     <nav class="nav__links" aria-label="Navigation principale">
-      <a class="btn-glass" href="#services">Services</a>
-      <a class="btn-glass" href="#nettoyage">Nettoyage</a>
-      <a class="btn-glass" href="#realisations">Réalisations</a>
-      <a class="btn-glass" href="#avis">Avis</a>
-      <a class="btn-glass" href="#anatomie">Anatomie</a>
-      <a class="btn-glass" href="#diagnostic">Diagnostic</a>
+      <a href="#services">Services</a>
+      <a href="#toiture">Toiture 3D</a>
+      <a href="#entretien">Entretien</a>
+      <a href="#realisations">Réalisations</a>
+      <a href="tarifs.html">Tarifs</a>
     </nav>
     <div class="nav__end">
-      <a class="nav__text" href="tel:+33782627856">07 82 62 78 56</a>
-      <a class="btn-primary nav__cta" href="#contact">Devis gratuit <span aria-hidden="true">→</span></a>
+      <a class="nav__call" href="tel:+33782627856"><span>Appelez</span> 07 82 62 78 56</a>
+      <a class="btn btn--sand btn--small nav__cta" href="#contact">Devis gratuit</a>
       <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu">
         <span></span><span></span>
       </button>
     </div>
   </div>
   <nav class="menu" id="menu" aria-label="Menu" hidden>
-    <a href="#services">Services toiture</a>
-    <a href="#nettoyage">Nettoyage</a>
-    <a href="#realisations">Nos réalisations</a>
-    <a href="#avis">Avis clients</a>
-    <a href="#anatomie">Anatomie d’une toiture</a>
-    <a href="#diagnostic">Diagnostic express</a>
-    <a href="#methode">Comment ça se passe</a>
-    <a href="#questions">Questions fréquentes</a>
-    <a href="#contact">Contact et devis</a>
+    <a href="#services"><span>01</span>Services</a>
+    <a href="#toiture"><span>02</span>La toiture en 3D</a>
+    <a href="#entretien"><span>03</span>Entretien et nettoyage</a>
+    <a href="#realisations"><span>04</span>Nos réalisations</a>
+    <a href="#diagnostic"><span>05</span>Diagnostic express</a>
+    <a href="#questions"><span>06</span>Questions fréquentes</a>
+    <a href="tarifs.html"><span>07</span>Nos tarifs</a>
+    <a href="#contact"><span>08</span>Contact et devis</a>
   </nav>
 </header>
 
-<main id="accueil">
+<main id="accueil" tabindex="-1">
 
-  <!-- Hero : ciel bleu et nuages -->
-  <section class="hero sky">
-    <div class="clouds" aria-hidden="true">
-      <div class="cloud cloud--a" data-seed="3"></div>
-      <div class="cloud cloud--b" data-seed="8"></div>
-      <div class="cloud cloud--c" data-seed="14"></div>
-      <div class="cloud cloud--d" data-seed="21"></div>
-    </div>
-    <div class="hero__grid wrap">
-      <div class="hero__inner">
-        <span class="badge fade">Devis gratuit — diagnostic toiture offert</span>
-        <h1 class="display fade"><em>Protégez</em> ce qui vous abrite.</h1>
-        <p class="subhead fade">Couvreur pour particuliers et professionnels : réfection de toiture, réparation de fuites, zinguerie et isolation. Nous nettoyons aussi dallages, terrasses, maisons et locaux professionnels.</p>
-        <form class="ask fade" id="ask">
-          <label class="sr-only" for="ask-input">Décrivez votre besoin : toiture ou nettoyage</label>
-          <input id="ask-input" type="text" placeholder="J’ai une fuite au plafond depuis la tempête…" autocomplete="off">
-          <button type="submit" aria-label="Envoyer ma demande">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-          </button>
-        </form>
-        <p class="hero__call fade"><i class="live-dot" aria-hidden="true"></i>Une urgence ? <a href="tel:+33782627856">Appelez le 07 82 62 78 56</a></p>
-      </div>
-      <!-- Maison 3D : la couverture se pose rang par rang ; on peut changer de matériau -->
-      <div class="hero__stage">
-        <canvas id="hero-roof" role="img" aria-label="Maison en 3D dont la couverture se pose rang par rang"></canvas>
-        <div class="covering" role="group" aria-label="Choisir la couverture de la maison">
-          <button type="button" class="covering__btn" data-covering="ardoise" aria-pressed="true">Ardoise</button>
-          <button type="button" class="covering__btn" data-covering="plate" aria-pressed="false">Tuile plate</button>
-          <button type="button" class="covering__btn" data-covering="romane" aria-pressed="false">Tuile romane</button>
-          <button type="button" class="covering__btn" data-covering="acier" aria-pressed="false">Bac acier</button>
+  <!-- Accueil : photo d'ardoises assombrie, maison 3D dont la toiture se pose rang par rang -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <p class="kicker kicker--dot">Couvreur · Morbihan (56)</p>
+        <h1 class="title title--hero">Protégez ce qui vous abrite.<span class="accent">Pour longtemps.</span></h1>
+        <p class="lead">Couverture, zinguerie, charpente, isolation et démoussage. Nous nettoyons aussi dallages, terrasses, maisons et locaux professionnels.</p>
+        <div class="actions">
+          <a class="btn btn--sand" href="#toiture">Voir la toiture en 3D <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 5.5V12H5.5"/></svg></a>
+          <a class="link" href="#contact">Demander un devis <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M5.5 4H12v6.5"/></svg></a>
         </div>
-        <p class="mono hero__hint" aria-hidden="true">Glissez pour faire tourner la maison</p>
+        <!-- À VÉRIFIER : engagements de l'entreprise -->
+        <ul class="proofs">
+          <li>Devis gratuit</li>
+          <li>Garantie décennale</li>
+          <li>Artisan couvreur</li>
+        </ul>
+        <a class="urgence" href="tel:+33782627856"><i class="live-dot" aria-hidden="true"></i>Une urgence ? <b>Appelez le 07 82 62 78 56</b></a>
+      </div>
+      <div class="hero__stage">
+        <canvas id="hero-roof" role="img" aria-label="Maison en 3D dont la toiture se pose rang par rang"></canvas>
+        <p class="hint"><i aria-hidden="true"></i>Glissez pour faire tourner la maison</p>
       </div>
     </div>
+    <a class="hero__scroll" href="#services">Faites défiler <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M3.5 9 8 13.5 12.5 9"/></svg></a>
   </section>
 
-  <!-- Badges laurier -->
-  <section class="laurels wrap" aria-label="Nos engagements">
-    <div class="laurel">
-      <svg class="leaf" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
-      <div><p class="laurel__name">Garantie décennale</p><p class="mono">Assurance travaux</p></div>
-      <svg class="leaf leaf--r" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
+  <!-- Bandeau défilant -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Couverture</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Zinguerie</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Charpente</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Isolation</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Démoussage</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Nettoyage</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Couverture</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Zinguerie</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Charpente</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Isolation</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Démoussage</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
+      <span>Nettoyage</span><svg class="star" viewBox="0 0 12 12"><path d="M6 0c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z"/></svg>
     </div>
-    <div class="laurel">
-      <svg class="leaf" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
-      <div><p class="laurel__name">Devis gratuit</p><p class="mono">Sans engagement</p></div>
-      <svg class="leaf leaf--r" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
-    </div>
-    <div class="laurel">
-      <svg class="leaf" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
-      <div><p class="laurel__name">Artisan couvreur</p><p class="mono">Travail soigné</p></div>
-      <svg class="leaf leaf--r" viewBox="0 0 20 44" aria-hidden="true"><path d="M17 42C6 34 3 22 7 3M7 10C3 9 2 6 2 3c3 0 5 3 5 7Zm0 9c-4 0-5-3-6-6 3 0 5 2 6 6Zm2 9c-4 1-6-2-7-5 3 0 6 1 7 5Zm3 8c-3 2-6 0-8-3 3-1 6 0 8 3Z" fill="none" stroke="currentColor"/></svg>
-    </div>
-  </section>
+  </div>
 
-  <!-- Services : tuiles chromatiques, chacune mène à un devis pré-rempli -->
-  <section class="section wrap" id="services">
-    <div class="head">
-      <span class="mono">Nos services</span>
-      <h2 class="display-sm"><em>Tout</em> pour votre toiture.</h2>
-      <p class="subhead">De la tuile cassée à la toiture complète, nous intervenons sur maisons, immeubles et bâtiments professionnels.</p>
-    </div>
-    <div class="tiles">
-      <article class="tile tile--iris">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11M7 13v14h18V13M7 18h18M7 22.5h18" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Couverture</h3>
-        <p>Réfection complète ou partielle : ardoise naturelle, tuiles plates, tuiles romanes ou mécaniques, bac acier.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Couverture">Devis couverture <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--cyan">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Fuites</h3>
-        <p>Recherche de fuite, bâchage d’urgence, remplacement de tuiles et réparation après tempête.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Fuite">Signaler une fuite <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--pale">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9h24v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9Zm18 8v11" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Zinguerie</h3>
-        <p>Gouttières, descentes, chéneaux, noues et solins en zinc, cuivre ou aluminium.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Zinguerie">Devis zinguerie <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--deep">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 26 16 6l14 20M9 16h14M6 21h20M16 6v20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Charpente</h3>
-        <p>Contrôle, traitement du bois, renforcement et remplacement de pièces abîmées.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Charpente">Devis charpente <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--orchid">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 15 16 4l13 11M6 16c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0M6 22c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Isolation</h3>
-        <p>Combles perdus et aménagés, écran sous-toiture. Moins de chaleur perdue en hiver.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Isolation">Devis isolation <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--peri">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22 16 10l12 12M10 5v3M16 2v3M22 5v3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Démoussage</h3>
-        <p>Nettoyage de la toiture, traitement anti-mousse et hydrofuge pour la protéger plus longtemps.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Démoussage">Devis démoussage <span aria-hidden="true">→</span></a>
-        <a class="tile__link" href="#demo-demoussage">Voir la démo en 3D <span aria-hidden="true">→</span></a>
-      </article>
-    </div>
-  </section>
-
-  <!-- Nettoyage : quatre tuiles, chacune mène à un devis pré-rempli.
-       À VÉRIFIER : le détail des prestations décrit dans chaque tuile -->
-  <section class="section wrap" id="nettoyage">
-    <div class="head">
-      <span class="mono">Nettoyage</span>
-      <h2 class="display-sm"><em>Propre</em>, du sol au toit.</h2>
-      <p class="subhead">Au-delà de la toiture, nous nettoyons vos dallages et vos terrasses, votre maison et tout type de locaux professionnels.</p>
-    </div>
-    <div class="tiles tiles--pairs">
-      <article class="tile tile--cyan">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 9h26v16H3zM3 17h26M11 9v8M21 9v8M7 17v8M16 17v8M25 17v8" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Dallages</h3>
-        <p>Allées, cours, parkings et abords en dalles, pavés ou béton : mousses, salissures et taches disparaissent.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Nettoyage de dallage">Devis dallage <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--peri">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 27 8 15h16l5 12ZM6.3 19h19.4M4.6 23h22.8M16 2.5c2.3 3.2 3.5 5 3.5 6.6a3.5 3.5 0 0 1-7 0c0-1.6 1.2-3.4 3.5-6.6Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Terrasses</h3>
-        <p>Carrelage, pierre, bois ou béton : votre terrasse retrouve son aspect d’origine, à la sortie de l’hiver comme avant l’été.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Nettoyage de terrasse">Devis terrasse <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--pale">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 15 7l12 10M7 14v14h16V14M13 28v-7h4v7M26 2v6M23 5h6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Maisons</h3>
-        <p>Un grand nettoyage, à l’intérieur comme à l’extérieur : après des travaux, avant une vente ou un emménagement.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Nettoyage de maison">Devis maison <span aria-hidden="true">→</span></a>
-      </article>
-      <article class="tile tile--deep">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 28V5h14v23M20 12h7v16M3 28h27M10 10h2M14 10h2M10 15h2M14 15h2M10 20h2M14 20h2M23 17h1M23 22h1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-        <h3>Locaux professionnels</h3>
-        <p>Bureaux, commerces, cabinets, ateliers, entrepôts : nous nettoyons tout type de locaux professionnels.</p>
-        <a class="tile__cta" href="#contact" data-travaux="Nettoyage de locaux professionnels">Devis locaux <span aria-hidden="true">→</span></a>
-      </article>
-    </div>
-  </section>
-
-  <!-- Réalisations : photos de chantiers, avec un comparatif avant / après.
-       Pour ajouter vos photos, voir realisations/LISEZMOI.txt ; légendes À COMPLÉTER ci-dessous.
-       Les photos 1 et 2 sont des montages avant / après : les étiquettes photo__tag les signalent. -->
-  <section class="section" id="realisations">
+  <!-- Services : chacun mène à un devis pré-rempli -->
+  <section class="section section--dark" id="services">
     <div class="wrap">
-      <div class="head">
-        <span class="mono">Nos réalisations</span>
-        <h2 class="display-sm">Des toits <em>bien</em> faits.</h2>
-        <p class="subhead">Quelques chantiers récents, de la réparation à la réfection complète.</p>
-      </div>
-
-      <div class="compare" id="compare" style="--focus: 50% 18%">
-        <figure class="compare__side photo photo--before">
-          <img src="realisations/avant.jpg" alt="Toiture en ardoise couverte de lichens, avant le démoussage" loading="lazy">
-          <span class="photo__empty"><b>Photo avant travaux</b><span>realisations/avant.jpg</span></span>
-        </figure>
-        <figure class="compare__side compare__side--after photo photo--after">
-          <img src="realisations/apres.jpg" alt="La même toiture en ardoise, propre et traitée après le démoussage" loading="lazy">
-          <span class="photo__empty"><b>Photo après travaux</b><span>realisations/apres.jpg</span></span>
-        </figure>
-        <span class="mono compare__tag compare__tag--before">Avant</span>
-        <span class="mono compare__tag compare__tag--after">Après</span>
-        <span class="compare__line" aria-hidden="true"></span>
-        <input class="compare__range" id="compare-range" type="range" min="0" max="100" value="50" aria-label="Glisser pour comparer avant et après les travaux">
-      </div>
-      <p class="compare__caption"><span class="mono">Ardoise · Démoussage et traitement hydrofuge</span><span class="work__place">Ville — année</span></p>
-
-      <ul class="works">
-        <li class="work">
-          <figure>
-            <div class="photo photo--pair-x"><img src="realisations/chantier-1.jpg" alt="Toiture en tuiles avant et après démoussage" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-1.jpg</span></span><span class="mono photo__tag">Avant</span><span class="mono photo__tag photo__tag--after">Après</span></div>
-            <figcaption><span class="mono">Tuiles · Démoussage</span><span class="work__place">Ville — année</span></figcaption>
-          </figure>
+      <header class="head">
+        <p class="kicker">Nos services</p>
+        <h2 class="title">Tout pour votre toiture.<span class="accent">Du faîtage à la gouttière.</span></h2>
+        <p class="lead">De la tuile cassée à la toiture complète, nous intervenons sur maisons, immeubles et bâtiments professionnels.</p>
+      </header>
+      <ul class="services">
+        <li class="service">
+          <span class="service__num">01</span>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11M7 13v14h18V13M7 18h18M7 22.5h18" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <h3>Couverture</h3>
+          <p>Réfection complète ou partielle : ardoise naturelle, tuiles plates, tuiles romanes ou mécaniques, bac acier.</p>
+          <a class="service__cta js-devis" href="#contact" data-travaux="Couverture">Devis couverture <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
         </li>
-        <li class="work">
-          <figure>
-            <div class="photo photo--pair-y"><img src="realisations/chantier-2.jpg" alt="Toiture en bac acier sous échafaudage, puis la même maison avec sa couverture refaite en tuiles" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-2.jpg</span></span><span class="mono photo__tag">Avant</span><span class="mono photo__tag photo__tag--after">Après</span></div>
-            <figcaption><span class="mono">Tuiles · Couverture refaite</span><span class="work__place">Ville — année</span></figcaption>
-          </figure>
+        <li class="service">
+          <span class="service__num">02</span>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <h3>Fuites</h3>
+          <p>Recherche de fuite, bâchage d’urgence, remplacement de tuiles et réparation après tempête.</p>
+          <a class="service__cta js-devis" href="#contact" data-travaux="Fuite">Signaler une fuite <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
         </li>
-        <li class="work">
-          <figure>
-            <div class="photo"><img src="realisations/chantier-3.jpg" alt="Pose de gouttières en zinc" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-3.jpg</span></span></div>
-            <figcaption><span class="mono">Zinguerie · Gouttières neuves</span><span class="work__place">Ville — année</span></figcaption>
-          </figure>
+        <li class="service">
+          <span class="service__num">03</span>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9h24v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9Zm18 8v11" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <h3>Zinguerie</h3>
+          <p>Gouttières, descentes, chéneaux, noues et solins en zinc, cuivre ou aluminium.</p>
+          <a class="service__cta js-devis" href="#contact" data-travaux="Zinguerie">Devis zinguerie <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
         </li>
-        <li class="work">
-          <figure>
-            <div class="photo"><img src="realisations/chantier-4.jpg" alt="Toiture en bac acier" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-4.jpg</span></span></div>
-            <figcaption><span class="mono">Bac acier · Toiture neuve</span><span class="work__place">Ville — année</span></figcaption>
-          </figure>
+        <li class="service">
+          <span class="service__num">04</span>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 26 16 6l14 20M9 16h14M6 21h20M16 6v20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <h3>Charpente</h3>
+          <p>Contrôle, traitement du bois, renforcement et remplacement de pièces abîmées.</p>
+          <a class="service__cta js-devis" href="#contact" data-travaux="Charpente">Devis charpente <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
         </li>
-        <li class="work">
-          <figure>
-            <div class="photo"><img src="realisations/chantier-5.jpg" alt="Réfection d’une toiture en ardoise" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-5.jpg</span></span></div>
-            <figcaption><span class="mono">Ardoise · Réfection complète</span><span class="work__place">Ville — année</span></figcaption>
-          </figure>
+        <li class="service">
+          <span class="service__num">05</span>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 15 16 4l13 11M6 16c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0M6 22c3 3 4 3 5 0s2-3 5 0 4 3 5 0 2-3 5 0" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <h3>Isolation</h3>
+          <p>Combles perdus et aménagés, écran sous-toiture. Moins de chaleur perdue en hiver.</p>
+          <a class="service__cta js-devis" href="#contact" data-travaux="Isolation">Devis isolation <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
         </li>
-        <li class="work">
-          <figure>
-            <div class="photo"><img src="realisations/chantier-6.jpg" alt="Renforcement de charpente" loading="lazy"><span class="photo__empty"><b>Photo à ajouter</b><span>realisations/chantier-6.jpg</span></span></div>
-            <figcaption><span class="mono">Charpente · Renforcement</span><span class="work__place">Ville — année</span></figcaption>
-          </figure>
+        <li class="service">
+          <span class="service__num">06</span>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22 16 10l12 12M10 5v3M16 2v3M22 5v3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          <h3>Démoussage</h3>
+          <p>Nettoyage de la toiture, traitement anti-mousse et hydrofuge pour la protéger plus longtemps.</p>
+          <a class="service__cta js-devis" href="#contact" data-travaux="Démoussage">Devis démoussage <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+          <a class="service__more needs-3d" href="#entretien">Voir la simulation en 3D</a>
         </li>
       </ul>
-      <div class="works__cta">
-        <a class="btn-primary" href="#contact">Votre toiture est la prochaine ? Demander un devis <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <!-- 01 / Toiture : maquette 3D. On choisit la couverture, puis on monte la toiture couche par couche -->
+  <section class="section section--dark section--tight" id="toiture">
+    <div class="wrap">
+      <header class="head">
+        <p class="kicker">01 / Toiture · Choisir, monter, comprendre</p>
+        <h2 class="title">Une toiture,<span class="accent">couche après couche.</span></h2>
+        <p class="lead">Choisissez votre couverture, puis montez la toiture : de la charpente aux gouttières, chaque couche a son rôle.</p>
+      </header>
+
+      <div class="panel maquette" id="maquette">
+        <div class="maquette__covers">
+          <p class="panel__label">01 / Choisissez la couverture</p>
+          <div class="covers" role="group" aria-label="Choisir la couverture">
+            <button type="button" class="cover-card" data-covering="ardoise" aria-pressed="true"
+              data-kind="Ardoise naturelle" data-title="Ardoise après ardoise" data-fix="Crochet inox" data-ridge="Tuiles faîtières scellées"
+              data-text="Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier.">
+              <span class="swatch swatch--ardoise" aria-hidden="true"></span><span>Ardoise</span>
+            </button>
+            <button type="button" class="cover-card" data-covering="plate" aria-pressed="false"
+              data-kind="Terre cuite" data-title="Tuile après tuile" data-fix="Ergot sur les liteaux" data-ridge="Tuiles faîtières scellées"
+              data-text="Les petites tuiles plates en terre cuite s’accrochent aux liteaux par leur ergot, rang par rang depuis l’égout, à joints croisés. Au sommet, les tuiles faîtières sont scellées au mortier.">
+              <span class="swatch swatch--plate" aria-hidden="true"></span><span>Tuile plate</span>
+            </button>
+            <button type="button" class="cover-card" data-covering="romane" aria-pressed="false"
+              data-kind="Terre cuite" data-title="Tuile après tuile" data-fix="Emboîtement" data-ridge="Tuiles faîtières scellées"
+              data-text="Les tuiles romanes en terre cuite s’emboîtent les unes dans les autres sur les liteaux, rang par rang depuis l’égout. Au sommet, les tuiles faîtières sont scellées au mortier.">
+              <span class="swatch swatch--romane" aria-hidden="true"></span><span>Tuile romane</span>
+            </button>
+            <button type="button" class="cover-card" data-covering="acier" aria-pressed="false"
+              data-kind="Acier prélaqué" data-title="Plaque après plaque" data-fix="Vis à rondelle d’étanchéité" data-ridge="Faîtage en acier"
+              data-text="Les plaques de bac acier nervurées vont d’une seule pièce du faîtage à l’égout. Elles sont posées d’un pignon à l’autre et vissées sur les nervures avec des vis à rondelle d’étanchéité. Au sommet, un faîtage en acier de la même teinte.">
+              <span class="swatch swatch--acier" aria-hidden="true"></span><span>Bac acier</span>
+            </button>
+          </div>
+          <div class="cover-info">
+            <p class="kicker" id="cover-kind">Ardoise naturelle</p>
+            <h3 class="cover-info__title" id="cover-title">Ardoise après ardoise</h3>
+            <p id="cover-text">Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier.</p>
+            <dl class="specs">
+              <div class="specs__big"><dt class="panel__label">Pente de la maquette</dt><dd>40°</dd></div>
+              <div><dt class="panel__label">Fixation</dt><dd id="cover-fix">Crochet inox</dd></div>
+              <div><dt class="panel__label">Faîtage</dt><dd id="cover-ridge">Tuiles faîtières scellées</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="maquette__stage">
+          <div class="maquette__bar needs-3d">
+            <p class="panel__label">02 / Montez la toiture</p>
+            <div class="seg" role="group" aria-label="Affichage de la maquette">
+              <button type="button" data-view="eclate" aria-pressed="true">Vue éclatée</button>
+              <button type="button" data-view="complet" aria-pressed="false">Toit complet</button>
+            </div>
+            <button type="button" class="pill" id="maquette-play">Lecture</button>
+          </div>
+          <div class="maquette__view needs-3d">
+            <canvas id="maquette-roof" role="img" aria-label="Maquette 3D de la toiture, montée couche par couche"></canvas>
+            <p class="note"><span>Glissez pour faire pivoter</span><span>Maquette illustrative</span></p>
+          </div>
+          <label class="range needs-3d">
+            <span class="panel__label">03 / Découvrir les couches</span>
+            <input type="range" id="couches" min="0" max="5" step="0.01" value="0">
+          </label>
+          <!-- Les cinq couches : la description de la couche choisie s'affiche dessous -->
+          <ol class="couches" id="couches-liste">
+            <li><button type="button" data-step="1" data-title="La structure en bois" data-text="Sablières, pannes, faîtière et chevrons portent tout le toit. Autour de la cheminée, un chevêtre reprend les chevrons coupés. Nous contrôlons, traitons et remplaçons les bois abîmés."><b>1</b>Charpente</button></li>
+            <li><button type="button" data-step="2" data-title="La chaleur reste dedans" data-text="De la laine de verre glissée entre les chevrons. Dans une maison mal isolée, jusqu’à 30 % de la chaleur s’échappe par le toit."><b>2</b>Isolation</button></li>
+            <li><button type="button" data-step="3" data-title="La barrière contre l’eau" data-text="Une membrane respirante, posée en lés depuis l’égout, arrête l’eau et la poussière et laisse sortir l’humidité. Les contre-liteaux qui la tiennent créent une lame d’air qui ventile la couverture."><b>3</b>Écran</button></li>
+            <li><button type="button" data-step="4" data-cover-step data-title="Ardoise après ardoise" data-text="Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier."><b>4</b>Couverture</button></li>
+            <li><button type="button" data-step="5" data-title="L’eau va où il faut" data-text="Gouttières demi-rondes sur leurs crochets, descentes, bandes de rive et abergement autour de la cheminée évacuent la pluie loin des murs."><b>5</b>Zinguerie</button></li>
+          </ol>
+          <div class="couche-info" aria-live="polite">
+            <p class="kicker" id="couche-num">Vue éclatée</p>
+            <p><strong id="couche-title">Les cinq couches d’une toiture.</strong> <span id="couche-text">Faites glisser le curseur ou touchez une couche pour la poser.</span></p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Avis clients : uniquement de vrais avis, recopiés sans modification (les faux avis sont interdits).
+  <!-- Transition -->
+  <div class="band">
+    <div class="wrap">
+      <p class="kicker">Entretien</p>
+      <p class="band__quote">Une toiture entretenue dure plus longtemps.</p>
+    </div>
+  </div>
+
+  <!-- 02 / Entretien et nettoyage : simulation du démoussage, méthode, prestations de nettoyage -->
+  <section class="section section--light" id="entretien">
+    <div class="wrap">
+      <header class="head">
+        <p class="kicker">02 / Entretien &amp; nettoyage</p>
+        <h2 class="title">Mousses et lichens,<span class="accent">partis pour de bon.</span></h2>
+        <p class="lead">Avec les années, mousses et lichens retiennent l’humidité et abîment la couverture. Faites glisser le curseur : le démoussage descend du faîtage vers la gouttière.</p>
+      </header>
+
+      <div class="panel clean needs-3d">
+        <div class="clean__view">
+          <p class="panel__label">Démoussage · simulation 3D</p>
+          <canvas id="nettoyage-roof" role="img" aria-label="Simulation 3D du démoussage d’une toiture"></canvas>
+          <p class="note"><span>Glissez pour faire pivoter</span><span>Maquette illustrative</span></p>
+        </div>
+        <div class="clean__side">
+          <p class="panel__label">01 / La couverture</p>
+          <div class="pills" role="group" aria-label="Couverture de la simulation">
+            <button type="button" class="clean-pill" data-covering="ardoise" aria-pressed="true">Ardoise</button>
+            <button type="button" class="clean-pill" data-covering="plate" aria-pressed="false">Tuile plate</button>
+            <button type="button" class="clean-pill" data-covering="romane" aria-pressed="false">Tuile romane</button>
+            <button type="button" class="clean-pill" data-covering="acier" aria-pressed="false">Bac acier</button>
+          </div>
+          <h3 class="clean__title">La différence se voit.</h3>
+          <p>Faites avancer la simulation pour comparer la toiture encrassée et la toiture nettoyée.</p>
+          <label class="range">
+            <span class="panel__label">02 / Avancement</span>
+            <input type="range" id="clean-range" min="0" max="100" step="1" value="0">
+          </label>
+          <p class="range__ends" aria-hidden="true"><span>Avant</span><span>Après</span></p>
+          <button type="button" class="btn btn--dark btn--block" id="clean-play">Voir le démoussage <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M5.5 4H12v6.5"/></svg></button>
+          <p class="legend"><span class="legend__dirty">Encrassé</span><span class="legend__clean">Nettoyé</span><span class="legend__value" id="clean-value" aria-live="polite">0 %</span></p>
+        </div>
+      </div>
+
+      <ol class="method">
+        <li><span class="method__num">01</span><h3>Le diagnostic</h3><p>Nous vérifions l’état des ardoises ou des tuiles et l’origine de l’encrassement.</p></li>
+        <li><span class="method__num">02</span><h3>Le nettoyage</h3><p>Du faîtage vers la gouttière, avec une méthode adaptée au matériau, sans l’abîmer.</p></li>
+        <li><span class="method__num">03</span><h3>La protection</h3><p>Un traitement anti-mousse puis un hydrofuge protègent la couverture plus longtemps.</p></li>
+      </ol>
+
+      <!-- Nettoyage : quatre prestations, chacune mène à un devis pré-rempli.
+           À VÉRIFIER : le détail des prestations décrit dans chaque carte -->
+      <div class="clean-services" id="nettoyage">
+        <header class="head head--small">
+          <p class="kicker">Nettoyage</p>
+          <h3 class="title title--small">Propre,<span class="accent">du sol au toit.</span></h3>
+          <p class="lead">Au-delà de la toiture, nous nettoyons vos dallages et vos terrasses, votre maison et tout type de locaux professionnels.</p>
+        </header>
+        <ul class="cards">
+          <li class="card">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 9h26v16H3zM3 17h26M11 9v8M21 9v8M7 17v8M16 17v8M25 17v8" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+            <h4>Dallages</h4>
+            <p>Allées, cours, parkings et abords en dalles, pavés ou béton : mousses, salissures et taches disparaissent.</p>
+            <a class="card__cta js-devis" href="#contact" data-travaux="Nettoyage de dallage">Devis dallage <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+          </li>
+          <li class="card">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 27 8 15h16l5 12ZM6.3 19h19.4M4.6 23h22.8M16 2.5c2.3 3.2 3.5 5 3.5 6.6a3.5 3.5 0 0 1-7 0c0-1.6 1.2-3.4 3.5-6.6Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+            <h4>Terrasses</h4>
+            <p>Carrelage, pierre, bois ou béton : votre terrasse retrouve son aspect d’origine, à la sortie de l’hiver comme avant l’été.</p>
+            <a class="card__cta js-devis" href="#contact" data-travaux="Nettoyage de terrasse">Devis terrasse <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+          </li>
+          <li class="card">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 15 7l12 10M7 14v14h16V14M13 28v-7h4v7M26 2v6M23 5h6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+            <h4>Maisons</h4>
+            <p>Un grand nettoyage, à l’intérieur comme à l’extérieur : après des travaux, avant une vente ou un emménagement.</p>
+            <a class="card__cta js-devis" href="#contact" data-travaux="Nettoyage de maison">Devis maison <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+          </li>
+          <li class="card">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 28V5h14v23M20 12h7v16M3 28h27M10 10h2M14 10h2M10 15h2M14 15h2M10 20h2M14 20h2M23 17h1M23 22h1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+            <h4>Locaux professionnels</h4>
+            <p>Bureaux, commerces, cabinets, ateliers, entrepôts : nous nettoyons tout type de locaux professionnels.</p>
+            <a class="card__cta js-devis" href="#contact" data-travaux="Nettoyage de locaux professionnels">Devis locaux <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 / Réalisations : uniquement des chantiers de l'entreprise, publiés avec l'accord du client.
+       À COMPLÉTER : la ville et l'année de chaque chantier (ajouter <span class="work__place">Ville — année</span> dans la légende).
+       Pour ajouter un chantier : copier un bloc <figure class="work"> et mettre la photo dans realisations/. -->
+  <section class="section section--dark" id="realisations">
+    <div class="wrap">
+      <header class="head">
+        <p class="kicker">03 / Réalisations</p>
+        <h2 class="title">Le travail,<span class="accent">en vrai.</span></h2>
+        <p class="lead">Des photos de nos chantiers, prises avant et après les travaux.</p>
+      </header>
+      <div class="works">
+        <figure class="work work--wide">
+          <div class="compare" id="compare" style="--focus: 50% 18%">
+            <div class="compare__side photo">
+              <img src="realisations/avant.jpg" alt="Toiture en ardoise couverte de lichens, avant le démoussage" loading="lazy">
+            </div>
+            <div class="compare__side compare__side--after photo">
+              <img src="realisations/apres.jpg" alt="La même toiture en ardoise, propre et traitée après le démoussage" loading="lazy">
+            </div>
+            <span class="tag compare__tag--before">Avant</span>
+            <span class="tag compare__tag--after">Après</span>
+            <span class="compare__line" aria-hidden="true"></span>
+            <input class="compare__range" id="compare-range" type="range" min="0" max="100" value="50" aria-label="Glisser pour comparer avant et après les travaux">
+          </div>
+          <figcaption><span class="kicker">Ardoise</span>Démoussage et traitement hydrofuge</figcaption>
+        </figure>
+        <figure class="work">
+          <div class="photo photo--pair"><img src="realisations/chantier-2.jpg" alt="Toiture en bac acier sous échafaudage, puis la même maison avec sa couverture refaite en tuiles" loading="lazy"><span class="tag">Avant</span><span class="tag tag--after">Après</span></div>
+          <figcaption><span class="kicker">Tuiles</span>Couverture refaite</figcaption>
+        </figure>
+      </div>
+      <div class="works__cta">
+        <a class="btn btn--sand" href="#contact">Votre toiture est la prochaine ? Demander un devis <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M5.5 4H12v6.5"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MASQUÉE (attribut hidden) tant qu'il n'y a pas de vrais avis : pour l'afficher, retirer hidden
+       et ajouter un lien « Avis » dans les menus.
+       Avis clients : uniquement de vrais avis, recopiés sans modification (les faux avis sont interdits).
        À COMPLÉTER pour chaque avis : le texte, le prénom et l'initiale, la ville, le mois et l'année,
        la note dans --note (5 pour cinq étoiles, 4.5 pour quatre et demie…), puis retirer « is-empty ».
        Les avis vont du plus récent au plus ancien.
        À REMPLACER : ajouter href sur les deux liens du bas, l'adresse de la fiche Google pour « Voir tous
        nos avis », le lien « Demander des avis » de la fiche pour « Laissez-nous un avis ». Grisés sans lien. -->
-  <section class="section band" id="avis">
+  <section class="section section--dark" id="avis" hidden>
     <div class="wrap">
-      <div class="head">
-        <span class="mono">Avis clients</span>
-        <h2 class="display-sm"><em>Ils</em> nous ont fait confiance.</h2>
-        <p class="subhead">Ce que nos clients disent de nos chantiers, sur Google.</p>
-      </div>
+      <header class="head">
+        <p class="kicker">Avis clients</p>
+        <h2 class="title">Ils nous ont<span class="accent">fait confiance.</span></h2>
+        <p class="lead">Ce que nos clients disent de nos chantiers, sur Google.</p>
+      </header>
       <ul class="reviews">
         <li class="review is-empty">
           <p class="review__stars" style="--note: 0" aria-label="Note à compléter">★★★★★</p>
           <blockquote class="review__text">Avis à ajouter : le texte d’un avis laissé par un client sur Google.</blockquote>
-          <p class="review__author"><b>Prénom N.</b><span class="mono">Ville · mois année</span></p>
+          <p class="review__author"><b>Prénom N.</b><span class="kicker">Ville · mois année</span></p>
         </li>
         <li class="review is-empty">
           <p class="review__stars" style="--note: 0" aria-label="Note à compléter">★★★★★</p>
           <blockquote class="review__text">Avis à ajouter : le texte d’un avis laissé par un client sur Google.</blockquote>
-          <p class="review__author"><b>Prénom N.</b><span class="mono">Ville · mois année</span></p>
+          <p class="review__author"><b>Prénom N.</b><span class="kicker">Ville · mois année</span></p>
         </li>
         <li class="review is-empty">
           <p class="review__stars" style="--note: 0" aria-label="Note à compléter">★★★★★</p>
           <blockquote class="review__text">Avis à ajouter : le texte d’un avis laissé par un client sur Google.</blockquote>
-          <p class="review__author"><b>Prénom N.</b><span class="mono">Ville · mois année</span></p>
+          <p class="review__author"><b>Prénom N.</b><span class="kicker">Ville · mois année</span></p>
         </li>
       </ul>
       <p class="reviews__note">Une sélection d’avis publiés par nos clients sur Google, reproduits sans modification et classés du plus récent au plus ancien. Tous nos avis sont consultables sur notre fiche Google.</p>
       <div class="reviews__cta">
-        <a class="btn-ghost" data-lien-google="fiche">Voir tous nos avis Google <span aria-hidden="true">→</span></a>
-        <a class="reviews__leave" data-lien-google="laisser-un-avis">Vous êtes client ? Laissez-nous un avis</a>
+        <a class="btn btn--line" data-lien-google="fiche">Voir tous nos avis Google</a>
+        <a class="link" data-lien-google="laisser-un-avis">Vous êtes client ? Laissez-nous un avis</a>
       </div>
     </div>
   </section>
 
-  <!-- Anatomie 3D : la toiture se monte au défilement -->
-  <section class="sky-section" id="anatomie">
-    <div class="sky-layer" aria-hidden="true">
-      <div class="sky-layer__view sky">
-        <div class="clouds">
-          <div class="cloud cloud--e" data-seed="5"></div>
-          <div class="cloud cloud--f" data-seed="12"></div>
-          <div class="cloud cloud--g" data-seed="17"></div>
-          <div class="cloud cloud--h" data-seed="26"></div>
-          <div class="cloud cloud--i" data-seed="31"></div>
+  <!-- 04 / Diagnostic express : le visiteur touche ce qu'il constate, sa demande se rédige toute seule -->
+  <section class="section section--light" id="diagnostic">
+    <div class="wrap diag">
+      <header class="head head--left">
+        <p class="kicker">04 / Diagnostic express</p>
+        <h2 class="title">Que voyez-vous<span class="accent">sur votre toit ?</span></h2>
+        <p class="lead">Touchez ce que vous constatez : votre demande de diagnostic se prépare toute seule. Nous venons ensuite vérifier gratuitement.</p>
+      </header>
+      <div class="panel diag__box">
+        <p class="panel__label">Ce que vous constatez</p>
+        <div class="symptoms" role="group" aria-label="Ce que vous constatez">
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="fuite">Fuite ou tache au plafond</button>
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="tempete">Dégâts après une tempête</button>
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="casse">Tuiles ou ardoises cassées</button>
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="gouttiere">Gouttière qui déborde</button>
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="mousse">Mousse ou lichen</button>
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="froid">Pièces froides sous le toit</button>
+          <button type="button" class="symptom" aria-pressed="false" data-symptom="age">Toiture de plus de 30 ans</button>
         </div>
-      </div>
-    </div>
-    <div class="wrap sky-content">
-      <div class="head">
-        <span class="mono">Anatomie d’une toiture</span>
-        <h2 class="display-sm"><em>Couche</em> après couche.</h2>
-        <p class="subhead">Choisissez votre toiture, puis faites défiler : elle se monte sous vos yeux, dans l’ordre d’un vrai chantier.</p>
-      </div>
-      <div class="anatomy">
-        <div class="anatomy__stage">
-          <div class="anatomy__view">
-            <canvas id="anatomy-roof" role="img" aria-label="Toiture en 3D qui se monte couche par couche : charpente, laine de verre, écran sous-toiture, couverture au choix, zinguerie"></canvas>
-          </div>
-          <!-- Le texte de l'étape Couverture suit le type de toiture choisi (data-title, data-text, data-dot) -->
-          <div class="covering covering--anatomy" role="group" aria-label="Choisir le type de toiture">
-            <button type="button" class="covering__btn" data-covering="ardoise" aria-pressed="true" data-dot="#3d444c"
-              data-title="Ardoise après ardoise"
-              data-text="Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier.">Ardoise</button>
-            <button type="button" class="covering__btn" data-covering="plate" aria-pressed="false" data-dot="#9d4f30"
-              data-title="Tuile après tuile"
-              data-text="Les petites tuiles plates en terre cuite s’accrochent aux liteaux par leur ergot, rang par rang depuis l’égout, à joints croisés. Au sommet, les tuiles faîtières sont scellées au mortier.">Tuile plate</button>
-            <button type="button" class="covering__btn" data-covering="romane" aria-pressed="false" data-dot="#b8582d"
-              data-title="Tuile après tuile"
-              data-text="Les tuiles romanes en terre cuite s’emboîtent les unes dans les autres sur les liteaux, rang par rang depuis l’égout. Au sommet, les tuiles faîtières sont scellées au mortier.">Tuile romane</button>
-            <button type="button" class="covering__btn" data-covering="acier" aria-pressed="false" data-dot="#3b4045"
-              data-title="Plaque après plaque"
-              data-text="Les plaques de bac acier nervurées vont d’une seule pièce du faîtage à l’égout. Elles sont posées d’un pignon à l’autre et vissées sur les nervures avec des vis à rondelle d’étanchéité. Au sommet, un faîtage en acier de la même teinte.">Bac acier</button>
-          </div>
-          <div class="anatomy__meter" aria-hidden="true">
-            <span class="mono" id="anatomy-label">01 — Charpente</span>
-            <span class="anatomy__bar"><i id="anatomy-fill"></i></span>
-          </div>
-        </div>
-        <ol class="anatomy__steps">
-          <li class="astep is-active" data-label="01 — Charpente" style="--dot: #c08a50">
-            <span class="mono"><i class="dot"></i>01 — Charpente</span>
-            <h3>La structure en bois</h3>
-            <p>Sablières, pannes, faîtière et chevrons portent tout le toit. Autour de la cheminée, un chevêtre reprend les chevrons coupés. Nous contrôlons, traitons et remplaçons les bois abîmés.</p>
-          </li>
-          <li class="astep" data-label="02 — Isolation" style="--dot: #e2b93b">
-            <span class="mono"><i class="dot"></i>02 — Isolation</span>
-            <h3>La chaleur reste dedans</h3>
-            <p>De la laine de verre glissée entre les chevrons. Dans une maison mal isolée, jusqu’à 30 % de la chaleur s’échappe par le toit.</p>
-          </li>
-          <li class="astep" data-label="03 — Écran sous-toiture" style="--dot: #c3ccd4">
-            <span class="mono"><i class="dot"></i>03 — Écran sous-toiture</span>
-            <h3>La barrière contre l’eau</h3>
-            <p>Une membrane respirante, posée en lés depuis l’égout, arrête l’eau et la poussière et laisse sortir l’humidité. Les contre-liteaux qui la tiennent créent une lame d’air qui ventile la couverture.</p>
-          </li>
-          <li class="astep" data-label="04 — Couverture" data-covering-step style="--dot: #3d444c">
-            <span class="mono"><i class="dot"></i>04 — Couverture</span>
-            <h3>Ardoise après ardoise</h3>
-            <p>Sur les liteaux, chaque ardoise est tenue par un crochet inox, rang par rang depuis l’égout. Au sommet, les tuiles faîtières en terre cuite sont scellées au mortier.</p>
-          </li>
-          <li class="astep" data-label="05 — Zinguerie" style="--dot: #a2abb0">
-            <span class="mono"><i class="dot"></i>05 — Zinguerie</span>
-            <h3>L’eau va où il faut</h3>
-            <p>Gouttières demi-rondes sur leurs crochets, descentes, bandes de rive et abergement autour de la cheminée évacuent la pluie loin des murs.</p>
-          </li>
-          <li class="astep" id="demo-demoussage" data-label="06 — Démoussage" style="--dot: #90b8f0">
-            <span class="mono"><i class="dot"></i>06 — Démoussage</span>
-            <h3>Le démoussage, en démonstration</h3>
-            <p>Avec les années, mousses et lichens s’installent et retiennent l’humidité. Nous nettoyons la couverture du faîtage vers l’égout, puis appliquons un traitement anti-mousse et un hydrofuge qui la protègent plus longtemps.</p>
-            <p class="mono demo__status" id="demo-status" aria-live="polite">La démonstration démarre en arrivant ici.</p>
-            <button type="button" class="btn-ghost demo__replay" id="demo-replay">Revoir la démonstration</button>
-          </li>
-        </ol>
+        <a class="btn btn--dark btn--block" id="diag-cta" href="#contact">Recevoir mon diagnostic gratuit <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M5.5 4H12v6.5"/></svg></a>
       </div>
     </div>
   </section>
 
-  <!-- Diagnostic express : le visiteur touche ce qu'il constate, sa demande de diagnostic se rédige toute seule -->
-  <section class="section wrap" id="diagnostic">
-    <div class="diag">
-      <span class="mono">Diagnostic express</span>
-      <h2 class="heading-lg">Que voyez-vous <em>sur votre</em> toit ?</h2>
-      <p>Touchez ce que vous constatez : votre demande de diagnostic se prépare toute seule. Nous venons ensuite vérifier gratuitement.</p>
-      <div class="symptoms" role="group" aria-label="Ce que vous constatez">
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="fuite">Fuite ou tache au plafond</button>
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="tempete">Dégâts après une tempête</button>
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="casse">Tuiles ou ardoises cassées</button>
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="gouttiere">Gouttière qui déborde</button>
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="mousse">Mousse ou lichen</button>
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="froid">Pièces froides sous le toit</button>
-        <button type="button" class="symptom" aria-pressed="false" data-symptom="age">Toiture de plus de 30 ans</button>
-      </div>
-      <a class="btn-primary" id="diag-cta" href="#contact">Recevoir mon diagnostic gratuit <span aria-hidden="true">→</span></a>
-    </div>
-  </section>
-
-  <!-- Carte inversée -->
-  <section class="wrap">
-    <div class="stat">
-      <h2 class="heading-lg">Un seul <em>interlocuteur</em>, du premier appel à la fin du chantier.</h2>
-      <!-- À VÉRIFIER : engagements de l'entreprise -->
-      <dl class="stat__grid">
-        <div><dt class="mono">Devis</dt><dd>Gratuit</dd></div>
-        <div><dt class="mono">Garantie</dt><dd>10 ans</dd></div>
-        <div><dt class="mono">Chantier</dt><dd>Nettoyé</dd></div>
-      </dl>
-    </div>
-  </section>
-
-  <!-- Méthode -->
-  <section class="section" id="methode">
+  <!-- 05 / Méthode -->
+  <section class="section section--dark" id="methode">
     <div class="wrap">
-      <div class="head">
-        <span class="mono">Comment ça se passe</span>
-        <h2 class="display-sm"><em>Simple</em>, du début à la fin.</h2>
-      </div>
+      <header class="head">
+        <p class="kicker">05 / Comment ça se passe</p>
+        <h2 class="title">Simple,<span class="accent">du début à la fin.</span></h2>
+      </header>
+      <!-- À VÉRIFIER : engagements de l'entreprise -->
       <ol class="steps">
-        <li><span class="mono">Étape 1</span><h3>Vous nous appelez</h3><p>Ou vous remplissez le formulaire. Nous fixons une date de visite.</p></li>
-        <li><span class="mono">Étape 2</span><h3>Visite et devis</h3><p>Nous inspectons la toiture ou les surfaces à nettoyer et vous remettons un devis détaillé, gratuit.</p></li>
-        <li><span class="mono">Étape 3</span><h3>Les travaux</h3><p>Chantier protégé et sécurisé. Les déchets sont évacués.</p></li>
-        <li><span class="mono">Étape 4</span><h3>La réception</h3><p>Nous vérifions le travail ensemble et vous remettons la garantie.</p></li>
+        <li><span class="steps__num">01</span><h3>Vous nous appelez</h3><p>Ou vous remplissez le formulaire. Nous fixons une date de visite.</p></li>
+        <li><span class="steps__num">02</span><h3>Visite et devis</h3><p>Nous inspectons la toiture ou les surfaces à nettoyer et vous remettons un devis détaillé, gratuit.</p></li>
+        <li><span class="steps__num">03</span><h3>Les travaux</h3><p>Chantier protégé et sécurisé. Les déchets sont évacués.</p></li>
+        <li><span class="steps__num">04</span><h3>La réception</h3><p>Nous vérifions le travail ensemble et vous remettons la garantie.</p></li>
       </ol>
     </div>
   </section>
 
   <!-- Questions -->
-  <section class="section band" id="questions">
-    <div class="wrap">
-      <div class="head">
-        <span class="mono">Questions fréquentes</span>
-        <h2 class="display-sm"><em>Vos</em> questions.</h2>
-      </div>
+  <section class="section section--light" id="questions">
+    <div class="wrap faq-wrap">
+      <header class="head head--left">
+        <p class="kicker">Questions fréquentes</p>
+        <h2 class="title">Vos questions,<span class="accent">nos réponses.</span></h2>
+      </header>
       <div class="faq">
         <details><summary>Le devis est-il payant ?</summary><p>Non. La visite, le diagnostic et le devis sont gratuits et sans engagement.</p></details>
+        <details><summary>Combien coûte une intervention ?</summary><p>Chaque chantier fait l’objet d’un devis détaillé et gratuit, remis avant toute intervention. Notre taux horaire, nos frais de déplacement et le prix de nos prestations courantes sont indiqués sur la page <a href="tarifs.html">Nos tarifs</a>.</p></details>
         <details><summary>Faites-vous aussi du nettoyage ?</summary><p>Oui : dallages, terrasses, maisons et tout type de locaux professionnels (bureaux, commerces, ateliers, entrepôts…). Décrivez-nous ce qu’il faut nettoyer, nous vous proposons une visite et un <a href="#nettoyage">devis gratuit</a>.</p></details>
         <details><summary>Comment savoir si ma toiture doit être refaite ?</summary><p>Tuiles cassées ou poreuses, mousse abondante, taches d’humidité au plafond, gouttières qui débordent. Une visite permet de savoir si une réparation suffit. Le <a href="#diagnostic">diagnostic express</a> vous donne un premier avis.</p></details>
         <details><summary>Vous déplacez-vous en urgence ?</summary><p>Oui. Après une tempête, nous bâchons la toiture pour la mettre hors d’eau, puis nous réparons. Nous vous aidons aussi pour la déclaration à l’assurance.</p></details>
         <details><summary>Combien de temps durent les travaux ?</summary><p>Une réparation se fait souvent dans la journée. Une réfection complète prend de quelques jours à quelques semaines selon la surface et la météo. Le planning figure sur le devis.</p></details>
-        <details><summary>Quelle TVA s’applique sur les travaux ?</summary><p>Pour un logement achevé depuis plus de deux ans, les travaux de rénovation bénéficient en général d’une TVA à 10 %, et l’isolation d’une TVA à 5,5 %. Nous vérifions votre cas et l’indiquons sur le devis.</p></details>
+        <details><summary>Quelle TVA s’applique sur les travaux ?</summary><p>Cela dépend de notre régime de TVA, de votre logement et de la nature des travaux : pour un logement de plus de deux ans, des taux réduits peuvent s’appliquer en rénovation et en isolation. Le devis indique toujours le prix exact, toutes taxes comprises.</p></details>
         <details><summary>Les travaux sont-ils garantis ?</summary><p>Oui, ils sont couverts par notre assurance décennale. L’attestation vous est remise avec le devis.</p></details>
       </div>
     </div>
   </section>
 
+  <!-- Bandeau d'appel -->
+  <a class="cta-band" href="#contact">
+    <span class="wrap cta-band__inner"><span>Parlons de votre projet</span><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12l8-8M5.5 4H12v6.5"/></svg></span>
+  </a>
+
   <!-- Contact -->
-  <section class="section" id="contact">
+  <section class="section section--dark" id="contact">
     <div class="wrap contact">
       <div class="contact__intro">
-        <span class="mono">Contact</span>
-        <h2 class="display-sm"><em>Parlons</em> de votre projet.</h2>
-        <p class="subhead">Laissez vos coordonnées, nous vous rappelons pour fixer une visite. Le diagnostic et le devis sont gratuits.</p>
-        <!-- À REMPLACER : secteur d'intervention -->
+        <header class="head head--left">
+          <p class="kicker">Contact</p>
+          <h2 class="title">Parlons de<span class="accent">votre projet.</span></h2>
+          <p class="lead">Laissez vos coordonnées, nous vous rappelons pour fixer une visite. Le diagnostic et le devis sont gratuits.</p>
+        </header>
+        <!-- À COMPLÉTER : la ville de l'entreprise et les communes desservies -->
         <dl class="coords">
-          <div><dt class="mono">Téléphone</dt><dd><a href="tel:+33782627856">07 82 62 78 56</a></dd></div>
-          <div><dt class="mono">E-mail</dt><dd><a href="mailto:adolpherudy0@gmail.com">adolpherudy0@gmail.com</a></dd></div>
-          <div><dt class="mono">Secteur</dt><dd>Votre ville et ses environs</dd></div>
+          <div><dt class="kicker">Téléphone</dt><dd><a href="tel:+33782627856">07 82 62 78 56</a></dd></div>
+          <div><dt class="kicker">WhatsApp</dt><dd><a href="https://wa.me/33782627856?text=Bonjour%2C%20je%20vous%20contacte%20depuis%20votre%20site%20au%20sujet%20de%20ma%20toiture." target="_blank" rel="noopener">Envoyez-nous une photo<span class="sr-only"> (ouvre WhatsApp)</span></a></dd></div>
+          <div><dt class="kicker">E-mail</dt><dd><a href="mailto:adolpherudy0@gmail.com">adolpherudy0@gmail.com</a></dd></div>
+          <div><dt class="kicker">Secteur</dt><dd>Tout le Morbihan (56)</dd></div>
         </dl>
         <div class="urgent">
-          <p class="mono">Urgence</p>
+          <p class="kicker"><i class="live-dot" aria-hidden="true"></i>Urgence</p>
           <p>Fuite, tuiles envolées après une tempête ? Appelez directement : nous mettons votre toiture hors d’eau au plus vite.</p>
-          <a class="btn-ghost" href="tel:+33782627856">Appeler le 07 82 62 78 56</a>
+          <a class="btn btn--line" href="tel:+33782627856">Appeler le 07 82 62 78 56</a>
         </div>
       </div>
-      <form class="form" id="devis" data-email="adolpherudy0@gmail.com">
+      <form class="form" id="devis">
+        <p class="form__legend">Les champs marqués <span class="req" aria-hidden="true">*</span> sont obligatoires.</p>
         <div class="form__row">
-          <label for="f-nom">Nom<input id="f-nom" name="nom" required autocomplete="name"></label>
-          <label for="f-tel">Téléphone<input id="f-tel" name="telephone" type="tel" required autocomplete="tel"></label>
+          <label for="f-nom"><span>Nom <span class="req" aria-hidden="true">*</span></span><input id="f-nom" name="nom" required autocomplete="name"></label>
+          <label for="f-tel"><span>Téléphone <span class="req" aria-hidden="true">*</span></span><input id="f-tel" name="telephone" type="tel" required autocomplete="tel"></label>
         </div>
         <div class="form__row">
           <label for="f-mail">E-mail<input id="f-mail" name="email" type="email" autocomplete="email"></label>
@@ -527,10 +547,20 @@
             <option>Autre</option>
           </select>
         </label>
-        <label for="f-msg">Votre demande<textarea id="f-msg" name="message" rows="5" required placeholder="Décrivez votre toiture et le problème. Vous pourrez joindre des photos à l’e-mail."></textarea></label>
-        <button class="btn-primary btn-block" type="submit">Envoyer ma demande <span aria-hidden="true">→</span></button>
-        <p class="mono form__note" id="form-note">Gratuit · sans engagement · réponse rapide</p>
-        <p class="form__privacy">Vos informations servent uniquement à vous recontacter au sujet de votre demande. <a href="mentions-legales.html#donnees">Données personnelles</a></p>
+        <label for="f-msg"><span>Votre demande <span class="req" aria-hidden="true">*</span></span><textarea id="f-msg" name="message" rows="5" required placeholder="Décrivez votre toiture et le problème. Vous pourrez joindre des photos à l’e-mail."></textarea></label>
+        <button class="btn btn--sand btn--block" type="submit" id="devis-submit">Envoyer ma demande <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"/></svg></button>
+        <!-- Dernière étape : la demande est rédigée, le visiteur l'envoie depuis sa propre messagerie (rien n'est stocké par le site) -->
+        <div class="send" id="send" hidden>
+          <p class="send__title" id="send-title" tabindex="-1">Dernière étape : envoyez votre demande</p>
+          <p class="send__text">Votre message est déjà rédigé. Choisissez comment nous l’envoyer : vous pourrez y joindre des photos de votre toit.</p>
+          <div class="send__actions">
+            <a class="btn btn--sand" id="send-mail" href="mailto:adolpherudy0@gmail.com"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17zM4 7l8 6.5L20 7"/></svg>Par e-mail</a>
+            <a class="btn btn--line" id="send-wa" href="https://wa.me/33782627856?text=Bonjour%2C%20je%20vous%20contacte%20depuis%20votre%20site%20au%20sujet%20de%20ma%20toiture." target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.8a8.2 8.2 0 0 0-7.1 12.3L3.8 20.2l4.2-1.1A8.2 8.2 0 1 0 12 3.8Z"/></svg>Par WhatsApp<span class="sr-only"> (ouvre WhatsApp)</span></a>
+          </div>
+          <button type="button" class="send__edit" id="send-edit">Modifier ma demande</button>
+        </div>
+        <p class="kicker form__note" id="form-note">Gratuit · sans engagement · réponse rapide</p>
+        <p class="form__privacy">Vos informations servent uniquement à répondre à votre demande et à établir votre devis. Elles partent de votre propre messagerie : ce site ne les enregistre pas. <a href="mentions-legales.html#donnees">Données personnelles</a></p>
       </form>
     </div>
   </section>
@@ -541,15 +571,17 @@
   <div class="wrap footer__inner">
     <a class="logo" href="#accueil">
       <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 15 14 5l11 10M7 12v11h14V12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
-      <span>A R Rénovation</span>
+      <span class="logo__text"><b>A R Rénovation</b><small>Couvreur · Morbihan (56)</small></span>
     </a>
-    <p class="mono">Couverture · Zinguerie · Charpente · Isolation · Nettoyage</p>
     <nav class="footer__links" aria-label="Liens utiles">
       <a href="tel:+33782627856">07 82 62 78 56</a>
       <a href="#contact">Devis gratuit</a>
+      <a href="tarifs.html">Nos tarifs</a>
       <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mentions-legales.html#donnees">Confidentialité</a>
+      <a href="mentions-legales.html#mediation">Médiation</a>
     </nav>
-    <p class="mono">© <span id="year">2026</span> A R Rénovation</p>
+    <p class="kicker">© <span id="year">2026</span> A R Rénovation</p>
   </div>
 </footer>
 
@@ -559,10 +591,12 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.6l1.4 4.3-2 1.5a12 12 0 0 0 6.1 6.1l1.5-2 4.3 1.4v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
     Appeler
   </a>
-  <a class="btn-primary" href="#contact">Devis gratuit <span aria-hidden="true">→</span></a>
+  <a class="btn btn--sand" href="#contact">Devis gratuit</a>
 </div>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Bibliothèque 3D three.js (licence MIT), chargée depuis cdnjs sans transmettre l'adresse de la page.
+     À la mise en ligne : la copier dans le site (three.min.js) et remplacer cette adresse, pour ne plus dépendre d'un service extérieur. -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script defer src="roof3d.js"></script>
 <script defer src="script.js"></script>
 </body>
